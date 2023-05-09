@@ -1,17 +1,24 @@
 #include "pokemontools.h"
 
-void DisplayLevelMoves(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int lvl, int move) {
+#include "address.h"
+#include "pointertools.h"
+#include "interpreter.h"
+#include "guicodes.h"
+#include "main.h"
 
+void DisplayLevelMoves(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	unsigned int address = GetAddress(ADD_LEVEL_TABLE);
 	byte* pointer = new byte[3];
 	unsigned int startAddress = 0;
 	unsigned int currentAddress = 0;
 	int segment = 0;
+	std::wstring spacer;
 
 	//Create Pointer pieces for address at the start of the pointer table
 	pointer[2] = FindBank(address);
 	//Pointer is 2 bytes so location in table is 2x Pokemon's number
-	pointer[0] = data[address + (2 * ((unsigned int)pokemon - 1))];
-	pointer[1] = data[address + (2 * ((unsigned int)pokemon - 1)) + 1];
+	pointer[0] = data[address + (2 * (pokemon - 1))];
+	pointer[1] = data[address + (2 * (pokemon - 1)) + 1];
 
 	currentAddress = PointerToAddress(pointer);
 	startAddress = currentAddress;
@@ -44,20 +51,28 @@ void DisplayLevelMoves(unsigned int address, unsigned short pokemon, std::vector
 		}
 
 		// Enter 2nd loop for Move data
-		SendMessage(GetDlgItem(hWnd, lvl), LB_ADDSTRING, 0, (LPARAM)std::to_wstring(InterpretNumbers(data[currentAddress])).c_str());
-		currentAddress = currentAddress + 1;
-		SendMessage(GetDlgItem(hWnd, move), LB_ADDSTRING, 0, (LPARAM)(InterpretMoves(data[currentAddress])).c_str());
-		currentAddress = currentAddress + 1;
+		if (InterpretNumbers(data[currentAddress]) >= 100) spacer = L": ";
+		if (InterpretNumbers(data[currentAddress]) < 100) spacer = L":  ";
+		if (InterpretNumbers(data[currentAddress]) < 10) spacer = L":    ";
 
+		SendMessage(GetDlgItem(hWnd, LB_LEVEL), LB_ADDSTRING, 0, (LPARAM)(
+			std::to_wstring(InterpretNumbers(data[currentAddress])) +
+			spacer +
+			InterpretMoves(data[currentAddress + 1])).c_str());
+
+		currentAddress += 2;
+		
 		//Check for end of Move data
 		if (data[currentAddress] == (byte)0x00) {
-			segment = segment + 1;
+			//segment = segment + 1;
 			break;
 		}
 	}
 }
 
-std::vector<byte> InsertLevelMoves(unsigned int address, unsigned short pokemon, std::vector<byte> data, byte lvl, byte move) {
+void InsertLevelMoves(std::vector<byte>& data, byte pokemon, byte lvl, byte move) {
+	unsigned int address = GetAddress(ADD_LEVEL_TABLE);
+
 
 	byte* pointer = new byte[3];
 	unsigned int currentAddress;
@@ -99,7 +114,7 @@ std::vector<byte> InsertLevelMoves(unsigned int address, unsigned short pokemon,
 
 	//Copy data from insertion point to the end of ROM Bank
 	//Minus 2 byte to keep room for the new byte from insertion
-	copy = CopyData(currentAddress, PointerToAddress(pointer) - 3, data);
+	copy = CopyData(data, currentAddress, PointerToAddress(pointer) - 3);
 
 	//Fill insertion point with new move data
 	data[currentAddress] = lvl;
@@ -108,24 +123,22 @@ std::vector<byte> InsertLevelMoves(unsigned int address, unsigned short pokemon,
 	currentAddress = currentAddress + 1;;
 
 	//Paste data over remaining ROM Bank data to shift data over 2 bytes
-	data = PasteData(currentAddress, data, copy);
+	PasteData(data, currentAddress, copy);
 
 	//Load Pointer Table into copy and update the Pointer Table
 	//Only update the pointers of all Pokemon past selected Pokemon
-	copy = CopyData(address + (pokemon * 2), address + 502, data);
+	copy = CopyData(data, address + (pokemon * 2), address + 502);
 	copy = UpdatePointerTable(copy, 0x0002);
 
 	//Paste new Pointer Table over old Pointer Table
-	data = PasteData(address + (pokemon * 2), data, copy);
-
-	return data;
+	PasteData(data, address + (pokemon * 2), copy);
 }
 
-std::vector<byte> DeleteLevelMoves(unsigned int address, unsigned short pokemon, std::vector<byte> data, byte lvl, byte move) {
-
+void DeleteLevelMoves(std::vector<byte>& data, byte pokemon, HWND hWnd) {
 	byte* pointer = new byte[3];
-	unsigned int currentAddress;
-	bool exists = false;
+	unsigned int address = GetAddress(ADD_LEVEL_TABLE);
+	unsigned int current;
+	int entry = SendMessage(GetDlgItem(hWnd, LB_LEVEL), LB_GETCURSEL, NULL, NULL);
 	std::vector<byte> copy;
 
 	//Create Pointer pieces for address at the start of the pointer table
@@ -135,54 +148,74 @@ std::vector<byte> DeleteLevelMoves(unsigned int address, unsigned short pokemon,
 	pointer[1] = data[address + (2 * (pokemon - 1)) + 1];
 
 	//Create variable for iterating through data
-	currentAddress = PointerToAddress(pointer);
+	current = PointerToAddress(pointer);
 
 	//Iterate through evolution data
-	while (data[currentAddress] != (byte)0x00) {
-		currentAddress = currentAddress + 1;
+	while (data[current] != 0x00) {
+		current++;
 	}
-	currentAddress++;
+	current++;
 
-	//Find 
-	while (data[currentAddress] != (byte)0x00) {
-		if (data[currentAddress] == lvl && data[currentAddress + 1] == move) {
-			exists = true;
-			break;
-		}
-		currentAddress = currentAddress + 2;
-	}
+	current += (entry + 1) * 2;
+	
+	//Fill pointer pieces to get address of the end of the current ROM Bank
+	pointer[2] = pointer[2] + 1;
+	pointer[0] = 0x00;
+	pointer[1] = 0x40;
 
-	if (exists == true) {
-		//Fill pointer pieces to get address of the end of the current ROM Bank
-		pointer[2] = pointer[2] + 1;
-		pointer[0] = 0x00;
-		pointer[1] = 0x40;
+	//
+	copy = CopyData(data, current, PointerToAddress(pointer) - 1);
 
-		//
-		copy = CopyData(currentAddress + 2, PointerToAddress(pointer) - 1, data);
+	//Paste data over remaining ROM Bank data to shift data over 2 bytes
+	PasteData(data, current - 2, copy);
 
-		//Paste data over remaining ROM Bank data to shift data over 2 bytes
-		data = PasteData(currentAddress, data, copy);
+	//Load Pointer Table into copy and update the Pointer Table
+	//Only update the pointers of all Pokemon past selected Pokemon
+	copy = CopyData(data, address + (pokemon * 2), address + 502);
+	copy = UpdatePointerTable(copy, -0x0002);
 
-		//Load Pointer Table into copy and update the Pointer Table
-		//Only update the pointers of all Pokemon past selected Pokemon
-		copy = CopyData(address + (pokemon * 2), address + 502, data);
-		copy = UpdatePointerTable(copy, -0x0002);
+	//Paste new Pointer Table over old Pointer Table
+	PasteData(data, address + (pokemon * 2), copy);
 
-		//Paste new Pointer Table over old Pointer Table
-		data = PasteData(address + (pokemon * 2), data, copy);
-	}
-
-	return data;
 }
 
-std::vector<byte> InsertEggMoves(unsigned int address, unsigned short pokemon, std::vector<byte> data, byte move) {
-
+void ChangeLevelMoves(std::vector<byte>& data, byte pokemon, HWND hWnd) {
 	byte* pointer = new byte[3];
-	unsigned int current_add;
+	unsigned int address = GetAddress(ADD_LEVEL_TABLE);
+	unsigned int current;
+	int entry = SendMessage(GetDlgItem(hWnd, LB_LEVEL), LB_GETCURSEL, NULL, NULL);
+	std::vector<byte> copy;
+
+	//Create Pointer pieces for address at the start of the pointer table
+	pointer[2] = FindBank(address);
+	//Pointer is 2 bytes so location in table is 2x Pokemon's number
+	pointer[0] = data[address + (2 * (pokemon - 1))];
+	pointer[1] = data[address + (2 * (pokemon - 1)) + 1];
+
+	//Create variable for iterating through data
+	current = PointerToAddress(pointer);
+
+	//Iterate through evolution data
+	while (data[current] != (byte)0x00) {
+		current++;
+	}
+	current++;
+
+	current += entry * 2;
+
+	data[current] = SendMessage(GetDlgItem(hWnd, CB_LEVELS), CB_GETCURSEL, NULL, NULL) + 1;
+	current++;
+	data[current] = SendMessage(GetDlgItem(hWnd, CB_MOVES), CB_GETCURSEL, NULL, NULL) + 1;
+}
+
+void InsertEggMoves(std::vector<byte>& data, byte pokemon, byte move) {
+	unsigned int address = GetAddress(ADD_EGG_TABLE);
+	byte* pointer = new byte[3];
+	unsigned int current;
 	int segment = 0;
 	std::vector<byte> copy;
-	short poke = InterpretFamily(pokemon);
+	byte poke = FindPokemonFamily(data, pokemon);
+	byte po = poke;
 
 	//Create Pointer pieces for address at the start of the pointer table
 	pointer[2] = FindBank(address);
@@ -191,81 +224,194 @@ std::vector<byte> InsertEggMoves(unsigned int address, unsigned short pokemon, s
 	pointer[1] = data[address + (2 * (poke - 1)) + 1];
 
 	//Create variable for iterating through data
-	current_add = PointerToAddress(pointer);
+	current = PointerToAddress(pointer);
 
-	if (data[current_add] == 0xFF) {
-		while (data[current_add] == 0xFF) {
-			poke--;
+	//If Pokemon has no Egg Moves
+	if (data[current] == 0xFF) {
+		//Scroll back to Pokemon that does have an Egg move entry
+		while (data[current] == 0xFF) {
+			po--;
 
 			pointer[2] = FindBank(address);
-			pointer[0] = data[address + (2 * (poke - 1))];
-			pointer[1] = data[address + (2 * (poke - 1)) + 1];
-			current_add = PointerToAddress(pointer);
+			pointer[0] = data[address + (2 * (po - 1))];
+			pointer[1] = data[address + (2 * (po - 1)) + 1];
+			current = PointerToAddress(pointer);
+		}
+		//Then find the end marker of previous valid Egg Move entry
+		while (data[current] != 0xFF) {
+			current++;
 		}
 
-		while (data[current_add] != 0xFF) {
-			current_add++;
-		}
+		pointer = CreatePointer(current);
 
-		pointer = CreatePointer(current_add);
-
-		data[address + (2 * (InterpretFamily(pokemon) - 1))] = pointer[0] - 1;
-		data[address + (2 * (InterpretFamily(pokemon) - 1)) + 1] = pointer[1];
+		data[address + (2 * (poke - 1))] = pointer[0] + 1;
+		data[address + (2 * (poke - 1)) + 1] = pointer[1];
 		
-		pointer[2] = pointer[2] + 1;
+		pointer[2] += 1;
 		pointer[0] = 0x00;
 		pointer[1] = 0x40;
+		//Copying Data from insertion point to end of ROM bank, Handling double 0xFF exception
+		if(data[current + 1] == 0xFF) copy = CopyData(data, current + 1, PointerToAddress(pointer) - 1);
+		else copy = CopyData(data, current, PointerToAddress(pointer) - 1);
 
-		copy = CopyData(current_add, PointerToAddress(pointer) - 1, data);
+		//Add the new move into the data
+		current++;
+		data[current] = move;
+		current++;
 
-		current_add++;
-		data[current_add] = move;
-		current_add++;
+		//Iterate through all Pokemon in the table until the point of insertion
+		for (int p = 0; p < poke; p++) {
+			unsigned int temp_add = 0;
+			pointer[2] = FindBank(address);
+			pointer[0] = data[address + (2 * p)];
+			pointer[1] = data[address + (2 * p) + 1];
+			temp_add = address + (p * 2);
+			//Check each iteration if the current check has no Egg Moves
+			if (data[PointerToAddress(pointer)] == 0xFF) {
+				//Update the Pointer by 2 bytes, one for the move, one for the end marker 0xFF
+				pointer = UpdatePointer(pointer, 0x02);
+				data[temp_add] = pointer[0];
+				data[temp_add + 1] = pointer[1];
+			}
+		}
 
 		//Paste data over remaining ROM Bank data to shift data over 2 bytes
-		data = PasteData(current_add, data, copy);
+		PasteData(data, current, copy);
 
 		//Load Pointer Table into copy and update the Pointer Table
 		//Only update the pointers of all Pokemon past selected Pokemon
-		copy = CopyData(address + (poke * 2), address + 502, data);
-		copy = UpdatePointerTable(copy, 0x0002);
-
+		copy = CopyData(data, address + (poke * 2), address + 502);
+		copy = UpdatePointerTable(copy, 0x02);
+		
 		//Paste new Pointer Table over old Pointer Table
-		data = PasteData(address + (poke * 2), data, copy);
+		PasteData(data, address + (poke * 2), copy);
 	}
+	//If Pokemon does have Egg Moves
 	else {
 		pointer[2] = pointer[2] + 1;
 		pointer[0] = 0x00;
 		pointer[1] = 0x40;
 
-		copy = CopyData(current_add, PointerToAddress(pointer) - 1, data);
+		copy = CopyData(data, current, PointerToAddress(pointer) - 1);
 
 		//Fill insertion point with new move data
-		data[current_add] = move;
-		current_add++;
+		data[current++] = move;
 
 		//Paste data over remaining ROM Bank data to shift data over 2 bytes
-		data = PasteData(current_add, data, copy);
+		PasteData(data, current, copy);
 
 		//Load Pointer Table into copy and update the Pointer Table
 		//Only update the pointers of all Pokemon past selected Pokemon
-		copy = CopyData(address + (poke * 2), address + 502, data);
-		copy = UpdatePointerTable(copy, 0x0001);
+		copy = CopyData(data, address + (poke * 2), address + 502);
+		copy = UpdatePointerTable(copy, 0x01);
 
 		//Paste new Pointer Table over old Pointer Table
-		data = PasteData(address + (poke * 2), data, copy);
-	}
+		PasteData(data, address + (poke * 2), copy);
 
-	return data;
+		//Iterate through all Pokemon in the table until the point of insertion
+		for (int p = 0; p < poke; p++) {
+			pointer[2] = FindBank(address);
+			pointer[0] = data[address + (2 * p)];
+			pointer[1] = data[address + (2 * p) + 1];
+			current = address + (p * 2);
+			//Check each iteration if the current check has no Egg Moves
+			if (data[PointerToAddress(pointer)] == 0xFF) {
+				data[current] += 0x01;
+			}
+		}
+	}
 }
 
-std::vector<byte> DeleteEggMoves(unsigned int address, unsigned short pokemon, std::vector<byte> data, byte move) {
-
-	byte* pointer = new byte[3];
-	unsigned int currentAddress;
-	bool exists = false;
+void UnsertEggMoves(std::vector<byte>& data, byte pokemon, byte move) {
+	unsigned int address = GetAddress(ADD_EGG_TABLE);
+	unsigned int current = 0;
 	std::vector<byte> copy;
-	short poke = InterpretFamily(pokemon);
+	byte* pointer = new byte[3];
+	byte poke = FindPokemonFamily(data, pokemon);
+	byte shift = 0x00;
+
+	pointer[2] = FindBank(address);
+	pointer[0] = data[address + (2 * (poke - 1))];
+	pointer[1] = data[address + (2 * (poke - 1)) + 1];
+	current = PointerToAddress(pointer);
+
+	//Handles Results of Removing the last egg move with DeleteEggMove
+	if ((data[current] == 0xFF && data[current - 1] == 0xFF && data[current + 1] != 0x00) || data[current] != 0xFF) {
+
+		pointer[2] = FindBank(address) + 1;
+		pointer[0] = 0x00;
+		pointer[1] = 0x40;
+
+		copy = CopyData(data, current, PointerToAddress(pointer) - 2);
+		PasteData(data, current + 1, copy);
+		data[current] = move;
+		shift = 0x01;
+	}
+
+	//Handles Pokemon that don't have Egg Moves
+	if (data[current] == 0xFF) {
+		byte prev = poke;
+		while (data[current] == 0xFF) {
+			prev--;
+
+			pointer[2] = FindBank(address);
+			pointer[0] = data[address + (2 * (prev - 1))];
+			pointer[1] = data[address + (2 * (prev - 1)) + 1];
+			current = PointerToAddress(pointer);
+		}
+		while (data[current] != 0xFF) {
+			current++;
+		}
+
+		current++;
+		pointer = CreatePointer(current);
+
+		data[address + (2 * (poke - 1))] = pointer[0];
+		data[address + (2 * (poke - 1)) + 1] = pointer [1];
+
+		pointer[2] += 1;
+		pointer[0] = 0x00;
+		pointer[1] = 0x40;
+
+		copy = CopyData(data, current - 1, PointerToAddress(pointer) - 3);
+		PasteData(data, current + 1, copy);
+
+		data[current] = move;
+
+		shift = 0x02;
+	}
+
+	//All pointer before Pokemon
+	for (byte p = 0; p < poke - 1; p++) {
+		unsigned int temp_add = 0;
+		pointer[2] = FindBank(address);
+		pointer[0] = data[address + (2 * p)];
+		pointer[1] = data[address + (2 * p) + 1];
+		temp_add = address + (p * 2);
+		if (data[PointerToAddress(pointer) + 1] == 0xFF) {
+			pointer = UpdatePointer(pointer, shift);
+			data[temp_add] = pointer[0];
+			data[temp_add + 1] = pointer[1];
+		}
+	}
+	//All Pointers After Selected Pokemon
+	copy = CopyData(data, address + (poke * 2), address + 502);
+	copy = UpdatePointerTable(copy, shift);
+	PasteData(data, address + (poke * 2), copy);
+}
+
+int DeleteEggMoves(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	unsigned int address = GetAddress(ADD_EGG_TABLE);
+	unsigned int current = 0;
+	byte move = SendMessage(GetDlgItem(hWnd, LB_EGG_MOVES), LB_GETCURSEL, NULL, NULL);
+	byte* pointer = new byte[3];
+	std::vector<byte> copy;
+	byte poke = FindPokemonFamily(data, pokemon);
+	byte p = poke;
+
+	if (SendMessage(GetDlgItem(hWnd, LB_EGG_MOVES), LB_GETCOUNT, NULL, NULL) == 0) {
+		return -1;
+	}
 
 	//Create Pointer pieces for address at the start of the pointer table
 	pointer[2] = FindBank(address);
@@ -274,47 +420,144 @@ std::vector<byte> DeleteEggMoves(unsigned int address, unsigned short pokemon, s
 	pointer[1] = data[address + (2 * (poke - 1)) + 1];
 
 	//Create variable for iterating through data
-	currentAddress = PointerToAddress(pointer);
+	current = PointerToAddress(pointer);
+	//Set the current Address to the Address of the move
+	current += move;
 
-	while (data[currentAddress] != (byte)0xff) {
-		if (data[currentAddress] == move) {
-			exists = true;
-			break;
-		}
-		currentAddress = currentAddress + 1;
+	//Fill pointer pieces to get address of the end of the current ROM Bank
+	pointer[2] = pointer[2] + 1;
+	pointer[0] = 0x00;
+	pointer[1] = 0x40;
+
+	//Copy data from insertion point to the end of ROM Bank
+	//Minus 1 bytes to keep room for the new byte from insertion
+	if (data[current + 1] == 0xFF && data[current - 1] == 0xFF) {
+		copy = CopyData(data, current + 2, PointerToAddress(pointer) - 1);
+	}
+	else {
+		copy = CopyData(data, current + 1, PointerToAddress(pointer) - 1);
 	}
 
-	if (exists == true) {
-		//Fill pointer pieces to get address of the end of the current ROM Bank
-		pointer[2] = pointer[2] + 1;
+	pointer = CreatePointer(current);
+
+	data[address + (2 * (poke - 1))] = pointer[0] + 1;
+	data[address + (2 * (poke - 1)) + 1] = pointer[1];
+
+	//Paste data over remaining ROM Bank data to shift data over 2 bytes
+	PasteData(data, current, copy);
+
+	//Load Pointer Table into copy and update the Pointer Table
+	//Only update the pointers of all Pokemon past selected Pokemon
+	copy = CopyData(data, address + (poke * 2), address + 502);
+	copy = UpdatePointerTable(copy, -0x01);
+
+	//Paste new Pointer Table over old Pointer Table
+	PasteData(data, address + (poke * 2), copy);
+
+	//Iterate through all Pokemon in the table until the point of insertion
+	for (poke = 0; poke < p - 1; poke++) {
+		unsigned int temp_add = 0;
+		pointer[2] = FindBank(address);
+		pointer[0] = data[address + (2 * poke)];
+		pointer[1] = data[address + (2 * poke) + 1];
+		temp_add = address + (poke * 2);
+		//Check each iteration if the current check has no Egg Moves
+		if (data[PointerToAddress(pointer)] == 0xFF) {
+			//Update the Pointer by 2 bytes, one for the move, one for the end marker 0xFF
+			pointer = UpdatePointer(pointer, -0x01);
+			data[temp_add] = pointer[0];
+			data[temp_add + 1] = pointer[1];
+		}
+	}
+	return 0;
+}
+
+int SeleteEggMoves(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	unsigned int address = GetAddress(ADD_EGG_TABLE);
+	unsigned int current = 0;
+	std::vector<byte> copy;
+	byte* pointer = new byte[3];
+	byte poke = FindPokemonFamily(data, pokemon);
+	byte move = SendMessage(GetDlgItem(hWnd, LB_EGG_MOVES), LB_GETCURSEL, NULL, NULL);
+
+	if (SendMessage(GetDlgItem(hWnd, LB_EGG_MOVES), LB_GETCOUNT, NULL, NULL) == 0) {
+		return -1;
+	}
+
+	pointer[2] = FindBank(address);
+	pointer[0] = data[address + (2 * (poke - 1))];
+	pointer[1] = data[address + (2 * (poke - 1)) + 1];
+	current = PointerToAddress(pointer);
+
+	//If no Egg Moves
+	if (data[current] == 0xFF) {
+		return 0;
+	}
+	else {
+		current += move;
+
+		pointer[2] = FindBank(address) + 1;
 		pointer[0] = 0x00;
 		pointer[1] = 0x40;
 
-		//Copy data from insertion point to the end of ROM Bank
-		//Minus 1 bytes to keep room for the new byte from insertion
-		copy = CopyData(currentAddress + 1, PointerToAddress(pointer) - 1, data);
+		copy = CopyData(data, current + 1, PointerToAddress(pointer) - 1);
+		PasteData(data, current, copy);
 
-		//Paste data over remaining ROM Bank data to shift data over 2 bytes
-		data = PasteData(currentAddress, data, copy);
-
-		//Load Pointer Table into copy and update the Pointer Table
-		//Only update the pointers of all Pokemon past selected Pokemon
-		copy = CopyData(address + (poke * 2), address + 502, data);
-		copy = UpdatePointerTable(copy, -0x0001);
-
-		//Paste new Pointer Table over old Pointer Table
-		data = PasteData(address + (poke * 2), data, copy);
+		//All Pointers Before selected Pokemon
+		for (byte p = 0; p < poke - 1; p++) {
+			unsigned int temp_add = 0;
+			pointer[2] = FindBank(address);
+			pointer[0] = data[address + (2 * p)];
+			pointer[1] = data[address + (2 * p) + 1];
+			temp_add = address + (p * 2);
+			//Check each iteration if the current check has no Egg Moves
+			if (data[PointerToAddress(pointer)] == 0x00) {
+				//Update the Pointer by 2 bytes, one for the move, one for the end marker 0xFF
+				pointer = UpdatePointer(pointer, -0x01);
+				data[temp_add] = pointer[0];
+				data[temp_add + 1] = pointer[1];
+			}
+		}
+		//All Pointers After Selected Pokemon
+		copy = CopyData(data, address + (poke * 2), address + 502);
+		copy = UpdatePointerTable(copy, -0x01);
+		PasteData(data, address + (poke * 2), copy);
 	}
 
-	return data;
+	return 0;
 }
 
-void DisplayEggMoves(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int inst) {
+void SynchTable(std::vector<byte>& data, unsigned int address, byte marker, byte loops) {
+	byte* pointer = new byte[3];
+	pointer[0] = data[address];
+	pointer[1] = data[address + 1];
+	pointer[2] = FindBank(address);
+	unsigned int content = PointerToAddress(pointer);
 
+	unsigned int table_size = (content - address) / 2;
+	unsigned int current_pointer = address + 2;
+
+	for (int i = 1; i < table_size; i++) {
+		for (int j = 0; j < loops; j++) {
+			while (data[content] != marker) content++;
+			content++;
+		}
+		pointer = CreatePointer(content);
+		data[current_pointer] = pointer[0];
+		current_pointer++;
+		data[current_pointer] = pointer[1];
+		current_pointer++;
+	}
+	
+}
+
+void DisplayEggMoves(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	unsigned int address = GetAddress(ADD_EGG_TABLE);
 	byte* pointer = new byte[3];
 	unsigned int startAddress = 0;
 	unsigned int currentAddress = 0;
-	short poke = InterpretFamily(pokemon);
+	//short poke = InterpretFamily(pokemon);
+	byte poke = FindPokemonFamily(data, pokemon);
 
 	//Create Pointer pieces for address at the start of the pointer table
 	pointer[2] = FindBank(address);
@@ -327,13 +570,13 @@ void DisplayEggMoves(unsigned int address, unsigned short pokemon, std::vector<b
 
 	//Iterate through evolution data
 	while (data[currentAddress] != (byte)0xff) {
-		SendMessage(GetDlgItem(hWnd, inst), LB_ADDSTRING, 0, (LPARAM)InterpretMoves(data[currentAddress]).c_str());
+		SendMessage(GetDlgItem(hWnd, LB_EGG_MOVES), LB_ADDSTRING, 0, (LPARAM)InterpretMoves(data[currentAddress]).c_str());
 		currentAddress++;
 	}
 }
 
-void DisplayTM(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int inst) {
-	unsigned int dataAddress = address + 24;
+void DisplayTM(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	unsigned int dataAddress = GetAddress(ADD_BASE_STATS) + 24;
 	dataAddress = dataAddress + ((pokemon - 1) * 32);
 
 	byte tm = data[dataAddress];
@@ -380,18 +623,18 @@ void DisplayTM(unsigned int address, unsigned short pokemon, std::vector<byte> d
 			}
 
 			if (((tm >> i) & 1) == 1) {
-				SendMessage(GetDlgItem(hWnd, inst), LB_ADDSTRING, 0, (LPARAM)tm_text.c_str());
+				SendMessage(GetDlgItem(hWnd, LB_TMS), LB_ADDSTRING, 0, (LPARAM)tm_text.c_str());
 			}
 		}
 	}
 }
 
-std::vector<byte> ToggleTMs(unsigned int address, unsigned short pokemon, std::vector<byte> data, byte tm) {
+void ToggleTMs(std::vector<byte>& data, byte pokemon, byte tm) {
 
 	byte tm_byte = (tm - 1) / 8;
 	byte tm_bit = (tm - 1) % 8;
 
-	unsigned int dataAddress = address + 24;
+	unsigned int dataAddress = GetAddress(ADD_BASE_STATS) + 24;
 	dataAddress = dataAddress + ((pokemon - 1) * 32);
 	dataAddress = dataAddress + tm_byte;
 
@@ -401,12 +644,10 @@ std::vector<byte> ToggleTMs(unsigned int address, unsigned short pokemon, std::v
 
 
 	data[dataAddress] = value;
-
-	return data;
 }
 
-void DisplayEvolution(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int evo) {
-
+void DisplayEvolution(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	unsigned int address = GetAddress(ADD_LEVEL_TABLE);
 	byte* pointer = new byte[3];
 	unsigned int start_address = 0;
 	unsigned int current_address = 0;
@@ -422,74 +663,74 @@ void DisplayEvolution(unsigned int address, unsigned short pokemon, std::vector<
 	current_address = PointerToAddress(pointer);
 	start_address = current_address;
 
-	SendMessage(GetDlgItem(hWnd, evo), LB_RESETCONTENT, 0, 0);
+	SendMessage(GetDlgItem(hWnd, LB_EVO), LB_RESETCONTENT, 0, 0);
 
 	//Iterate through evolution data
 	while (true) {
 		switch (data[current_address]) {
 		case 0x00:
 			str = InterpretEvos(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			break;
 
 		case 0x01:
 			str = InterpretEvos(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			current_address++;
 			str = L"LVL: ";
 			str.append(std::to_wstring((int)data[current_address]));
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			current_address++;
 			str = InterpretPokemon(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			break;
 
 		case 0x02:
 			str = InterpretEvos(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			current_address++;
 			str = InterpretItems(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			current_address++;
 			str = InterpretPokemon(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			break;
 
 		case 0x03:
 			str = InterpretEvos(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			current_address++;
 			str = InterpretItems(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			current_address++;
 			str = InterpretPokemon(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			break;
 
 		case 0x04:
 			str = InterpretEvos(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			current_address++;
 			str = InterpretHapp(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			current_address++;
 			str = InterpretPokemon(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			break;
 
 		case 0x05:
 			str = InterpretEvos(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			current_address++;
 			str = L"LVL: ";
 			str.append(std::to_wstring((int)data[current_address]));
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			current_address++;
 			str = InterpretStats(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			current_address++;
 			str = InterpretPokemon(data[current_address]);
-			SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)str.c_str());
+			SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)str.c_str());
 			break;
 		}
 
@@ -499,16 +740,16 @@ void DisplayEvolution(unsigned int address, unsigned short pokemon, std::vector<
 			break;
 		}
 
-		SendMessage(GetDlgItem(hWnd, evo), LB_ADDSTRING, 0, (LPARAM)L"");
+		SendMessage(GetDlgItem(hWnd, LB_EVO), LB_ADDSTRING, 0, (LPARAM)L"");
 	}
 
 }
 
-std::vector<byte> InsertEvolution(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int met, int con, int pok, int stat) {
-
+void InsertEvolution(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	unsigned int address = GetAddress(ADD_LEVEL_TABLE);
 	byte* pointer = new byte[3];
 	unsigned int current_address;
-	byte method = (byte)SendMessage(GetDlgItem(hWnd, met), CB_GETCURSEL, 0, 0) + 0x01;
+	byte method = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_MET), CB_GETCURSEL, 0, 0) + 0x01;
 	std::vector<byte> copy;
 
 	//Create Pointer pieces for address at the start of the pointer table
@@ -527,57 +768,57 @@ std::vector<byte> InsertEvolution(unsigned int address, unsigned short pokemon, 
 
 	switch (method) {
 	case 0x01:
-		copy = CopyData(current_address, PointerToAddress(pointer) - 4, data);
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, met), CB_GETCURSEL, 0, 0) + 0x01;
+		copy = CopyData(data, current_address, PointerToAddress(pointer) - 4);
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_MET), CB_GETCURSEL, 0, 0) + 0x01;
 		current_address++;
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, con), CB_GETCURSEL, 0, 0) + 0x01;
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_CON), CB_GETCURSEL, 0, 0) + 0x01;
 		current_address++;
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, pok), CB_GETCURSEL, 0, 0) + 0x01;
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_POK), CB_GETCURSEL, 0, 0) + 0x01;
 		break;
 	case 0x02:
-		copy = CopyData(current_address, PointerToAddress(pointer) - 4, data);
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, met), CB_GETCURSEL, 0, 0) + 0x01;
+		copy = CopyData(data, current_address, PointerToAddress(pointer) - 4);
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_MET), CB_GETCURSEL, 0, 0) + 0x01;
 		current_address++;
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, con), CB_GETCURSEL, 0, 0);
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_CON), CB_GETCURSEL, 0, 0);
 		current_address++;
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, pok), CB_GETCURSEL, 0, 0) + 0x01;
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_POK), CB_GETCURSEL, 0, 0) + 0x01;
 		break;
 	case 0x03:
-		copy = CopyData(current_address, PointerToAddress(pointer) - 4, data);
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, met), CB_GETCURSEL, 0, 0) + 0x01;
+		copy = CopyData(data, current_address, PointerToAddress(pointer) - 4);
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_MET), CB_GETCURSEL, 0, 0) + 0x01;
 		current_address++;
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, con), CB_GETCURSEL, 0, 0);
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_CON), CB_GETCURSEL, 0, 0);
 		current_address++;
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, pok), CB_GETCURSEL, 0, 0) + 0x01;
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_POK), CB_GETCURSEL, 0, 0) + 0x01;
 		break;
 	case 0x04:
-		copy = CopyData(current_address, PointerToAddress(pointer) - 4, data);
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, met), CB_GETCURSEL, 0, 0) + 0x01;
+		copy = CopyData(data, current_address, PointerToAddress(pointer) - 4);
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_MET), CB_GETCURSEL, 0, 0) + 0x01;
 		current_address++;
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, con), CB_GETCURSEL, 0, 0) + 0x01;
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_CON), CB_GETCURSEL, 0, 0) + 0x01;
 		current_address++;
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, pok), CB_GETCURSEL, 0, 0) + 0x01;
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_POK), CB_GETCURSEL, 0, 0) + 0x01;
 		break;
 	case 0x05:
-		copy = CopyData(current_address, PointerToAddress(pointer) - 5, data);
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, met), CB_GETCURSEL, 0, 0) + 0x01;
+		copy = CopyData(data, current_address, PointerToAddress(pointer) - 5);
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_MET), CB_GETCURSEL, 0, 0) + 0x01;
 		current_address++;
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, con), CB_GETCURSEL, 0, 0) + 0x01;
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_CON), CB_GETCURSEL, 0, 0) + 0x01;
 		current_address++;
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, stat), CB_GETCURSEL, 0, 0) + 0x01;
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_STAT), CB_GETCURSEL, 0, 0) + 0x01;
 		current_address++;
-		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, pok), CB_GETCURSEL, 0, 0) + 0x01;
+		data[current_address] = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_POK), CB_GETCURSEL, 0, 0) + 0x01;
 		break;
 	}
 
 	current_address++;
 
 	//Paste data over remaining ROM Bank data to shift data over 2 bytes
-	data = PasteData(current_address, data, copy);
+	PasteData(data, current_address, copy);
 
 	//Load Pointer Table into copy and update the Pointer Table
 	//Only update the pointers of all Pokemon past selected Pokemon
-	copy = CopyData(address + (pokemon * 2), address + 502, data);
+	copy = CopyData(data, address + (pokemon * 2), address + 502);
 	if (method == 0x05) {
 		copy = UpdatePointerTable(copy, 0x0004);
 	}
@@ -586,26 +827,25 @@ std::vector<byte> InsertEvolution(unsigned int address, unsigned short pokemon, 
 	}
 
 	//Paste new Pointer Table over old Pointer Table
-	data = PasteData(address + (pokemon * 2), data, copy);
-
-	return data;
+	PasteData(data, address + (pokemon * 2), copy);
 }
 
-std::vector<byte> DeleteEvolution(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int met, int con, int pok, int stat) {
-
+void DeleteEvolution(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	unsigned int address = GetAddress(ADD_LEVEL_TABLE);
 	byte* pointer = new byte[3];
 	unsigned int current_address;
 	unsigned int paste_address;
-	byte method = (byte)SendMessage(GetDlgItem(hWnd, met), CB_GETCURSEL, 0, 0) + 0x01;
-	byte condition = (byte)SendMessage(GetDlgItem(hWnd, con), CB_GETCURSEL, 0, 0) + 0x01;
-	byte evo_poke = (byte)SendMessage(GetDlgItem(hWnd, pok), CB_GETCURSEL, 0, 0) + 0x01;
-	byte stat_con = (byte)SendMessage(GetDlgItem(hWnd, stat), CB_GETCURSEL, 0, 0) + 0x01;
+	byte method = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_MET), CB_GETCURSEL, 0, 0) + 0x01;
+	byte condition = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_CON), CB_GETCURSEL, 0, 0) + 0x01;
+	byte evo_poke = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_POK), CB_GETCURSEL, 0, 0) + 0x01;
+	byte stat_con = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_STAT), CB_GETCURSEL, 0, 0) + 0x01;
 	std::vector<byte> copy;
 	bool exists = true;
 	bool found[4] = { false };
 	//These methods use items whose combobox items are one to one, so no need to add 1
-	if (method == 0x02 || method == 0x03) condition = (byte)SendMessage(GetDlgItem(hWnd, con), CB_GETCURSEL, 0, 0);
-
+	if (method == 0x02 || method == 0x03) {
+		condition = (byte)SendMessage(GetDlgItem(hWnd, CB_EVO_CON), CB_GETCURSEL, 0, 0);
+	}
 	//Create Pointer pieces for address at the start of the pointer table
 	pointer[2] = FindBank(address);
 	//Pointer is 2 bytes so location in table is 2x Pokemon's number
@@ -653,7 +893,7 @@ std::vector<byte> DeleteEvolution(unsigned int address, unsigned short pokemon, 
 			current_address++;
 
 			if (found[0] == true && found[1] == true && found[2] == true) {
-				copy = CopyData(current_address, PointerToAddress(pointer) - 1, data);
+				copy = CopyData(data, current_address, PointerToAddress(pointer) - 1);
 				break;
 			}
 		}
@@ -681,7 +921,7 @@ std::vector<byte> DeleteEvolution(unsigned int address, unsigned short pokemon, 
 			else found[2] = false;
 			current_address++;
 			if (found[0] == true && found[1] == true && found[2] == true && found[3] == true) {
-				copy = CopyData(current_address, PointerToAddress(pointer) - 1, data);
+				copy = CopyData(data, current_address, PointerToAddress(pointer) - 1);
 				break;
 			}
 		}
@@ -693,11 +933,11 @@ std::vector<byte> DeleteEvolution(unsigned int address, unsigned short pokemon, 
 	if (exists == true) {
 
 		//Paste data over remaining ROM Bank data to shift data over 2 bytes
-		data = PasteData(paste_address, data, copy);
+		PasteData(data, paste_address, copy);
 
 		//Load Pointer Table into copy and update the Pointer Table
 		//Only update the pointers of all Pokemon past selected Pokemon
-		copy = CopyData(address + (pokemon * 2), address + 502, data);
+		copy = CopyData(data, address + (pokemon * 2), address + 502);
 		if (method == 0x05) {
 			copy = UpdatePointerTable(copy, -0x0004);
 		}
@@ -706,198 +946,159 @@ std::vector<byte> DeleteEvolution(unsigned int address, unsigned short pokemon, 
 		}
 
 		//Paste new Pointer Table over old Pointer Table
-		data = PasteData(address + (pokemon * 2), data, copy);
+		PasteData(data, address + (pokemon * 2), copy);
 
 	}
-
-	return data;
 }
 
 ////////////////////////////////////////////////////Base Stat Information//////////////////////////////////////////////////////
 
-void DisplayBaseStats(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int hp, int atk, int def, int spd, int satk, int sdef) {
-	int cur_address = address + ((pokemon - 1) * 32);
+void DisplayBaseStats(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	//Base Stats data struct is 32 bytes, and +1 because Stats start on byte 2 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 1;
 
-	cur_address++;
-	SetDlgItemText(hWnd, hp, std::to_wstring(InterpretNumbers(data[cur_address])).c_str());
+	SetDlgItemText(hWnd, EB_STAT_HP, std::to_wstring(InterpretNumbers(data[cur_address++])).c_str());
 
-	cur_address++;
-	SetDlgItemText(hWnd, atk, std::to_wstring(InterpretNumbers(data[cur_address])).c_str());
+	SetDlgItemText(hWnd, EB_STAT_ATK, std::to_wstring(InterpretNumbers(data[cur_address++])).c_str());
 
-	cur_address++;
-	SetDlgItemText(hWnd, def, std::to_wstring(InterpretNumbers(data[cur_address])).c_str());
+	SetDlgItemText(hWnd, EB_STAT_DEF, std::to_wstring(InterpretNumbers(data[cur_address++])).c_str());
 
-	cur_address++;
-	SetDlgItemText(hWnd, spd, std::to_wstring(InterpretNumbers(data[cur_address])).c_str());
+	SetDlgItemText(hWnd, EB_STAT_SPD, std::to_wstring(InterpretNumbers(data[cur_address++])).c_str());
 
-	cur_address++;
-	SetDlgItemText(hWnd, satk, std::to_wstring(InterpretNumbers(data[cur_address])).c_str());
+	SetDlgItemText(hWnd, EB_STAT_SATK, std::to_wstring(InterpretNumbers(data[cur_address++])).c_str());
 
-	cur_address++;
-	SetDlgItemText(hWnd, sdef, std::to_wstring(InterpretNumbers(data[cur_address])).c_str());
+	SetDlgItemText(hWnd, EB_STAT_SDEF, std::to_wstring(InterpretNumbers(data[cur_address])).c_str());
 }
 
-std::vector<byte> ChangeBaseStats(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd,
-	HWND hp, HWND atk, HWND def, HWND spd, HWND satk, HWND sdef) {
-	bool is_number = false;
-	int cur_address = address + ((pokemon - 1) * 32);
-
-	cur_address++;
+void ChangeBaseStats(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	//Base Stats data struct is 32 bytes, and +1 because Stats start on byte 2 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 1;
 
 	wchar_t buff[4];
+	std::wstring value;
 
-	GetWindowText(hp, (LPWSTR)buff, 4);
-	std::wstring hp_text(buff);
-	is_number = CheckIfNumber(hp_text);
-	if (is_number == true) {
-		data[cur_address] = (byte)std::stoi(hp_text);
+	GetWindowText(GetDlgItem(hWnd, EB_STAT_HP), (LPWSTR)buff, 4);
+	value = buff;
+	if (CheckIfNumber(value) == true) {
+		data[cur_address++] = (byte)std::stoi(value);
 	}
-	cur_address++;
-
-	GetWindowText(atk, (LPWSTR)buff, 4);
-	std::wstring atk_text(buff);
-	is_number = CheckIfNumber(atk_text);
-	if (is_number == true) {
-		data[cur_address] = (byte)std::stoi(atk_text);
-	}
-	cur_address++;
-
-	GetWindowText(def, (LPWSTR)buff, 4);
-	std::wstring def_text(buff);
-	is_number = CheckIfNumber(def_text);
-	if (is_number == true) {
-		data[cur_address] = (byte)std::stoi(def_text);
-	}
-	cur_address++;
-
-	GetWindowText(spd, (LPWSTR)buff, 4);
-	std::wstring spd_text(buff);
-	is_number = CheckIfNumber(spd_text);
-	if (is_number == true) {
-		data[cur_address] = (byte)std::stoi(spd_text);
-	}
-	cur_address++;
-
-	GetWindowText(satk, (LPWSTR)buff, 4);
-	std::wstring satk_text(buff);
-	is_number = CheckIfNumber(satk_text);
-	if (is_number == true) {
-		data[cur_address] = (byte)std::stoi(satk_text);
-	}
-	cur_address++;
-
-	GetWindowText(sdef, (LPWSTR)buff, 4);
-	std::wstring sdef_text(buff);
-	is_number = CheckIfNumber(sdef_text);
-	if (is_number == true) {
-		data[cur_address] = (byte)std::stoi(sdef_text);
+	
+	GetWindowText(GetDlgItem(hWnd, EB_STAT_ATK), (LPWSTR)buff, 4);
+	value = buff;
+	if (CheckIfNumber(value) == true) {
+		data[cur_address++] = (byte)std::stoi(value);
 	}
 
-	return data;
+	GetWindowText(GetDlgItem(hWnd, EB_STAT_DEF), (LPWSTR)buff, 4);
+	value = buff;
+	if (CheckIfNumber(value) == true) {
+		data[cur_address++] = (byte)std::stoi(value);
+	}
+
+	GetWindowText(GetDlgItem(hWnd, EB_STAT_SPD), (LPWSTR)buff, 4);
+	value = buff;
+	if (CheckIfNumber(value) == true) {
+		data[cur_address++] = (byte)std::stoi(value);
+	}
+
+	GetWindowText(GetDlgItem(hWnd, EB_STAT_SATK), (LPWSTR)buff, 4);
+	value = buff;
+	if (CheckIfNumber(value) == true) {
+		data[cur_address++] = (byte)std::stoi(value);
+	}
+
+	GetWindowText(GetDlgItem(hWnd, EB_STAT_SDEF), (LPWSTR)buff, 4);
+	value = buff;
+	if (CheckIfNumber(value) == true) {
+		data[cur_address] = (byte)std::stoi(value);
+	}
 }
 
-void DisplayTyping(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int type1, int type2) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 7;
+void DisplayTyping(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	//Base Stats data struct is 32 bytes, and +7 because Typing is bytes 8 and 9 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 7;
 
-	SendMessage(GetDlgItem(hWnd, type1), CB_SETCURSEL, (WPARAM)InterpretTyping(data[cur_address]), 0);
-	cur_address++;
-	SendMessage(GetDlgItem(hWnd, type2), CB_SETCURSEL, (WPARAM)InterpretTyping(data[cur_address]), 0);
-
+	SendMessage(GetDlgItem(hWnd, CB_TYPE_1), CB_SETCURSEL, (WPARAM)InterpretTyping(data[cur_address++]), 0);
+	SendMessage(GetDlgItem(hWnd, CB_TYPE_2), CB_SETCURSEL, (WPARAM)InterpretTyping(data[cur_address]), 0);
 }
 
-std::vector<byte> ChangeTyping(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int type1, int type2) {
-	int cur_address = address + ((pokemon - 1) * 32);
+void ChangeTyping(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	//Base Stats data struct is 32 bytes, and +7 because Typing is bytes 8 and 9 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 7;
 	byte type_code = 0;
-	cur_address += 7;
 
-	type_code = InterpretTypingCombo(SendMessage(GetDlgItem(hWnd, type1), CB_GETCURSEL, 0, 0));
+	type_code = InterpretTypingCombo(SendMessage(GetDlgItem(hWnd, CB_TYPE_1), CB_GETCURSEL, 0, 0));
+	data[cur_address++] = type_code;
+
+	type_code = InterpretTypingCombo(SendMessage(GetDlgItem(hWnd, CB_TYPE_2), CB_GETCURSEL, 0, 0));
 	data[cur_address] = type_code;
-
-	cur_address++;
-
-	type_code = InterpretTypingCombo(SendMessage(GetDlgItem(hWnd, type2), CB_GETCURSEL, 0, 0));
-	data[cur_address] = type_code;
-
-	return data;
 }
 
-void DisplayHoldItems(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int item23, int item2) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 11;
+void DisplayHoldItems(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	//Base Stats data struct is 32 bytes, and +11 because Hold Items are bytes 12 and 13 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 11;
 
-	SendMessage(GetDlgItem(hWnd, item23), CB_SETCURSEL, (WPARAM)data[cur_address], 0);
-	cur_address++;
-	SendMessage(GetDlgItem(hWnd, item2), CB_SETCURSEL, (WPARAM)data[cur_address], 0);
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_23), CB_SETCURSEL, (WPARAM)data[cur_address++], 0);
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_2), CB_SETCURSEL, (WPARAM)data[cur_address], 0);
 }
 
-std::vector<byte> ChangeHoldItems(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int item23, int item2) {
-	int cur_address = address + ((pokemon - 1) * 32);
+void ChangeHoldItems(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	//Base Stats data struct is 32 bytes, and +11 because Hold Items are bytes 12 and 13 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 11;
 	byte item_code = 0;
-	cur_address += 11;
 
-	item_code = (byte)SendMessage(GetDlgItem(hWnd, item23), CB_GETCURSEL, 0, 0);
+	item_code = (byte)SendMessage(GetDlgItem(hWnd, CB_ITEM_23), CB_GETCURSEL, 0, 0);
+	data[cur_address++] = item_code;
+
+	item_code = (byte)SendMessage(GetDlgItem(hWnd, CB_ITEM_2), CB_GETCURSEL, 0, 0);
 	data[cur_address] = item_code;
-
-	cur_address++;
-
-	item_code = (byte)SendMessage(GetDlgItem(hWnd, item2), CB_GETCURSEL, 0, 0);
-	data[cur_address] = item_code;
-
-	return data;
 }
 
-void DisplayCaptureRate(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int cr) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 9;
+void DisplayCaptureRate(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	//Base Stats data struct is 32 bytes, and +9 because Capture Rate is byte 10 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 9;
 
-	SetDlgItemText(hWnd, cr, std::to_wstring(InterpretNumbers(data[cur_address])).c_str());
+	SetDlgItemText(hWnd, EB_CR, std::to_wstring(InterpretNumbers(data[cur_address])).c_str());
 }
 
-std::vector<byte> ChangeCaptureRate(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int cr) {
-	bool is_number = false;
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 9;
+void ChangeCaptureRate(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	//Base Stats data struct is 32 bytes, and +9 because Capture Rate is byte 10 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 9;
 
 	wchar_t buff[4];
+	std::wstring value;
 
-	GetWindowText(GetDlgItem(hWnd, cr), (LPWSTR)buff, 4);
-	std::wstring cr_text(buff);
-	is_number = CheckIfNumber(cr_text);
-	if (is_number == true) {
-		data[cur_address] = (byte)std::stoi(cr_text);
+	GetWindowText(GetDlgItem(hWnd, EB_CR), (LPWSTR)buff, 4);
+	value = buff;
+	if (CheckIfNumber(value) == true) {
+		data[cur_address] = (byte)std::stoi(value);
 	}
-
-	return data;
 }
 
-void DisplayBaseExp(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int exp) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 10;
+void DisplayBaseExp(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	//Base Stats data struct is 32 bytes, and +10 because Base Exp is byte 11 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 10;
 
-	SetDlgItemText(hWnd, exp, std::to_wstring(InterpretNumbers(data[cur_address])).c_str());
+	SetDlgItemText(hWnd, EB_BASE_EXP, std::to_wstring(InterpretNumbers(data[cur_address])).c_str());
 }
 
-std::vector<byte> ChangeBaseExp(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int exp) {
-	bool is_number = false;
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 10;
+void ChangeBaseExp(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	//Base Stats data struct is 32 bytes, and +10 because Base Exp is byte 11 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 10;
 
 	wchar_t buff[4];
+	std::wstring value;
 
-	GetWindowText(GetDlgItem(hWnd, exp), (LPWSTR)buff, 4);
-	std::wstring exp_text(buff);
-	is_number = CheckIfNumber(exp_text);
-	if (is_number == true) {
-		data[cur_address] = (byte)std::stoi(exp_text);
+	GetWindowText(GetDlgItem(hWnd, EB_BASE_EXP), (LPWSTR)buff, 4);
+	value = buff;
+	if (CheckIfNumber(value) == true) {
+		data[cur_address] = (byte)std::stoi(value);
 	}
-
-	return data;
 }
 
-void DisplayEggGroup(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int egg1, int egg2) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 23;
+void DisplayEggGroup(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	//Base Stats data struct is 32 bytes, and +23 because Egg Group is byte 24 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 23;
 
 	byte group1 = data[cur_address];
 	byte group2 = data[cur_address];
@@ -905,122 +1106,166 @@ void DisplayEggGroup(unsigned int address, unsigned short pokemon, std::vector<b
 	group1 = group1 >> 4;
 	group2 = group2 & 0x0F;
 
-	SendMessage(GetDlgItem(hWnd, egg1), CB_SETCURSEL, group1 - 1, 0);
-	SendMessage(GetDlgItem(hWnd, egg2), CB_SETCURSEL, group2 - 1, 0);
+	SendMessage(GetDlgItem(hWnd, CB_EGG_1), CB_SETCURSEL, group1 - 1, 0);
+	SendMessage(GetDlgItem(hWnd, CB_EGG_2), CB_SETCURSEL, group2 - 1, 0);
 }
 
-std::vector<byte> ChangeEggGroup(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int egg1, int egg2) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 23;
+void ChangeEggGroup(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	//Base Stats data struct is 32 bytes, and +23 because Egg Group is byte 24 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 23;
 
-	byte group = (byte)SendMessage(GetDlgItem(hWnd, egg1), CB_GETCURSEL, 0, 0) + 1;
+	byte group = (byte)SendMessage(GetDlgItem(hWnd, CB_EGG_1), CB_GETCURSEL, 0, 0) + 1;
 	group = group << 4;
-	group = group + (byte)SendMessage(GetDlgItem(hWnd, egg2), CB_GETCURSEL, 0, 0) + 1;
+	group = group + (byte)SendMessage(GetDlgItem(hWnd, CB_EGG_2), CB_GETCURSEL, 0, 0) + 1;
 
 	data[cur_address] = group;
-
-	return data;
 }
 
-void DisplayGenderRatio(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int gen) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 13;
+void DisplayGenderRatio(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	// Base Stats data struct is 32 bytes, and +13 because Gender Ratio is byte 14 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 13;
 
-	SendMessage(GetDlgItem(hWnd, gen), CB_SETCURSEL, (LPARAM)InterpretGenderRatio(data[cur_address]), 0);
+	SendMessage(GetDlgItem(hWnd, CB_GENDER), CB_SETCURSEL, (LPARAM)InterpretGenderRatio(data[cur_address]), 0);
 }
 
-std::vector<byte> ChangeGenderRatio(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int gen) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 13;
+void ChangeGenderRatio(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	// Base Stats data struct is 32 bytes, and +13 because Gender Ratio is byte 14 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 13;
 
-	int gender_code = (int)SendMessage(GetDlgItem(hWnd, gen), CB_GETCURSEL, 0, 0);
-
+	byte gender_code = SendMessage(GetDlgItem(hWnd, CB_GENDER), CB_GETCURSEL, 0, 0);
 
 	data[cur_address] = InterpretGenderCombo(gender_code);
-
-	return data;
 }
 
-void DisplayHatchSteps(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int hatch) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 15;
+void DisplayHatchSteps(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	// Base Stats data struct is 32 bytes, and +15 because Steps to Hatch is byte 16 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 15;
 
-	SetDlgItemText(hWnd, hatch, std::to_wstring(InterpretNumbers(data[cur_address]) * 256).c_str());
+	//Steps to Hatch byte is multiplied by 256 to get the total steps required
+	SetDlgItemText(hWnd, EB_HATCH_STEP, std::to_wstring(InterpretNumbers(data[cur_address]) * 256).c_str());
 }
 
-std::vector<byte> ChangeHatchSteps(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int hatch) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 15;
-	bool is_number = false;
+void ChangeHatchSteps(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	// Base Stats data struct is 32 bytes, and +13 because Gender Ratio is byte 14 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 15;
 
 	wchar_t buff[6];
+	std::wstring string;
 
-	GetWindowText(GetDlgItem(hWnd, hatch), (LPWSTR)buff, 6);
-	std::wstring hatch_text(buff);
-	is_number = CheckIfNumber(hatch_text);
-	if (is_number == true) {
-		unsigned int value = std::stoi(hatch_text);
-		value = value / 256;
+	GetWindowText(GetDlgItem(hWnd, EB_HATCH_STEP), (LPWSTR)buff, 6);
+	string = buff;
+	if (CheckIfNumber(string) == true) {
+		unsigned int value = std::stoi(string) / 256;
 		data[cur_address] = (byte)value;
 	}
-
-	return data;
 }
 
-void DisplayGrowthType(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int growth) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 22;
-	byte gro_code = 0;
+void DisplayGrowthType(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	// Base Stats data struct is 32 bytes, and +22 because Growth Rate is byte 23 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 22;
+	byte gro_code = data[cur_address];
 
-	gro_code = data[cur_address];
 	if (gro_code != 0x00) gro_code -= 0x02;
 
-	SendMessage(GetDlgItem(hWnd, growth), CB_SETCURSEL, (WPARAM)gro_code, 0);
+	SendMessage(GetDlgItem(hWnd, CB_GROWTH), CB_SETCURSEL, (WPARAM)gro_code, 0);
 
 }
 
-std::vector<byte> ChangeGrowthType(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int growth) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 22;
-
-	byte gro = (byte)SendMessage(GetDlgItem(hWnd, growth), CB_GETCURSEL, 0, 0);
+void ChangeGrowthType(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	// Base Stats data struct is 32 bytes, and +22 because Growth Rate is byte 23 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 22;
+	byte gro = (byte)SendMessage(GetDlgItem(hWnd, CB_GROWTH), CB_GETCURSEL, 0, 0);
+	
 	if (gro != 0x00) gro += 0x02;
 
 	data[cur_address] = gro;
-
-	return data;
 }
 
-void DisplaySpriteSize(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int size) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 17;
-	byte sze_code = 0;
-
-	sze_code = data[cur_address];
+void DisplaySpriteSize(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	// Base Stats data struct is 32 bytes, and +17 because Growth Rate is byte 18 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 17;
+	byte sze_code = data[cur_address];
 
 	switch (sze_code) {
 	case 0x55:
+		//Sprite Size of 40 x 40 pixels
 		sze_code = 0x00;
 		break;
 	case 0x66:
+		//Sprite Size of 48 x 48 pixels
 		sze_code = 0x01;
 		break;
 	case 0x77:
+		//Spriet Size of 56 x 56 pixels
 		sze_code = 0x02;
 		break;
 	}
 
-	SendMessage(GetDlgItem(hWnd, size), CB_SETCURSEL, (WPARAM)sze_code, 0);
+	SendMessage(GetDlgItem(hWnd, CB_SPR_SIZE), CB_SETCURSEL, (WPARAM)sze_code, 0);
 
 }
 
-std::vector<byte> ChangeSpriteSize(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int size) {
-	int cur_address = address + ((pokemon - 1) * 32);
-	cur_address += 17;
+void ChangeSpriteSize(std::vector<byte>& data, byte pokemon, HWND hWnd) {
+	// Base Stats data struct is 32 bytes, and +17 because Growth Rate is byte 18 of the struct
+	unsigned int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32) + 17;
 
-	int sze_code = (int)SendMessage(GetDlgItem(hWnd, size), CB_GETCURSEL, 0, 0);
+	byte sze_code = (byte)SendMessage(GetDlgItem(hWnd, CB_SPR_SIZE), CB_GETCURSEL, 0, 0);
 
 	data[cur_address] = InterpretSizeCombo(sze_code);
+}
 
-	return data;
+byte FindPokemonFamily(std::vector<byte>& data, byte pokemon) {
+	byte* pointer = new byte[3];
+	unsigned int address = GetAddress(ADD_LEVEL_TABLE);
+	pointer[0] = data[address];
+	pointer[1] = data[address + 1];
+	pointer[2] = FindBank(address);
+	unsigned int current = PointerToAddress(pointer);
+	int size = GetNumberOfTableElements(address, data);
+
+	for (byte i = 0; i < size; i++) {
+		pointer[0] = data[address + (i*2)];
+		pointer[1] = data[address + 1 + (i*2)];
+		pointer[2] = FindBank(address);
+		current = PointerToAddress(pointer);
+		
+		while (data[current] != 0x00) {
+			switch (data[current]) {
+			case 0x01://Evolution by Level Up
+				if (data[current + 2] == pokemon) {
+					return FindPokemonFamily(data, i + 1);
+				}
+				current += 3;
+				break;
+			case 0x02://Evolution by Item
+				if (data[current + 2] == pokemon) {
+					return FindPokemonFamily(data, i + 1);
+				}
+				current += 3;
+				break;
+			case 0x03://Evolution by Trade
+				if (data[current + 2] == pokemon) {
+					return FindPokemonFamily(data, i + 1);
+				}
+				current += 3;
+				break;
+			case 0x04://Evolution by Happiness
+				if (data[current + 2] == pokemon) {
+					return FindPokemonFamily(data, i + 1);
+				}
+				current += 3;
+				break;
+			case 0x05://Evolution by Stats
+				if (data[current + 3] == pokemon) {
+					return FindPokemonFamily(data, i + 1);
+				}
+				current += 4;
+				break;
+			default://No Evolution Type
+				break;
+			}
+		}
+	}
+
+	return pokemon;
 }

@@ -1,13 +1,21 @@
 #include "trainertools.h"
 
-void FillTrainerTree(std::vector<byte> data, int train_add, int type_add, HWND hWndtv) {
+#include "address.h"
+#include "guicodes.h"
+#include "pointertools.h"
+#include "interpreter.h"
+#include "main.h"
+
+void FillTrainerTree(std::vector<byte>& data, HWND hWnd) {
+	HWND hWndtv = GetDlgItem(hWnd, TV_TRAINERS);
 	byte* pointer = new byte[3];
+	unsigned int train_add = GetAddress(ADD_TRAINER_TABLE);
 	unsigned int cur_address = 0;
 	unsigned int end_address = 0;
 	game_string name;
 	name.characters = 0;
 	int trainer_code = 0;
-	int type_quantity = GetNumberOfClasses(train_add, data);
+	int type_quantity = GetNumberOfTableElements(train_add, data);
 	
 	pointer[2] = FindBank(train_add);
 	pointer[0] = data[train_add];
@@ -15,7 +23,7 @@ void FillTrainerTree(std::vector<byte> data, int train_add, int type_add, HWND h
 
 	cur_address = PointerToAddress(pointer);
 
-	GetTrainerTypes(data, train_add, type_add, hWndtv);
+	GetTrainerTypes(data, hWndtv);
 	HTREEITEM hti = TreeView_GetFirstVisible(hWndtv);
 	HTREEITEM htr = TreeView_GetFirstVisible(hWndtv);
 
@@ -76,11 +84,11 @@ void FillTrainerTree(std::vector<byte> data, int train_add, int type_add, HWND h
 
 }
 
-void GetTrainerTypes(std::vector<byte>& data, int trainer_add, int type_add, HWND hWndtv) {
+void GetTrainerTypes(std::vector<byte>& data, HWND hWndtv) {
 	game_string name;
-	unsigned int cur_add = (unsigned int)type_add;
+	unsigned int cur_add = GetAddress(ADD_TRAINER_CLASSES);
 	HTREEITEM hti = TVI_FIRST;
-	int type_quantity = GetNumberOfClasses(trainer_add, data);
+	int type_quantity = GetNumberOfTableElements(GetAddress(ADD_TRAINER_TABLE), data);
 	
 	TreeView_DeleteAllItems(hWndtv);
 
@@ -92,13 +100,17 @@ void GetTrainerTypes(std::vector<byte>& data, int trainer_add, int type_add, HWN
 
 }
 
-void GetTrainerData(std::vector<byte> data, HTREEITEM item, int address, HWND hWndtv, HWND hWnd) {
+void GetTrainerData(std::vector<byte>& data, HTREEITEM item, HWND hWnd) {
+	HWND hWndtv = GetDlgItem(hWnd, TV_TRAINERS);
 	HTREEITEM hti = item;
 	byte* pointer = new byte[3];
+	unsigned int address = GetAddress(ADD_TRAINER_TABLE);
 	int cur_address = 0;
 	game_string name;
 	trainer_pokemon poke = { 0 };
 	name.characters = 0;
+	int exp = 0;
+	int exp_total = 0;
 	byte trainer = 0;
 	byte type = 0;
 	byte control = 0;
@@ -138,6 +150,10 @@ void GetTrainerData(std::vector<byte> data, HTREEITEM item, int address, HWND hW
 
 	cur_address++;
 
+	for (int i = 0; i < 6; i++) {//Reset the EXP Labels
+		SetDlgItemText(hWnd, STC_POKE_EXP1 + i, L"");
+	}
+
 	for (int i = 0; i < 6; i++) {
 
 		if (data[cur_address] == 0xFF) {
@@ -160,13 +176,14 @@ void GetTrainerData(std::vector<byte> data, HTREEITEM item, int address, HWND hW
 			SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE1_4 + (i * 5)), CB_SETCURSEL, (WPARAM)poke.move4, 0);
 			SendMessage(GetDlgItem(hWnd, CB_TRA_ITEM_1 + (i * 5)), CB_SETCURSEL, (WPARAM)poke.item, 0);
 
-			if (control == 0x00) cur_address += 2;
-			if (control == 0x01) cur_address += 6;
-			if (control == 0x02) cur_address += 3;
-			if (control == 0x03) cur_address += 7;
+			exp = GetBaseExp(data, poke.pokemon) * (int)poke.level * 1.5 / 7;
+			SetDlgItemText(hWnd, STC_POKE_EXP1 + i, std::to_wstring(exp).c_str());
+			exp_total += exp;
 		}
 
 	}
+
+	SetDlgItemText(hWnd, STC_EXP_TOTAL, std::to_wstring(exp_total).c_str());
 
 	DisableTrainerControls(hWnd, control);
 
@@ -175,49 +192,36 @@ void GetTrainerData(std::vector<byte> data, HTREEITEM item, int address, HWND hW
 	SetDlgItemText(hWnd, STC_TRAINER_TYPE, (LPWSTR)IntToHexString(type).c_str());
 }
 
-trainer_pokemon GetTrainerPokemon(std::vector<byte> data, int address, byte control) {
+trainer_pokemon GetTrainerPokemon(std::vector<byte>& data, int& address, byte control) {
 	trainer_pokemon poke = { 0 };
 
 	switch (control) {
 	case 0x00:
-		poke.level = data[address];
-		address++;
-		poke.pokemon = data[address];
+		poke.level = data[address++];
+		poke.pokemon = data[address++];
 		break;
 	case 0x01:
-		poke.level = data[address];
-		address++;
-		poke.pokemon = data[address];
-		address++;
-		poke.move1 = data[address];
-		address++;
-		poke.move2 = data[address];
-		address++;
-		poke.move3 = data[address];
-		address++;
-		poke.move4 = data[address];
+		poke.level = data[address++];
+		poke.pokemon = data[address++];
+		poke.move1 = data[address++];
+		poke.move2 = data[address++];
+		poke.move3 = data[address++];
+		poke.move4 = data[address++];
 		break;
 	case 0x02:
-		poke.level = data[address];
-		address++;
-		poke.pokemon = data[address];
-		address++;
-		poke.item = data[address];
+		poke.level = data[address++];
+		poke.pokemon = data[address++];
+		poke.item = data[address++];
+
 		break;
 	case 0x03:
-		poke.level = data[address];
-		address++;
-		poke.pokemon = data[address];
-		address++;
-		poke.item = data[address];
-		address++;
-		poke.move1 = data[address];
-		address++;
-		poke.move2 = data[address];
-		address++;
-		poke.move3 = data[address];
-		address++;
-		poke.move4 = data[address];
+		poke.level = data[address++];
+		poke.pokemon = data[address++];
+		poke.item = data[address++];
+		poke.move1 = data[address++];
+		poke.move2 = data[address++];
+		poke.move3 = data[address++];
+		poke.move4 = data[address++];
 		break;
 	}
 
@@ -225,13 +229,14 @@ trainer_pokemon GetTrainerPokemon(std::vector<byte> data, int address, byte cont
 
 }
 
-void ChangeTrainerData(HWND hWnd, std::vector<byte>& data, int address, HTREEITEM hti) {
+void ChangeTrainerData(std::vector<byte>& data, HTREEITEM hti, HWND hWnd) {
 	std::vector<byte> copy;
 	trainer_pokemon poke = { 0 };
+	unsigned int address = GetAddress(ADD_TRAINER_TABLE);
 
 	wchar_t name[10] = { L'\0' };
 	GetWindowText(GetDlgItem(hWnd, EB_TRAINER_NAME), name, 10);
-	int type_quantity = GetNumberOfClasses(address, data);
+	int type_quantity = GetNumberOfTableElements(address, data);
 
 	int cur_address = address;
 	int copy_point = 0;
@@ -269,8 +274,11 @@ void ChangeTrainerData(HWND hWnd, std::vector<byte>& data, int address, HTREEITE
 
 	//Iterate through Class data to get to requested Trainer
 	for (int i = 0; i < trainer; i++) {
+		cur_address = copy_point;
 		while (data[copy_point] != 0xFF) copy_point++;
+		copy_point++;
 	}
+	copy_point--;
 
 	old_size = copy_point - cur_address;
 
@@ -280,7 +288,7 @@ void ChangeTrainerData(HWND hWnd, std::vector<byte>& data, int address, HTREEITE
 
 	end_address = PointerToAddress(pointer) - 1;
 
-	copy = CopyData(copy_point, end_address, data);
+	copy = CopyData(data, copy_point, end_address);
 
 	//Insert Trainer Name
 	for (wchar_t c : name) {
@@ -451,30 +459,31 @@ void ChangeTrainerData(HWND hWnd, std::vector<byte>& data, int address, HTREEITE
 		}
 	}
 
-	copy = CopyData(0, copy.size() - new_size, copy);
+	copy = CopyData(copy, 0, copy.size() - new_size);
 
-	data = PasteData(cur_address, data, copy);
+	PasteData(data, cur_address, copy);
 
-	copy = CopyData(address + (type * 2), address + (type_quantity * 2), data);
+	copy = CopyData(data, address + (type * 2), address + (type_quantity * 2));
 	copy = UpdatePointerTable(copy, (unsigned short)(new_size - old_size));
 
-	data = PasteData(address + (type * 2), data, copy);
+	PasteData(data, address + (type * 2), copy);
 
 }
 
-void AddTrainerData(HWND hWnd, std::vector<byte>& data, int address, HTREEITEM hti) {
+void AddTrainerData(std::vector<byte>& data, HTREEITEM hti, HWND hWnd) {
 	std::vector<byte> copy;
 	trainer_pokemon poke = { 0 };
 
 	wchar_t name[10] = { L'\0' };
 	GetWindowText(GetDlgItem(hWnd, EB_TRAINER_NAME), name, 10);
 
+	unsigned int address = GetAddress(ADD_TRAINER_TABLE);
 	int cur_address = address;
 	int end_address = address;
 	byte* pointer = new byte[3];
 
 	int data_size = 0;
-	int type_quantity = GetNumberOfClasses(address, data);
+	int type_quantity = GetNumberOfTableElements(address, data);
 
 	//byte trainer = 0;
 	byte type = 0;
@@ -513,7 +522,7 @@ void AddTrainerData(HWND hWnd, std::vector<byte>& data, int address, HTREEITEM h
 	pointer[1] = 0x40;
 	end_address = PointerToAddress(pointer) - 1;
 
-	copy = CopyData(cur_address, end_address, data);
+	copy = CopyData(data, cur_address, end_address);
 
 	//Insert Trainer Name
 	for (wchar_t c : name) {
@@ -688,33 +697,14 @@ void AddTrainerData(HWND hWnd, std::vector<byte>& data, int address, HTREEITEM h
 	data_size++;
 	cur_address++;
 
-	copy = CopyData(0, copy.size() - data_size - 1, copy);
+	copy = CopyData(copy, 0, copy.size() - data_size - 1);
 
-	data = PasteData(cur_address, data, copy);
+	PasteData(data, cur_address, copy);
 
-	copy = CopyData(address + ((type-1) * 2), address + (type_quantity * 2), data);
+	copy = CopyData(data, address + ((type-1) * 2), address + (type_quantity * 2));
 	copy = UpdatePointerTable(copy, (unsigned short)data_size);
 
-	data = PasteData(address + ((type-1) * 2), data, copy);
-
-}
-
-int GetNumberOfClasses(int trainer_add, std::vector<byte>& data) {
-	int count = 0;
-	int destination = 0;
-	byte pointer[3];
-
-	pointer[2] = FindBank(trainer_add);
-	pointer[0] = data[trainer_add];
-	pointer[1] = data[trainer_add + 1];
-	destination = PointerToAddress(pointer);
-
-	while (trainer_add < destination) {
-		trainer_add += 2;
-		count++;
-	}
-
-	return count;
+	PasteData(data, address + ((type-1) * 2), copy);
 
 }
 
@@ -850,4 +840,11 @@ void DisableTrainerControls(HWND hWnd, int control) {
 		EnableWindow(GetDlgItem(hWnd, CB_TRA_MOVE6_4), true);
 		break;
 	}
+}
+
+int GetBaseExp(std::vector<byte>& data,byte pokemon) {
+	int cur_address = GetAddress(ADD_BASE_STATS) + ((pokemon - 1) * 32);
+	cur_address += 10;
+
+	return (int) data[cur_address];
 }

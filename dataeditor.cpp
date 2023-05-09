@@ -1,11 +1,13 @@
 #include "dataeditor.h"
 
-int GetFileSize(std::wstring fileName) {
+unsigned int GetFileSize(std::wstring fileName) {
 
 	std::ifstream ROMFile(fileName, std::ios::binary | std::ios::ate);
-	int size = (int)ROMFile.tellg();
+	unsigned int size = ROMFile.tellg();
 
 	ROMFile.close();
+
+	if (size == (unsigned int)-1) return 0;
 
 	return size;
 }
@@ -16,7 +18,7 @@ std::vector<byte> LoadData(std::wstring fileName) {
 
 	ROMFile.unsetf(std::ios::skipws);
 
-	int size = GetFileSize(fileName);
+	unsigned int size = GetFileSize(fileName);
 
 	std::vector<byte> vec;
 	vec.reserve(size);
@@ -28,36 +30,33 @@ std::vector<byte> LoadData(std::wstring fileName) {
 	return vec;
 }
 
-void SaveData(std::wstring fileName, std::vector<byte> vec) {
+void SaveData(std::vector<byte>& vec, std::wstring fileName) {
 
 	std::ofstream ROMFile(fileName, std::ios::out | std::ios::binary);
-
 
 	int size = GetFileSize(fileName);
 	std::copy(vec.begin(), vec.end(), std::ostream_iterator<byte>(ROMFile));
 }
 
-std::vector<byte> CopyData(int startAdd, int endAdd, std::vector<byte> data) {
+std::vector<byte> CopyData(std::vector<byte>& data, unsigned int start_address, unsigned int end_address) {
 
 	std::vector<byte> copy;
 
-	for (int i = startAdd; i < endAdd + 1; i++) {
+	for (int i = start_address; i < end_address + 1; i++) {
 		copy.push_back(data.at(i));
 	}
 
 	return copy;
 }
 
-std::vector<byte> PasteData(int startAdd, std::vector<byte> data, std::vector<byte> copy) {
+void PasteData(std::vector<byte>& data, unsigned int start_address, std::vector<byte>& copy) {
 
-	int copySize = (int)copy.size();
+	unsigned int copySize = (unsigned int)copy.size();
 
-	for (int i = startAdd; i < startAdd + copySize; i++)
+	for (unsigned int i = start_address; i < start_address + copySize; i++)
 	{
-		data[i] = copy[i - startAdd];
+		data[i] = copy[i - start_address];
 	}
-
-	return data;
 }
 
 bool CheckForRom(std::vector<byte> rom) {
@@ -75,7 +74,7 @@ bool CheckIfNumber(std::wstring& input) {
 	return !input.empty() && it == input.end();
 }
 
-game_string GetGameString(std::vector<byte> data, int address, byte end) {
+game_string GetGameString(std::vector<byte>& data, int address, byte end) {
 	int cur_address = address;
 	game_string str;
 	str.characters = 0;
@@ -103,7 +102,7 @@ std::wstring IntToHexString(int number) {
 	return oss.str();
 }
 
-bool CheckValidPointerTableEntry(std::vector<byte> data, int address, int entry) {
+bool CheckValidPointerTableEntry(std::vector<byte>& data, int address, int entry) {
 	byte* pointer = new byte[3];
 
 	pointer[2] = FindBank(address);
@@ -111,4 +110,24 @@ bool CheckValidPointerTableEntry(std::vector<byte> data, int address, int entry)
 	pointer[1] = data[address + 1];
 
 	return (address + ((entry - 1) * 2) + 1) < PointerToAddress(pointer);
+}
+
+int GetNumberOfTableElements(int table_add, std::vector<byte>& data) {
+	int count = 0;
+	int destination = 0;
+	byte pointer[3];
+
+	pointer[2] = FindBank(table_add);
+	pointer[0] = data[table_add];
+	pointer[1] = data[table_add + 1];
+	destination = PointerToAddress(pointer);
+
+	count = (destination - table_add) / 2;
+
+	return count;
+
+}
+
+bool CheckBit(byte b, byte p) {
+	return (b>>p) & 1;
 }

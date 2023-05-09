@@ -17,4 +17,5 @@ HWND AddGrowthCombo(HWND, int, int, int, int, int);
 HWND AddSizeCombo(HWND, int, int, int, int, int);
 HWND AddEvoMethodCombo(HWND, int, int, int, int, int);
 HWND AddEvoStatCombo(HWND, int, int, int, int, int);
+HWND AddNumberCombo(HWND hWnd, int x, int y, int width, int height, int inst, int range);
 void ChangeEvoCombos(HWND, HWND, HWND, HWND);

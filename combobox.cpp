@@ -282,7 +282,9 @@ HWND AddRomCombo(HWND hWnd, int x, int y, int width, int height, int inst) {
 	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)rom_type.c_str());
 	rom_type = L"CRYSTAL";
 	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)rom_type.c_str());
-	rom_type = L"CUSTOM";
+	rom_type = L"GOLD/SILVER (JP)";
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)rom_type.c_str());
+	rom_type = L"CRYSTAL (JP)";
 	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)rom_type.c_str());
 
 	SendMessage(GetDlgItem(hWnd, inst), CB_SETCURSEL, 0, 0);
@@ -316,6 +318,19 @@ HWND AddEvoStatCombo(HWND hWnd, int x, int y, int width, int height, int inst) {
 	}
 
 	return method;
+}
+
+HWND AddNumberCombo(HWND hWnd, int x, int y, int width, int height, int inst, int range) {
+	HWND numbers = CreateWindow(L"COMBOBOX", NULL, WS_VISIBLE | WS_CHILD | CBS_DROPDOWN |
+		CBS_HASSTRINGS | WS_VSCROLL, x, y, width, height, hWnd, (HMENU)inst, NULL, NULL);
+
+	for (int i = 0; i < range; i++) {
+		std::wstring name = std::to_wstring(InterpretNumbers(i));
+
+		SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)name.c_str());
+	}
+
+	return numbers;
 }
 
 void ChangeEvoCombos(HWND met, HWND con, HWND poke, HWND stat) {

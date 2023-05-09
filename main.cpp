@@ -1,82 +1,22 @@
 #include "main.h"
 
+#include "address.h"
+#include "combobox.h"
+#include "dataeditor.h"
+#include "encounters.h"
+#include "resource.h"
+#include "guicodes.h"
+#include "interpreter.h"
+#include "pointertools.h"
+#include "pokemontools.h"
+#include "randomencounters.h"
+#include "trainertools.h"
+
 std::vector<BYTE> rom;
 
 HMENU hMenu;
 HWND hTabCntrl;
 HWND hStat;
-
-HWND cb_poke;
-HWND cb_moves;
-HWND cb_levels;
-HWND cb_egg_moves;
-HWND cb_tms;
-HWND cb_item23;
-HWND cb_item2;
-HWND cb_growth;
-HWND cb_gender;
-HWND cb_spr_size;
-HWND cb_egg_1;
-HWND cb_egg_2;
-HWND cb_type_1;
-HWND cb_type_2;
-HWND cb_rom;
-HWND cb_evo_met;
-HWND cb_evo_con;
-HWND cb_evo_pok;
-HWND cb_evo_stat;
-
-HWND btn_select;
-HWND btn_rom;
-HWND btn_add_moves;
-HWND btn_del_moves;
-HWND btn_add_egg;
-HWND btn_del_egg;
-HWND btn_tog_tm;
-HWND btn_upd_bs;
-HWND btn_sel_evo;
-HWND btn_add_evo;
-HWND btn_del_evo;
-
-HWND eb_hp;
-HWND eb_atk;
-HWND eb_def;
-HWND eb_spd;
-HWND eb_satk;
-HWND eb_sdef;
-HWND eb_cap_rate;
-HWND eb_base_exp;
-HWND eb_spr_size;
-HWND eb_hatch;
-
-HWND stc_level_up;
-HWND stc_egg_move;
-HWND stc_tms;
-HWND stc_hp;
-HWND stc_atk;
-HWND stc_def;
-HWND stc_spd;
-HWND stc_satk;
-HWND stc_sdef;
-HWND stc_cr;
-HWND stc_exp;
-HWND stc_growth;
-HWND stc_gender;
-HWND stc_hatch;
-HWND stc_size;
-HWND stc_item23;
-HWND stc_item2;
-HWND stc_egg_1;
-HWND stc_egg_2;
-HWND stc_type_1;
-HWND stc_type_2;
-HWND stc_evo;
-
-HWND lb_level_up;
-HWND lb_level_move;
-HWND lb_egg_move;
-HWND lb_tm;
-HWND lb_evo;
 
 int tab_sel = 0;
 int desk_width = GetSystemMetrics(SM_CXSCREEN);
@@ -89,12 +29,6 @@ unsigned char move = 0;
 unsigned char egg = 0;
 unsigned char tm = 0;
 
-int level_up_table = GS_TABLE_DATA;
-int egg_table = GS_EGG_TABLE;
-int base_stats_address = GS_BASE_STATS;
-int trainer_class_address = GS_TRAINER_TYPES;
-int trainer_table_address = GS_TRAINER_TABLE;
-
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	HTREEITEM hti = TreeView_GetSelection(GetDlgItem(hWnd, TV_TRAINERS));
@@ -102,6 +36,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	char item2_sel = SendMessage(GetDlgItem(hWnd, CB_ITEM_2), CB_GETCURSEL, 0, 0);
 	char type1_sel = SendMessage(GetDlgItem(hWnd, CB_TYPE_1), CB_GETCURSEL, 0, 0);
 	char type2_sel = SendMessage(GetDlgItem(hWnd, CB_TYPE_2), CB_GETCURSEL, 0, 0);
+	bool filled = true;
 
 	switch (msg) {
 
@@ -110,6 +45,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		AddTabs(hWnd);
 		AddPokemonControls(hWnd);
 		AddTrainerControls(hWnd);
+		AddEncounterControls(hWnd);
 		break;
 
 	case WM_DESTROY:
@@ -128,147 +64,197 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case OPEN_FILE:
 			OpenFile(hWnd);
 			if (rom.empty() == false) {
-				TogglePokemonEnables(true);
-				FillTrainerTree(rom, trainer_table_address, trainer_class_address, GetDlgItem(hWnd, TV_TRAINERS));
+				TogglePokemonEnables(true, hWnd);
+				FillTrainerTree(rom, hWnd);
+				FillEncountersTree(rom, GetDlgItem(hWnd, TV_ENCOUNTERS));
 			}
 			break;
 		case SAVE_FILE:
 			SaveFile(hWnd);
 			break;
-		case ROM_BUTTON:
-			SelectRom(cb_rom);
+		case BTN_ROM:
+			SelectRom(GetDlgItem(hWnd, CB_ROM));
 			if (rom.empty() == false) {
 				SelectPokemon(hWnd);
-				FillTrainerTree(rom, trainer_table_address, trainer_class_address, GetDlgItem(hWnd, TV_TRAINERS));
-				GetTrainerData(rom, hti, trainer_table_address, GetDlgItem(hWnd, TV_TRAINERS), hWnd);
+				FillTrainerTree(rom, hWnd);
+				GetTrainerData(rom, hti, hWnd);
 			}
 			break;
-		case ADD_MOVE_BUTTON:
+		case BTN_ADD_MOVE:
 			pokemon = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, NULL, NULL);
 			level = SendMessage(GetDlgItem(hWnd, CB_LEVELS), CB_GETCURSEL, NULL, NULL);
 			move = SendMessage(GetDlgItem(hWnd, CB_MOVES), CB_GETCURSEL, NULL, NULL);
 			if (level != 255 && move != 255) {
-				rom = InsertLevelMoves(level_up_table, pokemon + 1, rom, level + 1, move + 1);
+				InsertLevelMoves(rom, pokemon + 1, level + 1, move + 1);
 				SelectPokemon(hWnd);
 			}
 			else {
 				MessageBox(NULL, L"Please Select Level and Move", L"", MB_OK);
 			}
 			break;
-		case DEL_MOVE_BUTTON:
+
+		case BTN_DEL_MOVE:
 			pokemon = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, NULL, NULL);
-			level = SendMessage(GetDlgItem(hWnd, CB_LEVELS), CB_GETCURSEL, NULL, NULL);
-			move = SendMessage(GetDlgItem(hWnd, CB_MOVES), CB_GETCURSEL, NULL, NULL);
-			if (level != 255 && move != 255) {
-				rom = DeleteLevelMoves(level_up_table, pokemon + 1, rom, level + 1, move + 1);
+			if(SendMessage(GetDlgItem(hWnd, LB_LEVEL), LB_GETCURSEL, NULL, NULL) != LB_ERR) {
+				DeleteLevelMoves(rom, pokemon + 1, hWnd);
 				SelectPokemon(hWnd);
 			}
 			else {
 				MessageBox(NULL, L"Please Select Level and Move", L"", MB_OK);
 			}
 			break;
-		case SELECT_BUTTON:
+
+		case BTN_CHNG_MOVE:
 			pokemon = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, NULL, NULL);
-			SelectPokemon(hWnd);
+			if (SendMessage(GetDlgItem(hWnd, LB_LEVEL), LB_GETCURSEL, NULL, NULL) != LB_ERR &&
+				SendMessage(GetDlgItem(hWnd, CB_LEVELS), CB_GETCURSEL, NULL, NULL) != -1 &&
+				SendMessage(GetDlgItem(hWnd, CB_MOVES), CB_GETCURSEL, NULL, NULL) != -1) {
+				ChangeLevelMoves(rom, pokemon + 1, hWnd);
+				SelectPokemon(hWnd);
+			}
+			else {
+				MessageBox(NULL, L"Please Select Level and Move", L"", MB_OK);
+			}
 			break;
-		case ADD_EGG_BUTTON:
+
+		case BTN_ADD_EGG:
 			pokemon = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, NULL, NULL);
 			move = SendMessage(GetDlgItem(hWnd, CB_EGG_MOVES), CB_GETCURSEL, NULL, NULL);
 			if (move != 255) {
-				rom = InsertEggMoves(egg_table, pokemon + 1, rom, move + 1);
+				UnsertEggMoves(rom, pokemon + 1, move + 1);
 				SelectPokemon(hWnd);
 			}
 			else {
 				MessageBox(NULL, L"Please Select Move", L"", MB_OK);
 			}
 			break;
-		case DEL_EGG_BUTTON:
+
+		case BTN_DEL_EGG:
 			pokemon = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, NULL, NULL);
-			move = SendMessage(GetDlgItem(hWnd, CB_EGG_MOVES), CB_GETCURSEL, NULL, NULL);
-			if (move != 255) {
-				rom = DeleteEggMoves(egg_table, pokemon + 1, rom, move + 1);
-				SelectPokemon(hWnd);
-			}
-			else {
-				MessageBox(NULL, L"Please Select A Move", L"", MB_OK);
-			}
+			SeleteEggMoves(rom, pokemon + 1, hWnd);
+			SelectPokemon(hWnd);
 			break;
-		case TOGGLE_TM_BUTTON:
+
+		case BTN_TOGGLE_TM:
 			tm = SendMessage(GetDlgItem(hWnd, CB_TMS), CB_GETCURSEL, NULL, NULL);
 
 			if (tm != 255) {
-				rom = ToggleTMs(base_stats_address, pokemon + 1, rom, tm + 1);
+				ToggleTMs(rom, pokemon + 1, tm + 1);
 				SelectPokemon(hWnd);
 			}
 			else {
 				MessageBox(NULL, L"Please Select a TM", L"", MB_OK);
 			}
 			break;
-		case EVO_BUTTON:
-			ChangeEvoCombos(cb_evo_met, cb_evo_con, cb_evo_pok, cb_evo_stat);
+
+		case BTN_EVO:
+			ChangeEvoCombos(GetDlgItem(hWnd, CB_EVO_MET), GetDlgItem(hWnd, CB_EVO_CON),
+				GetDlgItem(hWnd, CB_EVO_POK), GetDlgItem(hWnd, CB_EVO_STAT));
 			break;
-		case ADD_EVO_BUTTON:
-			if (SendMessage(cb_evo_met, CB_GETCURSEL, 0, 0) != -1 && SendMessage(cb_evo_con, CB_GETCURSEL, 0, 0) != -1 && SendMessage(cb_evo_pok, CB_GETCURSEL, 0, 0) != -1) {
-				//if (SendMessage(cb_evo_met, CB_GETCURSEL, 0, 0) == 4 && SendMessage(cb_evo_stat, CB_GETCURSEL, 0, 0) != -1) {
-				rom = InsertEvolution(level_up_table, pokemon + 1, rom, hWnd, CB_EVO_MET, CB_EVO_CON, CB_EVO_POK, CB_EVO_STAT);
-				//}
+
+		case BTN_ADD_EVO:
+			if (SendMessage(GetDlgItem(hWnd, CB_EVO_MET), CB_GETCURSEL, 0, 0) != -1 &&
+				SendMessage(GetDlgItem(hWnd, CB_EVO_CON), CB_GETCURSEL, 0, 0) != -1 &&
+				SendMessage(GetDlgItem(hWnd, CB_EVO_POK), CB_GETCURSEL, 0, 0) != -1) {
+
+				InsertEvolution(rom, pokemon + 1, hWnd);
 			}
 			SelectPokemon(hWnd);
 			break;
-		case DEL_EVO_BUTTON:
-			if (SendMessage(cb_evo_met, CB_GETCURSEL, 0, 0) != -1 && SendMessage(cb_evo_con, CB_GETCURSEL, 0, 0) != -1 && SendMessage(cb_evo_pok, CB_GETCURSEL, 0, 0) != -1) {
-				//if (SendMessage(cb_evo_met, CB_GETCURSEL, 0, 0) == 4 && SendMessage(cb_evo_stat, CB_GETCURSEL, 0, 0) != -1) {
-				rom = DeleteEvolution(level_up_table, pokemon + 1, rom, hWnd, CB_EVO_MET, CB_EVO_CON, CB_EVO_POK, CB_EVO_STAT);
-				//}
+
+		case BTN_DEL_EVO:
+			if (SendMessage(GetDlgItem(hWnd, CB_EVO_MET), CB_GETCURSEL, 0, 0) != -1 &&
+				SendMessage(GetDlgItem(hWnd, CB_EVO_CON), CB_GETCURSEL, 0, 0) != -1 &&
+				SendMessage(GetDlgItem(hWnd, CB_EVO_POK), CB_GETCURSEL, 0, 0) != -1) {
+
+				DeleteEvolution(rom, pokemon + 1, hWnd);
 			}
 			SelectPokemon(hWnd);
 			break;
-		case UPDATE_STATS_BUTTON:
-			rom = ChangeBaseStats(base_stats_address, pokemon + 1, rom, hWnd, eb_hp, eb_atk, eb_def, eb_spd, eb_satk, eb_sdef);
-			rom = ChangeCaptureRate(base_stats_address, pokemon + 1, rom, hWnd, EB_CR);
-			rom = ChangeBaseExp(base_stats_address, pokemon + 1, rom, hWnd, EB_BASE_EXP);
-			rom = ChangeEggGroup(base_stats_address, pokemon + 1, rom, hWnd, CB_EGG_1, CB_EGG_2);
-			rom = ChangeGenderRatio(base_stats_address, pokemon + 1, rom, hWnd, CB_GENDER);
-			rom = ChangeHatchSteps(base_stats_address, pokemon + 1, rom, hWnd, EB_HATCH_STEP);
-			rom = ChangeGrowthType(base_stats_address, pokemon + 1, rom, hWnd, CB_GROWTH);
-			rom = ChangeSpriteSize(base_stats_address, pokemon + 1, rom, hWnd, CB_SPR_SIZE);
+
+		case BTN_UPDATE_STATS:
+			ChangeBaseStats(rom, pokemon + 1, hWnd);
+			ChangeCaptureRate(rom, pokemon + 1, hWnd);
+			ChangeBaseExp(rom, pokemon + 1, hWnd);
+			ChangeEggGroup(rom, pokemon + 1, hWnd);
+			ChangeGenderRatio(rom, pokemon + 1, hWnd);
+			ChangeHatchSteps(rom, pokemon + 1, hWnd);
+			ChangeGrowthType(rom, pokemon + 1, hWnd);
+			ChangeSpriteSize(rom, pokemon + 1, hWnd);
 			if (type1_sel != -1 && type2_sel != -1) {
-				rom = ChangeTyping(base_stats_address, pokemon + 1, rom, hWnd, CB_TYPE_1, CB_TYPE_2);
+				ChangeTyping(rom, pokemon + 1, hWnd);
 			}
 			if (item23_sel != -1 && item2_sel != -1) {
-				rom = ChangeHoldItems(base_stats_address, pokemon + 1, rom, hWnd, CB_ITEM_23, CB_ITEM_2);
+				ChangeHoldItems(rom, pokemon + 1, hWnd);
 			}
 
 			SelectPokemon(hWnd);
 			break;
-		case BTN_UPDATE_TRAINER:
-			ChangeTrainerData(hWnd, rom, GS_TRAINER_TABLE, hti);
-			FillTrainerTree(rom, trainer_table_address, trainer_class_address, GetDlgItem(hWnd, TV_TRAINERS));
-			GetTrainerData(rom, hti, trainer_table_address, GetDlgItem(hWnd, TV_TRAINERS), hWnd);
+
+		case BTN_SYNCH_POKE:
+			SynchTable(rom, GetAddress(ADD_LEVEL_TABLE), 0x00, 2);
 			break;
+
+		case BTN_UPDATE_TRAINER:
+			ChangeTrainerData(rom, hti, hWnd);
+			FillTrainerTree(rom, hWnd);
+			GetTrainerData(rom, hti, hWnd);
+			break;
+
 		case BTN_ADD_TRAINER:
-			AddTrainerData(hWnd, rom, trainer_table_address, hti);
-			FillTrainerTree(rom, trainer_table_address, trainer_class_address, GetDlgItem(hWnd, TV_TRAINERS));
-			GetTrainerData(rom, hti, trainer_table_address, GetDlgItem(hWnd, TV_TRAINERS), hWnd);
+			AddTrainerData(rom, hti, hWnd);
+			FillTrainerTree(rom, hWnd);
+			GetTrainerData(rom, hti, hWnd);
+			break;
+
+		case BTN_UPDATE_ENCOUNTER:
+			hti = TreeView_GetSelection(GetDlgItem(hWnd, TV_ENCOUNTERS));
+			for (int i = 0; i < 21; i++) {
+				if (SendMessage(GetDlgItem(hWnd, CB_MOR_POKE_1 + i), CB_GETCURSEL, 0, 0) == -1 &&
+					SendMessage(GetDlgItem(hWnd, CB_MOR_LVL_1 + i), CB_GETCURSEL, 0, 0) == -1) {
+					filled = false;
+				}
+			}
+			if (filled == true) {
+				ChangeGrassEncounterData(rom, hti, hWnd);
+			}
+			filled = true;
+			for (int i = 0; i < 3; i++) {
+				if (SendMessage(GetDlgItem(hWnd, CB_SURF_POKE_1 + i), CB_GETCURSEL, 0, 0) == -1 &&
+					SendMessage(GetDlgItem(hWnd, CB_SURF_LVL_1 + i), CB_GETCURSEL, 0, 0) == -1) {
+					filled = false;
+				}
+			}
+			if (filled == true) {
+				ChangeSurfEncounterData(rom, hti, hWnd);
+			}
+			filled = true;
+			break;
+
+		case BTN_RAND_ENCOUNTER:
+			//RandomizeEncounters(hWnd);
+			RandomizeTables(rom);
 			break;
 		}
+
 
 		if (CBN_SELCHANGE == HIWORD(wParam)) {
 			if (LOWORD(wParam) == CB_POKEMON) {
 				SelectPokemon(hWnd);
+				DisplayRandomPokemon(hWnd, SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, NULL, NULL) + 1);
 			}
 			if (LOWORD(wParam) == CB_TRAINER_CONTROL) {
 				DisableTrainerControls(hWnd, SendMessage(GetDlgItem(hWnd, CB_TRAINER_CONTROL), CB_GETCURSEL, NULL, NULL));
 			}
 			if (LOWORD(wParam) == CB_EVO_MET) {
-				ChangeEvoCombos(cb_evo_met, cb_evo_con, cb_evo_pok, cb_evo_stat);
+				ChangeEvoCombos(GetDlgItem(hWnd, CB_EVO_MET), GetDlgItem(hWnd, CB_EVO_CON), GetDlgItem(hWnd, CB_EVO_POK), GetDlgItem(hWnd, CB_EVO_STAT));
 			}
 			if (LOWORD(wParam) == CB_ROM) {
-				SelectRom(cb_rom);
+				SelectRom(GetDlgItem(hWnd, CB_ROM));
 				if (rom.empty() == false) {
 					SelectPokemon(hWnd);
-					FillTrainerTree(rom, trainer_table_address, trainer_class_address, GetDlgItem(hWnd, TV_TRAINERS));
-					GetTrainerData(rom, hti, trainer_table_address, GetDlgItem(hWnd, TV_TRAINERS), hWnd);
+					FillTrainerTree(rom, hWnd);
+					GetTrainerData(rom, hti, hWnd);
 				}
 
 			}
@@ -282,31 +268,57 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 			switch (tab_sel) {
 			case 0:
-				TogglePokemonTab(true);
+				TogglePokemonTab(true, hWnd);
 				ToggleTrainerTab(false, hWnd);
+				ToggleEncountersTab(false, hWnd);
+				ToggleRandomElements(true, hWnd);
 				break;
 			case 1:
-				TogglePokemonTab(false);
+				TogglePokemonTab(false, hWnd);
 				ToggleTrainerTab(true, hWnd);
+				ToggleEncountersTab(false, hWnd);
+				ToggleRandomElements(false, hWnd);
 				break;
 			case 2:
-				TogglePokemonTab(false);
+				TogglePokemonTab(false, hWnd);
 				ToggleTrainerTab(false, hWnd);
+				ToggleEncountersTab(true, hWnd);
+				ToggleRandomElements(true, hWnd);
 				break;
 			case 3:
-				TogglePokemonTab(false);
+				TogglePokemonTab(false, hWnd);
 				ToggleTrainerTab(false, hWnd);
+				ToggleEncountersTab(false, hWnd);
+				ToggleRandomElements(false, hWnd);
 				break;
 			case 4:
-				TogglePokemonTab(false);
+				TogglePokemonTab(false, hWnd);
 				ToggleTrainerTab(false, hWnd);
+				ToggleEncountersTab(false, hWnd);
+				ToggleRandomElements(false, hWnd);
 				break;
 			}
 		}
 		if (((LPNMHDR)lParam)->code == TVN_SELCHANGED) {
-			if (TreeView_GetChild(GetDlgItem(hWnd, TV_TRAINERS), hti) == NULL) {
-				GetTrainerData(rom, hti, trainer_table_address, GetDlgItem(hWnd, TV_TRAINERS), hWnd);
+			switch (((LPNMHDR)lParam)->idFrom) {
+			
+			case TV_TRAINERS:
+				hti = TreeView_GetSelection(GetDlgItem(hWnd, TV_TRAINERS));
+				if (TreeView_GetChild(GetDlgItem(hWnd, TV_TRAINERS), hti) == NULL) {
+					GetTrainerData(rom, hti, hWnd);
+				}
+				break;
+			case TV_ENCOUNTERS:
+				hti = TreeView_GetSelection(GetDlgItem(hWnd, TV_ENCOUNTERS));
+				if (TreeView_GetChild(GetDlgItem(hWnd, TV_ENCOUNTERS), hti) == NULL) {
+					GetGrassEncounterData(rom, hti, hWnd);
+					GetGrassSwarmData(rom, hti, hWnd);
+					GetSurfEncounterData(rom, hti, hWnd);
+					GetSurfSwarmData(rom, hti, hWnd);
+				}
+				break;
 			}
+			
 
 		}
 		
@@ -342,6 +354,10 @@ int InsertTabItem(HWND hWnd, std::wstring txt, int item_index, int image_index) 
 	tabPage.iImage = image_index;
 
 	return (int)SendMessage(hWnd, TCM_INSERTITEM, item_index, (LPARAM)&tabPage);
+}
+
+HWND CreateCheckBox(HWND hWnd, std::wstring name, int x, int y, int w, int h, int id) {
+	return CreateWindowEx(NULL, L"BUTTON", name.c_str(), BS_AUTOCHECKBOX | WS_VISIBLE | WS_CHILD, x, y, w, h, hWnd, (HMENU) id, NULL, NULL);
 }
 
 void AddMenus(HWND hWnd) {
@@ -431,105 +447,125 @@ HTREEITEM InsertTreeItem(HWND hWndTV, LPWSTR name, int nLevel, HTREEITEM hPrev, 
 }
 
 void AddPokemonControls(HWND hWnd) {
-	stc_level_up = CreateWindowW(L"Static", L"Level Up Moves", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, LVL_CONS_X, LVL_CONS_Y, 150, 25, hWnd,
-		(HMENU)IDC_STATIC_LEVEL, NULL, NULL);
-	stc_egg_move = CreateWindowW(L"Static", L"Egg Moves", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, EGG_CONS_X, EGG_CONS_Y, 150, 25, hWnd,
-		(HMENU)IDC_STATIC_EGG, NULL, NULL);
-	stc_tms = CreateWindowW(L"Static", L"TM Compatability", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TM_CONS_X, TM_CONS_Y, 170, 25, hWnd,
-		(HMENU)IDC_STATIC_TM, NULL, NULL);
+	CreateWindowW(L"Static", L"Level Up Moves", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, LVL_CONS_X, LVL_CONS_Y, 150, 25, hWnd,
+		(HMENU)STC_MOVE_LEVEL, NULL, NULL);
+	CreateWindowW(L"Static", L"Egg Moves", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, EGG_CONS_X, EGG_CONS_Y, 150, 25, hWnd,
+		(HMENU)STC_MOVE_EGG, NULL, NULL);
+	CreateWindowW(L"Static", L"TM Compatability", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TM_CONS_X, TM_CONS_Y, 170, 25, hWnd,
+		(HMENU)STC_MOVE_TM, NULL, NULL);
 
-	stc_hp = CreateWindowW(L"Static", L"HP", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X, BS_CONS_Y, BS_CONS_W, 25, hWnd,
-		0, NULL, NULL);
-	stc_atk = CreateWindowW(L"Static", L"Attack", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X, BS_CONS_Y + 50, BS_CONS_W, 25, hWnd,
-		0, NULL, NULL);
-	stc_def = CreateWindowW(L"Static", L"Defense", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X, BS_CONS_Y + 100, BS_CONS_W, 25, hWnd,
-		0, NULL, NULL);
-	stc_spd = CreateWindowW(L"Static", L"Speed", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X, BS_CONS_Y + 150, BS_CONS_W, 25, hWnd,
-		0, NULL, NULL);
-	stc_satk = CreateWindowW(L"Static", L"Special Atk", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X, BS_CONS_Y + 200, BS_CONS_W, 25, hWnd,
-		0, NULL, NULL);
-	stc_sdef = CreateWindowW(L"Static", L"Special Def", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X, BS_CONS_Y + 250, BS_CONS_W, 25, hWnd,
-		0, NULL, NULL);
-	stc_cr = CreateWindowW(L"Static", L"Capture Rate", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y, 100, 25, hWnd,
-		0, NULL, NULL);
-	stc_exp = CreateWindowW(L"Static", L"Base EXP", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 50, 100, 25, hWnd,
-		0, NULL, NULL);
-	stc_growth = CreateWindowW(L"Static", L"Growth Rate", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 100, 100, 25, hWnd,
-		0, NULL, NULL);
-	stc_gender = CreateWindowW(L"Static", L"Gender Ratio", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 150, 100, 25, hWnd,
-		0, NULL, NULL);
-	stc_hatch = CreateWindowW(L"Static", L"Steps to Hatch", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 200, 100, 25, hWnd,
-		0, NULL, NULL);
-	stc_size = CreateWindowW(L"Static", L"Sprite Size", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 250, 100, 25, hWnd,
-		0, NULL, NULL);
-	stc_item23 = CreateWindowW(L"Static", L"Hold Item 23%", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y, 150, 25, hWnd,
-		0, NULL, NULL);
-	stc_item2 = CreateWindowW(L"Static", L"Hold Item 2%", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 50, 150, 25, hWnd,
-		0, NULL, NULL);
-	stc_egg_1 = CreateWindowW(L"Static", L"Egg Group 1", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 100, 150, 25, hWnd,
-		0, NULL, NULL);
-	stc_egg_2 = CreateWindowW(L"Static", L"Egg Group 2", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 150, 150, 25, hWnd,
-		0, NULL, NULL);
-	stc_type_1 = CreateWindowW(L"Static", L"Type 1", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 200, 150, 25, hWnd,
-		0, NULL, NULL);
-	stc_type_2 = CreateWindowW(L"Static", L"Type 2", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 250, 150, 25, hWnd,
-		0, NULL, NULL);
-	stc_evo = CreateWindowW(L"Static", L"Evolution", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, EVO_CONS_X, EVO_CONS_Y, 150, 25, hWnd,
-		0, NULL, NULL);
+	CreateWindowW(L"Static", L"HP", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X, BS_CONS_Y, BS_CONS_W, 25, hWnd,
+		(HMENU)STC_STAT_HP, NULL, NULL);
+	CreateWindowW(L"Static", L"Attack", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X, BS_CONS_Y + 50, BS_CONS_W, 25, hWnd,
+		(HMENU)STC_STAT_ATK, NULL, NULL);
+	CreateWindowW(L"Static", L"Defense", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X, BS_CONS_Y + 100, BS_CONS_W, 25, hWnd,
+		(HMENU)STC_STAT_DEF, NULL, NULL);
+	CreateWindowW(L"Static", L"Speed", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X, BS_CONS_Y + 150, BS_CONS_W, 25, hWnd,
+		(HMENU)STC_STAT_SPD, NULL, NULL);
+	CreateWindowW(L"Static", L"Special Atk", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X, BS_CONS_Y + 200, BS_CONS_W, 25, hWnd,
+		(HMENU)STC_STAT_SATK, NULL, NULL);
+	CreateWindowW(L"Static", L"Special Def", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X, BS_CONS_Y + 250, BS_CONS_W, 25, hWnd,
+		(HMENU)STC_STAT_SDEF, NULL, NULL);
+	CreateWindowW(L"Static", L"Capture Rate", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y, 100, 25, hWnd,
+		(HMENU)STC_CATCH_RATE, NULL, NULL);
+	CreateWindowW(L"Static", L"Base EXP", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 50, 100, 25, hWnd,
+		(HMENU)STC_BASE_EXP, NULL, NULL);
+	CreateWindowW(L"Static", L"Growth Rate", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 100, 100, 25, hWnd,
+		(HMENU)STC_GROWTH_RATE, NULL, NULL);
+	CreateWindowW(L"Static", L"Gender Ratio", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 150, 100, 25, hWnd,
+		(HMENU)STC_GENDER_RATIO, NULL, NULL);
+	CreateWindowW(L"Static", L"Steps to Hatch", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 200, 100, 25, hWnd,
+		(HMENU)STC_HATCH_STEPS, NULL, NULL);
+	CreateWindowW(L"Static", L"Sprite Size", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 250, 100, 25, hWnd,
+		(HMENU)STC_SPRITE_SIZE, NULL, NULL);
+	CreateWindowW(L"Static", L"Hold Item 23%", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y, 150, 25, hWnd,
+		(HMENU)STC_ITEM_23, NULL, NULL);
+	CreateWindowW(L"Static", L"Hold Item 2%", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 50, 150, 25, hWnd,
+		(HMENU)STC_ITEM_2, NULL, NULL);
+	CreateWindowW(L"Static", L"Egg Group 1", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 100, 150, 25, hWnd,
+		(HMENU)STC_EGG_1, NULL, NULL);
+	CreateWindowW(L"Static", L"Egg Group 2", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 150, 150, 25, hWnd,
+		(HMENU)STC_EGG_2, NULL, NULL);
+	CreateWindowW(L"Static", L"Type 1", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 200, 150, 25, hWnd,
+		(HMENU)STC_TYPE_1, NULL, NULL);
+	CreateWindowW(L"Static", L"Type 2", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 250, 150, 25, hWnd,
+		(HMENU)STC_TYPE_2, NULL, NULL);
+	CreateWindowW(L"Static", L"Evolution", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, EVO_CONS_X, EVO_CONS_Y, 150, 25, hWnd,
+		(HMENU)STC_EVOLUTION, NULL, NULL);
 
-	cb_rom = AddRomCombo(hWnd, ROM_CONS_X, ROM_CONS_Y, 125, 100, CB_ROM);
-	cb_poke = AddPokemonCombo(hWnd, (desk_width / 2) - 75, 25, 170, 150, CB_POKEMON, 1);
-	cb_moves = AddMovesCombo(hWnd, LVL_CONS_X, LVL_CONS_Y + 25, 150, 175, CB_MOVES, 1);
-	cb_levels = AddLevelsCombo(hWnd, LVL_CONS_X, LVL_CONS_Y + 50, 150, 175, CB_LEVELS, 1);
-	cb_egg_moves = AddMovesCombo(hWnd, EGG_CONS_X, EGG_CONS_Y + 25, 150, 175, CB_EGG_MOVES, 1);
-	cb_tms = AddTMCombo(hWnd, TM_CONS_X, TM_CONS_Y + 25, 170, 175, CB_TMS);
-	cb_growth = AddGrowthCombo(hWnd, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 125, 100, 175, CB_GROWTH);
-	cb_gender = AddGenderCombo(hWnd, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 175, 100, 175, CB_GENDER);
-	cb_spr_size = AddSizeCombo(hWnd, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 275, 100, 175, CB_SPR_SIZE);
-	cb_item23 = AddItemsCombo(hWnd, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 25, 150, 175, CB_ITEM_23, 0);
-	cb_item2 = AddItemsCombo(hWnd, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 75, 150, 175, CB_ITEM_2, 0);
-	cb_egg_1 = AddEggGroupCombo(hWnd, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 125, 150, 175, CB_EGG_1);
-	cb_egg_2 = AddEggGroupCombo(hWnd, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 175, 150, 175, CB_EGG_2);
-	cb_type_1 = AddTypeCombo(hWnd, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 225, 150, 175, CB_TYPE_1);
-	cb_type_2 = AddTypeCombo(hWnd, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 275, 150, 175, CB_TYPE_2);
-	cb_evo_met = AddEvoMethodCombo(hWnd, EVO_CONS_X, EVO_CONS_Y + 25, 150, 175, CB_EVO_MET);
-	cb_evo_con = AddLevelsCombo(hWnd, EVO_CONS_X, EVO_CONS_Y + 75, 150, 175, CB_EVO_CON, 1);
-	cb_evo_pok = AddPokemonCombo(hWnd, EVO_CONS_X, EVO_CONS_Y + 100, 150, 175, CB_EVO_POK, 1);
-	cb_evo_stat = AddEvoStatCombo(hWnd, EVO_CONS_X, EVO_CONS_Y + 125, 150, 175, CB_EVO_STAT);
+	AddRomCombo(hWnd, ROM_CONS_X, ROM_CONS_Y, 125, 100, CB_ROM);
+	AddPokemonCombo(hWnd, (desk_width / 2) - 75, 25, 170, 150, CB_POKEMON, 1);
+	AddMovesCombo(hWnd, LVL_CONS_X, LVL_CONS_Y + 25, 150, 175, CB_MOVES, 1);
+	AddLevelsCombo(hWnd, LVL_CONS_X, LVL_CONS_Y + 50, 150, 175, CB_LEVELS, 1);
+	AddMovesCombo(hWnd, EGG_CONS_X, EGG_CONS_Y + 25, 150, 175, CB_EGG_MOVES, 1);
+	AddTMCombo(hWnd, TM_CONS_X, TM_CONS_Y + 25, 170, 175, CB_TMS);
+	AddGrowthCombo(hWnd, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 125, 100, 175, CB_GROWTH);
+	AddGenderCombo(hWnd, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 175, 100, 175, CB_GENDER);
+	AddSizeCombo(hWnd, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 275, 100, 175, CB_SPR_SIZE);
+	AddItemsCombo(hWnd, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 25, 150, 175, CB_ITEM_23, 0);
+	AddItemsCombo(hWnd, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 75, 150, 175, CB_ITEM_2, 0);
+	AddEggGroupCombo(hWnd, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 125, 150, 175, CB_EGG_1);
+	AddEggGroupCombo(hWnd, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 175, 150, 175, CB_EGG_2);
+	AddTypeCombo(hWnd, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 225, 150, 175, CB_TYPE_1);
+	AddTypeCombo(hWnd, BS_CONS_X + BS_CONS_W + 150, BS_CONS_Y + 275, 150, 175, CB_TYPE_2);
+	AddEvoMethodCombo(hWnd, EVO_CONS_X, EVO_CONS_Y + 25, 150, 175, CB_EVO_MET);
+	AddLevelsCombo(hWnd, EVO_CONS_X, EVO_CONS_Y + 75, 150, 175, CB_EVO_CON, 1);
+	AddPokemonCombo(hWnd, EVO_CONS_X, EVO_CONS_Y + 100, 150, 175, CB_EVO_POK, 1);
+	AddEvoStatCombo(hWnd, EVO_CONS_X, EVO_CONS_Y + 125, 150, 175, CB_EVO_STAT);
+	AddLevelsCombo(hWnd, RAND_CONS_X, RAND_CONS_Y, 50, 200, CB_MIN_LVL, 1);
+	AddLevelsCombo(hWnd, RAND_CONS_X, RAND_CONS_Y + 50, 50, 200, CB_MAX_LVL, 1);
 
-	btn_select = CreateWindow(L"Button", L"Select", WS_VISIBLE | WS_CHILD, (desk_width / 2) - 25, 50, 50, 25, hWnd, (HMENU)SELECT_BUTTON, NULL, NULL);
-	btn_rom = CreateWindow(L"Button", L"Select", WS_VISIBLE | WS_CHILD, ROM_CONS_X + 150, ROM_CONS_Y, 50, 25, hWnd, (HMENU)ROM_BUTTON, NULL, NULL);
-	btn_add_moves = CreateWindow(L"Button", L"Add", WS_VISIBLE | WS_CHILD, LVL_CONS_X + 12, LVL_CONS_Y + 375, 50, 25, hWnd, (HMENU)ADD_MOVE_BUTTON, NULL, NULL);
-	btn_del_moves = CreateWindow(L"Button", L"Delete", WS_VISIBLE | WS_CHILD, LVL_CONS_X + 88, LVL_CONS_Y + 375, 50, 25, hWnd, (HMENU)DEL_MOVE_BUTTON, NULL, NULL);
-	btn_add_egg = CreateWindow(L"Button", L"Add", WS_VISIBLE | WS_CHILD, EGG_CONS_X + 12, EGG_CONS_Y + 375, 50, 25, hWnd, (HMENU)ADD_EGG_BUTTON, NULL, NULL);
-	btn_del_egg = CreateWindow(L"Button", L"Delete", WS_VISIBLE | WS_CHILD, EGG_CONS_X + 88, EGG_CONS_Y + 375, 50, 25, hWnd, (HMENU)DEL_EGG_BUTTON, NULL, NULL);
-	btn_tog_tm = CreateWindow(L"Button", L"Toggle", WS_VISIBLE | WS_CHILD, TM_CONS_X + 50, TM_CONS_Y + 375, 50, 25, hWnd, (HMENU)TOGGLE_TM_BUTTON, NULL, NULL);
-	btn_upd_bs = CreateWindow(L"Button", L"Update", WS_VISIBLE | WS_CHILD, BS_CONS_X + 15, BS_CONS_Y + 375, 50, 25, hWnd, (HMENU)UPDATE_STATS_BUTTON, NULL, NULL);
-	btn_sel_evo = CreateWindow(L"Button", L"Select Method", WS_VISIBLE | WS_CHILD, EVO_CONS_X, EVO_CONS_Y + 50, 150, 25, hWnd, (HMENU)EVO_BUTTON, NULL, NULL);
-	btn_add_evo = CreateWindow(L"Button", L"Add", WS_VISIBLE | WS_CHILD, EVO_CONS_X, EVO_CONS_Y + 375, 50, 25, hWnd, (HMENU)ADD_EVO_BUTTON, NULL, NULL);
-	btn_del_evo = CreateWindow(L"Button", L"Delete", WS_VISIBLE | WS_CHILD, EVO_CONS_X + 75, EVO_CONS_Y + 375, 50, 25, hWnd, (HMENU)DEL_EVO_BUTTON, NULL, NULL);
+	CreateWindow(L"Button", L"Add", WS_VISIBLE | WS_CHILD, LVL_CONS_X + 12, LVL_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_ADD_MOVE, NULL, NULL);
+	CreateWindow(L"Button", L"Delete", WS_VISIBLE | WS_CHILD, LVL_CONS_X + 88, LVL_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_DEL_MOVE, NULL, NULL);
+	CreateWindow(L"Button", L"Change", WS_VISIBLE | WS_CHILD, LVL_CONS_X + 41, LVL_CONS_Y + 410, 60, 25, hWnd, (HMENU)BTN_CHNG_MOVE, NULL, NULL);
+	CreateWindow(L"Button", L"Add", WS_VISIBLE | WS_CHILD, EGG_CONS_X + 12, EGG_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_ADD_EGG, NULL, NULL);
+	CreateWindow(L"Button", L"Delete", WS_VISIBLE | WS_CHILD, EGG_CONS_X + 88, EGG_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_DEL_EGG, NULL, NULL);
+	CreateWindow(L"Button", L"Toggle", WS_VISIBLE | WS_CHILD, TM_CONS_X + 50, TM_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_TOGGLE_TM, NULL, NULL);
+	CreateWindow(L"Button", L"Update", WS_VISIBLE | WS_CHILD, BS_CONS_X + 15, BS_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_UPDATE_STATS, NULL, NULL);
+	CreateWindow(L"Button", L"Select Method", WS_VISIBLE | WS_CHILD, EVO_CONS_X, EVO_CONS_Y + 50, 150, 25, hWnd, (HMENU)BTN_EVO, NULL, NULL);
+	CreateWindow(L"Button", L"Add", WS_VISIBLE | WS_CHILD, EVO_CONS_X, EVO_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_ADD_EVO, NULL, NULL);
+	CreateWindow(L"Button", L"Delete", WS_VISIBLE | WS_CHILD, EVO_CONS_X + 75, EVO_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_DEL_EVO, NULL, NULL);
+	CreateWindow(L"Button", L"Synch", WS_VISIBLE | WS_CHILD, EVO_CONS_X + 75, ROM_CONS_Y, 50, 25, hWnd, (HMENU)BTN_SYNCH_POKE, NULL, NULL);
 
+	CreateCheckBox(hWnd, L"Rare", RAND_CONS_X + 100, RAND_CONS_Y, 100, 25, CHB_RARE);
+	CreateCheckBox(hWnd, L"Legend", RAND_CONS_X + 100, RAND_CONS_Y + 25, 100, 25, CHB_LEGEND);
+	CreateCheckBox(hWnd, L"Morning", RAND_CONS_X + 200, RAND_CONS_Y, 100, 25, CHB_MOR);
+	CreateCheckBox(hWnd, L"Day", RAND_CONS_X + 200, RAND_CONS_Y + 25, 100, 25, CHB_DAY);
+	CreateCheckBox(hWnd, L"Night", RAND_CONS_X + 200, RAND_CONS_Y + 50, 100, 25, CHB_NGT);
+	CreateCheckBox(hWnd, L"Shore", RAND_CONS_X + 300, RAND_CONS_Y, 100, 25, CHB_SHORE);
+	CreateCheckBox(hWnd, L"Salt Water", RAND_CONS_X + 300, RAND_CONS_Y + 25, 100, 25, CHB_SALT);
+	CreateCheckBox(hWnd, L"Fresh Water", RAND_CONS_X + 300, RAND_CONS_Y + 50, 100, 25, CHB_FRESH);
+	CreateCheckBox(hWnd, L"Field", RAND_CONS_X + 420, RAND_CONS_Y, 100, 25, CHB_FIELD);
+	CreateCheckBox(hWnd, L"Grasslands", RAND_CONS_X + 420, RAND_CONS_Y + 50, 100, 25, CHB_GRASSLANDS);
+	CreateCheckBox(hWnd, L"Forest", RAND_CONS_X + 420, RAND_CONS_Y + 25, 100, 25, CHB_FOREST);
+	CreateCheckBox(hWnd, L"Urban", RAND_CONS_X + 520, RAND_CONS_Y, 80, 25, CHB_URBAN);
+	CreateCheckBox(hWnd, L"Ruins", RAND_CONS_X + 520, RAND_CONS_Y + 25, 80, 25, CHB_RUINS);
+	CreateCheckBox(hWnd, L"Mountains", RAND_CONS_X + 600, RAND_CONS_Y, 100, 25, CHB_MOUNTAIN);
+	CreateCheckBox(hWnd, L"Cave", RAND_CONS_X + 600, RAND_CONS_Y + 25, 100, 25, CHB_CAVE);
+	CreateCheckBox(hWnd, L"Hot", RAND_CONS_X + 700, RAND_CONS_Y, 100, 25, CHB_HOT);
+	CreateCheckBox(hWnd, L"Cold", RAND_CONS_X + 700, RAND_CONS_Y + 25, 100, 25, CHB_COLD);
+	CreateCheckBox(hWnd, L"Electric", RAND_CONS_X + 700, RAND_CONS_Y + 50, 100, 25, CHB_ELECTRIC);
 
-	lb_level_up = CreateWindow(L"ListBox", L"Level", WS_VISIBLE | WS_CHILD | WS_BORDER, LVL_CONS_X, LVL_CONS_Y + 75, 30, 300, hWnd, (HMENU)LB_LEVEL, NULL, NULL);
-	lb_level_move = CreateWindow(L"ListBox", L"Moves", WS_VISIBLE | WS_CHILD | WS_BORDER, LVL_CONS_X + 30, LVL_CONS_Y + 75, 120, 300, hWnd, (HMENU)LB_MOVES, NULL, NULL);
-	lb_egg_move = CreateWindow(L"ListBox", L"Egg Moves", WS_VISIBLE | WS_CHILD | WS_BORDER, EGG_CONS_X, EGG_CONS_Y + 75, 150, 300, hWnd, (HMENU)LB_EGG_MOVES, NULL, NULL);
-	lb_tm = CreateWindow(L"ListBox", L"TMs", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, TM_CONS_X, TM_CONS_Y + 75, 170, 300, hWnd, (HMENU)LB_TMS, NULL, NULL);
-	lb_evo = CreateWindow(L"ListBox", L"Evolution", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, EVO_CONS_X, EVO_CONS_Y + 150, 150, 225, hWnd, (HMENU)LB_EVO, NULL, NULL);
+	CreateWindow(L"ListBox", L"Level", WS_VISIBLE | WS_CHILD | WS_BORDER, LVL_CONS_X, LVL_CONS_Y + 75, 150, 300, hWnd, (HMENU)LB_LEVEL, NULL, NULL);
+	//CreateWindow(L"ListBox", L"Moves", WS_VISIBLE | WS_CHILD | WS_BORDER, LVL_CONS_X + 30, LVL_CONS_Y + 75, 120, 300, hWnd, (HMENU)LB_MOVES, NULL, NULL);
+	CreateWindow(L"ListBox", L"Egg Moves", WS_VISIBLE | WS_CHILD | WS_BORDER, EGG_CONS_X, EGG_CONS_Y + 75, 150, 300, hWnd, (HMENU)LB_EGG_MOVES, NULL, NULL);
+	CreateWindow(L"ListBox", L"TMs", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, TM_CONS_X, TM_CONS_Y + 75, 170, 300, hWnd, (HMENU)LB_TMS, NULL, NULL);
+	CreateWindow(L"ListBox", L"Evolution", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, EVO_CONS_X, EVO_CONS_Y + 150, 150, 225, hWnd, (HMENU)LB_EVO, NULL, NULL);
 
-	eb_hp = CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X, BS_CONS_Y + 25, BS_CONS_W, 20, hWnd, (HMENU)EB_STAT_HP, NULL, NULL);
-	eb_atk = CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X, BS_CONS_Y + 75, BS_CONS_W, 20, hWnd, (HMENU)EB_STAT_ATK, NULL, NULL);
-	eb_def = CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X, BS_CONS_Y + 125, BS_CONS_W, 20, hWnd, (HMENU)EB_STAT_DEF, NULL, NULL);
-	eb_spd = CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X, BS_CONS_Y + 175, BS_CONS_W, 20, hWnd, (HMENU)EB_STAT_SPD, NULL, NULL);
-	eb_satk = CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X, BS_CONS_Y + 225, BS_CONS_W, 20, hWnd, (HMENU)EB_STAT_SATK, NULL, NULL);
-	eb_sdef = CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X, BS_CONS_Y + 275, BS_CONS_W, 20, hWnd, (HMENU)EB_STAT_SDEF, NULL, NULL);
-	eb_cap_rate = CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 25, 100, 20, hWnd, (HMENU)EB_CR, NULL, NULL);
-	eb_base_exp = CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 75, 100, 20, hWnd, (HMENU)EB_BASE_EXP, NULL, NULL);
-	eb_hatch = CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 225, 100, 20, hWnd, (HMENU)EB_HATCH_STEP, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X, BS_CONS_Y + 25, BS_CONS_W, 20, hWnd, (HMENU)EB_STAT_HP, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X, BS_CONS_Y + 75, BS_CONS_W, 20, hWnd, (HMENU)EB_STAT_ATK, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X, BS_CONS_Y + 125, BS_CONS_W, 20, hWnd, (HMENU)EB_STAT_DEF, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X, BS_CONS_Y + 175, BS_CONS_W, 20, hWnd, (HMENU)EB_STAT_SPD, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X, BS_CONS_Y + 225, BS_CONS_W, 20, hWnd, (HMENU)EB_STAT_SATK, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X, BS_CONS_Y + 275, BS_CONS_W, 20, hWnd, (HMENU)EB_STAT_SDEF, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 25, 100, 20, hWnd, (HMENU)EB_CR, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 75, 100, 20, hWnd, (HMENU)EB_BASE_EXP, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 225, 100, 20, hWnd, (HMENU)EB_HATCH_STEP, NULL, NULL);
 
-	TogglePokemonEnables(false);
-	EnableWindow(cb_evo_con, false);
-	EnableWindow(cb_evo_pok, false);
-	EnableWindow(cb_evo_stat, false);
+	TogglePokemonEnables(false, hWnd);
+	EnableWindow(GetDlgItem(hWnd, CB_EVO_CON), false);
+	EnableWindow(GetDlgItem(hWnd, CB_EVO_POK), false);
+	EnableWindow(GetDlgItem(hWnd, CB_EVO_STAT), false);
 }
 
 void AddTrainerControls(HWND hWnd) {
@@ -539,6 +575,20 @@ void AddTrainerControls(HWND hWnd) {
 		(HMENU)STC_TRAINER_CODE, NULL, NULL);
 	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X - BS_CONS_W - 100, 50, 50, 25, hWnd,
 		(HMENU)STC_TRAINER_TYPE, NULL, NULL);
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_1_CONS_X, TRA_CONS_Y + 300, 170 , 25, hWnd,
+		(HMENU)STC_POKE_EXP1, NULL, NULL);
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_2_CONS_X, TRA_CONS_Y + 300, 170, 25, hWnd,
+		(HMENU)STC_POKE_EXP2, NULL, NULL);
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_3_CONS_X, TRA_CONS_Y + 300, 170, 25, hWnd,
+		(HMENU)STC_POKE_EXP3, NULL, NULL);
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_4_CONS_X, TRA_CONS_Y + 300, 170, 25, hWnd,
+		(HMENU)STC_POKE_EXP4, NULL, NULL);
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_5_CONS_X, TRA_CONS_Y + 300, 170, 25, hWnd,
+		(HMENU)STC_POKE_EXP5, NULL, NULL);
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_6_CONS_X, TRA_CONS_Y + 300, 170, 25, hWnd,
+		(HMENU)STC_POKE_EXP6, NULL, NULL);
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_2_CONS_X, TRA_CONS_Y + 400, 170, 25, hWnd,
+		(HMENU)STC_EXP_TOTAL, NULL, NULL);
 
 	AddPokemonCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y, 170, 150, CB_TRA_POKE1, 0);
 	AddPokemonCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y, 170, 150, CB_TRA_POKE2, 0);
@@ -599,40 +649,137 @@ void AddTrainerControls(HWND hWnd) {
 	ToggleTrainerTab(false, hWnd);
 }
 
+void AddEncounterControls(HWND hWnd) {
+	CreateWindowEx(0, WC_TREEVIEW, L"Tree", WS_VISIBLE | WS_CHILD | WS_BORDER | TVS_HASLINES, 20, 50, 150, 500, hWnd, (HMENU)TV_ENCOUNTERS, 0, 0);
+
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X - BS_CONS_W - 50, 50, 50, 25, hWnd,
+		(HMENU)STC_ENCOUNTER_INDEX, NULL, NULL);
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X - BS_CONS_W - 100, 50, 50, 25, hWnd,
+		(HMENU)STC_ENCOUNTER_MAP, NULL, NULL);
+
+	for (int i = 0; i < 3; i++) {
+		AddNumberCombo(hWnd, ENC_CONS_X + 150 + (i*230), ENC_CONS_Y - 50, LVL_COMBO_WIDTH, 150, CB_MOR_RATE + i, 256);
+	}
+
+	for (int i = 0; i < 3; i++) {
+		CreateWindowW(L"Static", L"60%", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, ENC_CONS_X + 750,
+			ENC_CONS_Y + (i * 30), 50, 25, hWnd, (HMENU)(STC_ENC_60 + i), NULL, NULL);
+
+		AddLevelsCombo(hWnd, ENC_CONS_X + 820, ENC_CONS_Y + (i * 30), LVL_COMBO_WIDTH, 150, CB_SURF_LVL_1 + i, 1);
+		AddPokemonCombo(hWnd, ENC_CONS_X + 900, ENC_CONS_Y + (i * 30), POKE_COMBO_WIDTH, 150, CB_SURF_POKE_1 + i, 1);
+	}
+
+	SetDlgItemText(hWnd, STC_ENC_32, L"30%");
+	SetDlgItemText(hWnd, STC_ENC_11, L"10%");
+
+	for (int i = 0; i < 7; i++) {
+		CreateWindowW(L"Static", L"30%", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, ENC_CONS_X, 
+			ENC_CONS_Y + (i*30), 50, 25, hWnd, (HMENU)(STC_ENC_30 + i), NULL, NULL);
+		
+		AddLevelsCombo(hWnd, ENC_CONS_X + 70, ENC_CONS_Y + (i*30), LVL_COMBO_WIDTH, 150, CB_MOR_LVL_1 + i, 1);
+		AddPokemonCombo(hWnd, ENC_CONS_X + 150, ENC_CONS_Y + (i*30), POKE_COMBO_WIDTH, 150, CB_MOR_POKE_1 + i, 1);
+		
+		AddLevelsCombo(hWnd, ENC_CONS_X + 300, ENC_CONS_Y + (i*30), LVL_COMBO_WIDTH, 150, CB_DAY_LVL_1 + i, 1);
+		AddPokemonCombo(hWnd, ENC_CONS_X + 380, ENC_CONS_Y + (i*30), POKE_COMBO_WIDTH, 150, CB_DAY_POKE_1 + i, 1);
+		
+		AddLevelsCombo(hWnd, ENC_CONS_X + 530, ENC_CONS_Y + (i*30), LVL_COMBO_WIDTH, 150, CB_NGT_LVL_1 + i, 1);
+		AddPokemonCombo(hWnd, ENC_CONS_X + 610, ENC_CONS_Y + (i*30), POKE_COMBO_WIDTH, 150, CB_NGT_POKE_1 + i, 1);
+	}
+
+	CreateWindow(L"Button", L"Update", WS_VISIBLE | WS_CHILD, (desk_width / 2) - 25, 50, 50, 25, hWnd, (HMENU)BTN_UPDATE_ENCOUNTER, NULL, NULL);
+	CreateWindow(L"Button", L"Randomize", WS_VISIBLE | WS_CHILD, (desk_width / 2) + 50, 50, 80, 25, hWnd, (HMENU)BTN_RAND_ENCOUNTER, NULL, NULL);
+
+	AddNumberCombo(hWnd, ENC_CONS_X + 880, ENC_CONS_Y - 50, LVL_COMBO_WIDTH, 150, CB_SURF_RATE, 256);
+
+	SetDlgItemText(hWnd, STC_ENC_20, L"20%");
+	SetDlgItemText(hWnd, STC_ENC_10, L"10%");
+	SetDlgItemText(hWnd, STC_ENC_5, L"5%");
+	SetDlgItemText(hWnd, STC_ENC_4, L"4%");
+	SetDlgItemText(hWnd, STC_ENC_1, L"1%");
+
+	ToggleEncountersTab(false, hWnd);
+}
+
 void SelectRom(HWND hWnd) {
 	int cur_sel = (int)SendMessage(hWnd, CB_GETCURSEL, 0, 0);
 
 	switch (cur_sel) {
 	case 0: {
-		level_up_table = GS_TABLE_DATA;
-		egg_table = GS_EGG_TABLE;
-		base_stats_address = GS_BASE_STATS;
-		trainer_table_address = GS_TRAINER_TABLE;
-		trainer_class_address = GS_TRAINER_TYPES;
+		SetAddress(ADD_LEVEL_TABLE, GS_LEVEL_TABLE);
+		SetAddress(ADD_EGG_TABLE, GS_EGG_TABLE);
+		SetAddress(ADD_BASE_STATS, GS_BASE_STATS);
+		SetAddress(ADD_TRAINER_TABLE, GS_TRAINER_TABLE);
+		SetAddress(ADD_TRAINER_CLASSES, GS_TRAINER_TYPES);
+		SetAddress(ADD_MAP_HEADER_TABLE, GS_MAP_TABLE);
+		SetAddress(ADD_MAP_NAME_TABLE, GS_LOCATION_NAME_TABLE);
+
+		SetAddress(ADD_JOHTO_GRASS, GS_JOHTO_GRASS);
+		SetAddress(ADD_KANTO_GRASS, GS_KANTO_GRASS);
+		SetAddress(ADD_JOHTO_SURF, GS_JOHTO_SURF);
+		SetAddress(ADD_KANTO_SURF, GS_KANTO_SURF);
+		SetAddress(ADD_SWARM_GRASS, GS_SWARM_GRASS);
+		SetAddress(ADD_SWARM_SURF, GS_SWARM_SURF);
 		break;
 	}
 	case 1: {
-		level_up_table = C_TABLE_DATA;
-		egg_table = C_EGG_TABLE;
-		base_stats_address = C_BASE_STATS;
-		trainer_table_address = C_TRAINER_TABLE;
-		trainer_class_address = C_TRAINER_TYPES;
+		SetAddress(ADD_LEVEL_TABLE, C_LEVEL_TABLE);
+		SetAddress(ADD_EGG_TABLE, C_EGG_TABLE);
+		SetAddress(ADD_BASE_STATS, C_BASE_STATS);
+		SetAddress(ADD_TRAINER_TABLE, C_TRAINER_TABLE);
+		SetAddress(ADD_TRAINER_CLASSES, C_TRAINER_TYPES);
+		SetAddress(ADD_MAP_HEADER_TABLE, C_MAP_TABLE);
+		SetAddress(ADD_MAP_NAME_TABLE, C_LOCATION_NAME_TABLE);
+
+		SetAddress(ADD_JOHTO_GRASS, C_JOHTO_GRASS);
+		SetAddress(ADD_KANTO_GRASS, C_KANTO_GRASS);
+		SetAddress(ADD_JOHTO_SURF, C_JOHTO_SURF);
+		SetAddress(ADD_KANTO_SURF, C_KANTO_SURF);
+		SetAddress(ADD_SWARM_GRASS, C_SWARM_GRASS);
+		SetAddress(ADD_SWARM_SURF, C_SWARM_SURF);
 		break;
 	}
 	case 2: {
-		level_up_table = GS_TABLE_DATA;
-		egg_table = GS_EGG_TABLE;
-		base_stats_address = GS_BASE_STATS;
-		trainer_table_address = GS_TRAINER_TABLE;
-		trainer_class_address = GS_TRAINER_TYPES;
+		SetAddress(ADD_LEVEL_TABLE, GS_JP_LEVEL_TABLE);
+		SetAddress(ADD_EGG_TABLE, GS_JP_EGG_TABLE);
+		SetAddress(ADD_BASE_STATS, GS_JP_BASE_STATS);
+		SetAddress(ADD_TRAINER_TABLE, GS_JP_TRAINER_TABLE);
+		SetAddress(ADD_TRAINER_CLASSES, GS_JP_TRAINER_TYPES);
+		SetAddress(ADD_MAP_HEADER_TABLE, GS_JP_MAP_TABLE);
+		SetAddress(ADD_MAP_NAME_TABLE, GS_JP_LOCATION_NAME_TABLE);
+
+		SetAddress(ADD_JOHTO_GRASS, GS_JP_JOHTO_GRASS);
+		SetAddress(ADD_KANTO_GRASS, GS_JP_KANTO_GRASS);
+		SetAddress(ADD_JOHTO_SURF, GS_JP_JOHTO_SURF);
+		SetAddress(ADD_KANTO_SURF, GS_JP_KANTO_SURF);
+		SetAddress(ADD_SWARM_GRASS, GS_JP_SWARM_GRASS);
+		SetAddress(ADD_SWARM_SURF, GS_JP_SWARM_SURF);
+	}
+		break;
+	case 3: {
+		SetAddress(ADD_LEVEL_TABLE, C_JP_LEVEL_TABLE);
+		SetAddress(ADD_EGG_TABLE, C_JP_EGG_TABLE);
+		SetAddress(ADD_BASE_STATS, C_JP_BASE_STATS);
+		SetAddress(ADD_TRAINER_TABLE, C_JP_TRAINER_TABLE);
+		SetAddress(ADD_TRAINER_CLASSES, C_JP_TRAINER_TYPES);
+		SetAddress(ADD_MAP_HEADER_TABLE, C_JP_MAP_TABLE);
+		SetAddress(ADD_MAP_NAME_TABLE, C_JP_LOCATION_NAME_TABLE);
+
+		SetAddress(ADD_JOHTO_GRASS, C_JP_JOHTO_GRASS);
+		SetAddress(ADD_KANTO_GRASS, C_JP_KANTO_GRASS);
+		SetAddress(ADD_JOHTO_SURF, C_JP_JOHTO_SURF);
+		SetAddress(ADD_KANTO_SURF, C_JP_KANTO_SURF);
+		SetAddress(ADD_SWARM_GRASS, C_JP_SWARM_GRASS);
+		SetAddress(ADD_SWARM_SURF, C_JP_SWARM_SURF);
 		break;
 	}
 	default:
-		level_up_table = GS_TABLE_DATA;
-		egg_table = GS_EGG_TABLE;
-		base_stats_address = GS_BASE_STATS;
-		trainer_table_address = GS_TRAINER_TABLE;
-		trainer_class_address = GS_TRAINER_TYPES;
+		SetAddress(ADD_LEVEL_TABLE, GS_LEVEL_TABLE);
+		SetAddress(ADD_EGG_TABLE, GS_EGG_TABLE);
+		SetAddress(ADD_BASE_STATS, GS_BASE_STATS);
+		SetAddress(ADD_TRAINER_TABLE, GS_TRAINER_TABLE);
+		SetAddress(ADD_TRAINER_CLASSES, GS_TRAINER_TYPES);
+		SetAddress(ADD_MAP_HEADER_TABLE, GS_MAP_TABLE);
+		SetAddress(ADD_MAP_NAME_TABLE, GS_LOCATION_NAME_TABLE);
 		break;
 	}
 
@@ -679,112 +826,162 @@ void SaveFile(HWND hWnd) {
 	GetSaveFileName(&ofn);
 
 	if (ofn.lpstrFile[0] != '\0') {
-		SaveData(ofn.lpstrFile, rom);
+		SaveData(rom, ofn.lpstrFile);
 		MessageBox(NULL, ofn.lpstrFile, L"", MB_OK);
 	}
 }
 
-void TogglePokemonEnables(bool update) {
-	EnableWindow(cb_poke, update);
-	EnableWindow(cb_moves, update);
-	EnableWindow(cb_levels, update);
-	EnableWindow(cb_egg_moves, update);
-	EnableWindow(cb_tms, update);
-	EnableWindow(cb_item23, update);
-	EnableWindow(cb_item2, update);
-	EnableWindow(cb_type_1, update);
-	EnableWindow(cb_type_2, update);
-	EnableWindow(cb_egg_1, update);
-	EnableWindow(cb_egg_2, update);
-	EnableWindow(cb_gender, update);
-	EnableWindow(cb_growth, update);
-	EnableWindow(cb_spr_size, update);
-	EnableWindow(cb_evo_met, update);
+void SaveRandomOptions(HWND hWnd) {
+	static unsigned int values[20];
 
-	//EnableWindow(btn_rom, update);
-	EnableWindow(btn_select, update);
-	EnableWindow(btn_add_moves, update);
-	EnableWindow(btn_del_moves, update);
-	EnableWindow(btn_add_egg, update);
-	EnableWindow(btn_del_egg, update);
-	EnableWindow(btn_tog_tm, update);
-	EnableWindow(btn_upd_bs, update);
-	EnableWindow(btn_sel_evo, update);
-	EnableWindow(btn_add_evo, update);
-	EnableWindow(btn_del_evo, update);
+	unsigned int temp;
+	int n;
+
+	for (int i = 0; i < 18; i++) {
+		temp = SendMessage(GetDlgItem(hWnd, CHB_RARE + i), BM_GETCHECK, NULL, NULL);
+		if (values[i] != 0) {
+			SendMessage(GetDlgItem(hWnd, CHB_RARE + i), BM_SETCHECK, values[i], NULL);
+		}
+		else SendMessage(GetDlgItem(hWnd, CHB_RARE + i), BM_SETCHECK, BST_UNCHECKED, NULL);
+		values[i] = temp;
+	}
+
+	for (int i = 0; i < 2; i++) {
+		temp = SendMessage(GetDlgItem(hWnd, CB_MIN_LVL + i), CB_GETCURSEL, NULL, NULL);
+		if (values[i + 18] != 0) {
+			SendMessage(GetDlgItem(hWnd, CB_MIN_LVL + i), CB_SETCURSEL, values[i + 18], NULL);
+		}
+		else SendMessage(GetDlgItem(hWnd, CB_MIN_LVL + i), CB_SETCURSEL, -1, NULL);
+		values[i + 18] = temp;
+	}
 }
 
-void TogglePokemonTab(bool update) {
-	ShowWindow(cb_poke, update);
-	ShowWindow(cb_moves, update);
-	ShowWindow(cb_levels, update);
-	ShowWindow(cb_egg_moves, update);
-	ShowWindow(cb_tms, update);
-	ShowWindow(cb_item23, update);
-	ShowWindow(cb_item2, update);
-	ShowWindow(cb_type_1, update);
-	ShowWindow(cb_type_2, update);
-	ShowWindow(cb_egg_1, update);
-	ShowWindow(cb_egg_2, update);
-	ShowWindow(cb_gender, update);
-	ShowWindow(cb_growth, update);
-	ShowWindow(cb_spr_size, update);
-	ShowWindow(cb_evo_met, update);
-	ShowWindow(cb_evo_con, update);
-	ShowWindow(cb_evo_pok, update);
-	ShowWindow(cb_evo_stat, update);
+void TogglePokemonEnables(bool update, HWND hWnd) {
+	EnableWindow(GetDlgItem(hWnd, CB_POKEMON), update);
+	EnableWindow(GetDlgItem(hWnd, CB_MOVES), update);
+	EnableWindow(GetDlgItem(hWnd, CB_LEVELS), update);
+	EnableWindow(GetDlgItem(hWnd, CB_EGG_MOVES), update);
+	EnableWindow(GetDlgItem(hWnd, CB_TMS), update);
+	EnableWindow(GetDlgItem(hWnd, CB_ITEM_23), update);
+	EnableWindow(GetDlgItem(hWnd, CB_ITEM_2), update);
+	EnableWindow(GetDlgItem(hWnd, CB_TYPE_1), update);
+	EnableWindow(GetDlgItem(hWnd, CB_TYPE_2), update);
+	EnableWindow(GetDlgItem(hWnd, CB_EGG_1), update);
+	EnableWindow(GetDlgItem(hWnd, CB_EGG_2), update);
+	EnableWindow(GetDlgItem(hWnd, CB_GENDER), update);
+	EnableWindow(GetDlgItem(hWnd, CB_GROWTH), update);
+	EnableWindow(GetDlgItem(hWnd, CB_SPR_SIZE), update);
+	EnableWindow(GetDlgItem(hWnd, CB_EVO_MET), update);
 
-	ShowWindow(btn_rom, update);
-	ShowWindow(btn_select, update);
-	ShowWindow(btn_add_moves, update);
-	ShowWindow(btn_del_moves, update);
-	ShowWindow(btn_add_egg, update);
-	ShowWindow(btn_del_egg, update);
-	ShowWindow(btn_tog_tm, update);
-	ShowWindow(btn_upd_bs, update);
-	ShowWindow(btn_sel_evo, update);
-	ShowWindow(btn_add_evo, update);
-	ShowWindow(btn_del_evo, update);
+	EnableWindow(GetDlgItem(hWnd, BTN_ADD_MOVE), update);
+	EnableWindow(GetDlgItem(hWnd, BTN_DEL_MOVE), update);
+	EnableWindow(GetDlgItem(hWnd, BTN_CHNG_MOVE), update);
+	EnableWindow(GetDlgItem(hWnd, BTN_ADD_EGG), update);
+	EnableWindow(GetDlgItem(hWnd, BTN_DEL_EGG), update);
+	EnableWindow(GetDlgItem(hWnd, BTN_TOGGLE_TM), update);
+	EnableWindow(GetDlgItem(hWnd, BTN_UPDATE_STATS), update);
+	EnableWindow(GetDlgItem(hWnd, BTN_EVO), update);
+	EnableWindow(GetDlgItem(hWnd, BTN_ADD_EVO), update);
+	EnableWindow(GetDlgItem(hWnd, BTN_DEL_EVO), update);
+}
 
-	ShowWindow(eb_hp, update);
-	ShowWindow(eb_atk, update);
-	ShowWindow(eb_def, update);
-	ShowWindow(eb_spd, update);
-	ShowWindow(eb_satk, update);
-	ShowWindow(eb_sdef, update);
-	ShowWindow(eb_cap_rate, update);
-	ShowWindow(eb_base_exp, update);
-	ShowWindow(eb_hatch, update);
+void ToggleRandomElements(bool update, HWND hWnd) {
+	ShowWindow(GetDlgItem(hWnd, CHB_RARE), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_LEGEND), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_MOR), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_DAY), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_NGT), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_HOT), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_COLD), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_ELECTRIC), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_GRASSLANDS), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_FOREST), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_FIELD), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_MOUNTAIN), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_CAVE), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_URBAN), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_RUINS), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_SHORE), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_SALT), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_FRESH), update);
 
-	ShowWindow(stc_level_up, update);
-	ShowWindow(stc_egg_move, update);
-	ShowWindow(stc_tms, update);
-	ShowWindow(stc_hp, update);
-	ShowWindow(stc_atk, update);
-	ShowWindow(stc_def, update);
-	ShowWindow(stc_spd, update);
-	ShowWindow(stc_satk, update);
-	ShowWindow(stc_sdef, update);
-	ShowWindow(stc_cr, update);
-	ShowWindow(stc_exp, update);
-	ShowWindow(stc_growth, update);
-	ShowWindow(stc_gender, update);
-	ShowWindow(stc_hatch, update);
-	ShowWindow(stc_size, update);
-	ShowWindow(stc_item23, update);
-	ShowWindow(stc_item2, update);
-	ShowWindow(stc_egg_1, update);
-	ShowWindow(stc_egg_2, update);
-	ShowWindow(stc_type_1, update);
-	ShowWindow(stc_type_2, update);
-	ShowWindow(stc_evo, update);
-	//ShowWindow(GetDlgItem(hWnd, ))
+	ShowWindow(GetDlgItem(hWnd, CB_MIN_LVL), update);
+	ShowWindow(GetDlgItem(hWnd, CB_MAX_LVL), update);
 
-	ShowWindow(lb_level_up, update);
-	ShowWindow(lb_level_move, update);
-	ShowWindow(lb_egg_move , update);
-	ShowWindow(lb_tm, update);
-	ShowWindow(lb_evo, update);
+	SaveRandomOptions(hWnd);
+}
+
+void TogglePokemonTab(bool update, HWND hWnd) {
+	ShowWindow(GetDlgItem(hWnd, CB_POKEMON), update);
+	ShowWindow(GetDlgItem(hWnd, CB_MOVES), update);
+	ShowWindow(GetDlgItem(hWnd, CB_LEVELS), update);
+	ShowWindow(GetDlgItem(hWnd, CB_EGG_MOVES), update);
+	ShowWindow(GetDlgItem(hWnd, CB_TMS), update);
+	ShowWindow(GetDlgItem(hWnd, CB_ITEM_23), update);
+	ShowWindow(GetDlgItem(hWnd, CB_ITEM_2), update);
+	ShowWindow(GetDlgItem(hWnd, CB_TYPE_1), update);
+	ShowWindow(GetDlgItem(hWnd, CB_TYPE_2), update);
+	ShowWindow(GetDlgItem(hWnd, CB_EGG_1), update);
+	ShowWindow(GetDlgItem(hWnd, CB_EGG_2), update);
+	ShowWindow(GetDlgItem(hWnd, CB_GENDER), update);
+	ShowWindow(GetDlgItem(hWnd, CB_GROWTH), update);
+	ShowWindow(GetDlgItem(hWnd, CB_SPR_SIZE), update);
+	ShowWindow(GetDlgItem(hWnd, CB_EVO_MET), update);
+	ShowWindow(GetDlgItem(hWnd, CB_EVO_CON), update);
+	ShowWindow(GetDlgItem(hWnd, CB_EVO_POK), update);
+	ShowWindow(GetDlgItem(hWnd, CB_EVO_STAT), update);
+
+	ShowWindow(GetDlgItem(hWnd, BTN_ROM), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_ADD_MOVE), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_DEL_MOVE), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_CHNG_MOVE), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_ADD_EGG), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_DEL_EGG), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_TOGGLE_TM), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_UPDATE_STATS), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_EVO), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_ADD_EVO), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_DEL_EVO), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_SYNCH_POKE), update);
+
+	ShowWindow(GetDlgItem(hWnd, EB_STAT_HP), update);
+	ShowWindow(GetDlgItem(hWnd, EB_STAT_ATK), update);
+	ShowWindow(GetDlgItem(hWnd, EB_STAT_DEF), update);
+	ShowWindow(GetDlgItem(hWnd, EB_STAT_SPD), update);
+	ShowWindow(GetDlgItem(hWnd, EB_STAT_SATK), update);
+	ShowWindow(GetDlgItem(hWnd, EB_STAT_SDEF), update);
+	ShowWindow(GetDlgItem(hWnd, EB_CR), update);
+	ShowWindow(GetDlgItem(hWnd, EB_BASE_EXP), update);
+	ShowWindow(GetDlgItem(hWnd, EB_HATCH_STEP), update);
+
+	ShowWindow(GetDlgItem(hWnd, STC_MOVE_LEVEL), update);
+	ShowWindow(GetDlgItem(hWnd, STC_MOVE_EGG), update);
+	ShowWindow(GetDlgItem(hWnd, STC_MOVE_TM), update);
+	ShowWindow(GetDlgItem(hWnd, STC_STAT_HP), update);
+	ShowWindow(GetDlgItem(hWnd, STC_STAT_ATK), update);
+	ShowWindow(GetDlgItem(hWnd, STC_STAT_DEF), update);
+	ShowWindow(GetDlgItem(hWnd, STC_STAT_SPD), update);
+	ShowWindow(GetDlgItem(hWnd, STC_STAT_SATK), update);
+	ShowWindow(GetDlgItem(hWnd, STC_STAT_SDEF), update);
+	ShowWindow(GetDlgItem(hWnd, STC_CATCH_RATE), update);
+	ShowWindow(GetDlgItem(hWnd, STC_BASE_EXP), update);
+	ShowWindow(GetDlgItem(hWnd, STC_GROWTH_RATE), update);
+	ShowWindow(GetDlgItem(hWnd, STC_GENDER_RATIO), update);
+	ShowWindow(GetDlgItem(hWnd, STC_HATCH_STEPS), update);
+	ShowWindow(GetDlgItem(hWnd, STC_SPRITE_SIZE), update);
+	ShowWindow(GetDlgItem(hWnd, STC_ITEM_23), update);
+	ShowWindow(GetDlgItem(hWnd, STC_ITEM_2), update);
+	ShowWindow(GetDlgItem(hWnd, STC_EGG_1), update);
+	ShowWindow(GetDlgItem(hWnd, STC_EGG_2), update);
+	ShowWindow(GetDlgItem(hWnd, STC_TYPE_1), update);
+	ShowWindow(GetDlgItem(hWnd, STC_TYPE_2), update);
+	ShowWindow(GetDlgItem(hWnd, STC_EVOLUTION), update);
+
+	ShowWindow(GetDlgItem(hWnd, LB_LEVEL), update);
+	ShowWindow(GetDlgItem(hWnd, LB_MOVES), update);
+	ShowWindow(GetDlgItem(hWnd, LB_EGG_MOVES), update);
+	ShowWindow(GetDlgItem(hWnd, LB_TMS), update);
+	ShowWindow(GetDlgItem(hWnd, LB_EVO), update);
 }
 
 void ToggleTrainerTab(bool update, HWND hWnd) {
@@ -792,6 +989,13 @@ void ToggleTrainerTab(bool update, HWND hWnd) {
 
 	ShowWindow(GetDlgItem(hWnd, STC_TRAINER_CODE), update);
 	ShowWindow(GetDlgItem(hWnd, STC_TRAINER_TYPE), update);
+	ShowWindow(GetDlgItem(hWnd, STC_POKE_EXP1), update);
+	ShowWindow(GetDlgItem(hWnd, STC_POKE_EXP2), update);
+	ShowWindow(GetDlgItem(hWnd, STC_POKE_EXP3), update);
+	ShowWindow(GetDlgItem(hWnd, STC_POKE_EXP4), update);
+	ShowWindow(GetDlgItem(hWnd, STC_POKE_EXP5), update);
+	ShowWindow(GetDlgItem(hWnd, STC_POKE_EXP6), update);
+	ShowWindow(GetDlgItem(hWnd, STC_EXP_TOTAL), update);
 
 	ShowWindow(GetDlgItem(hWnd, EB_TRAINER_NAME), update);
 
@@ -843,6 +1047,42 @@ void ToggleTrainerTab(bool update, HWND hWnd) {
 	ShowWindow(GetDlgItem(hWnd, BTN_ADD_TRAINER), update);
 }
 
+void ToggleEncountersTab(bool update, HWND hWnd) {
+	ShowWindow(GetDlgItem(hWnd, TV_ENCOUNTERS), update);
+
+	ShowWindow(GetDlgItem(hWnd, CB_MOR_RATE), update);
+	ShowWindow(GetDlgItem(hWnd, CB_DAY_RATE), update);
+	ShowWindow(GetDlgItem(hWnd, CB_NGT_RATE), update);
+
+	ShowWindow(GetDlgItem(hWnd, CB_SURF_RATE), update);
+
+	for (int i = 0; i < 7; i++) {
+		ShowWindow(GetDlgItem(hWnd, CB_MOR_LVL_1 + i), update);
+		ShowWindow(GetDlgItem(hWnd, CB_MOR_POKE_1 + i), update);
+
+		ShowWindow(GetDlgItem(hWnd, CB_DAY_LVL_1 + i), update);
+		ShowWindow(GetDlgItem(hWnd, CB_DAY_POKE_1 + i), update);
+
+		ShowWindow(GetDlgItem(hWnd, CB_NGT_LVL_1 + i), update);
+		ShowWindow(GetDlgItem(hWnd, CB_NGT_POKE_1 + i), update);
+
+		ShowWindow(GetDlgItem(hWnd, STC_ENC_30 + i), update);
+	}
+
+	for (int i = 0; i < 3; i++) {
+		ShowWindow(GetDlgItem(hWnd, CB_SURF_LVL_1 + i), update);
+		ShowWindow(GetDlgItem(hWnd, CB_SURF_POKE_1 + i), update);
+
+		ShowWindow(GetDlgItem(hWnd, STC_ENC_60 + i), update);
+	}
+
+	ShowWindow(GetDlgItem(hWnd, STC_ENCOUNTER_MAP), update);
+	ShowWindow(GetDlgItem(hWnd, STC_ENCOUNTER_INDEX), update);
+
+	ShowWindow(GetDlgItem(hWnd, BTN_UPDATE_ENCOUNTER), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_RAND_ENCOUNTER), update);
+}
+
 void SelectPokemon(HWND hWnd) {
 
 	SendMessage(GetDlgItem(hWnd, LB_LEVEL), LB_RESETCONTENT, NULL, NULL);
@@ -853,20 +1093,20 @@ void SelectPokemon(HWND hWnd) {
 	pokemon = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, NULL, NULL);
 
 	if (pokemon >= 0 && pokemon <= 250) {
-		DisplayLevelMoves(level_up_table, pokemon + 1, rom, hWnd, LB_LEVEL, LB_MOVES);
-		DisplayEggMoves(egg_table, pokemon + 1, rom, hWnd, LB_EGG_MOVES);
-		DisplayTM(base_stats_address, pokemon + 1, rom, hWnd, LB_TMS);
-		DisplayBaseStats(base_stats_address, pokemon + 1, rom, hWnd, EB_STAT_HP, EB_STAT_ATK, EB_STAT_DEF, EB_STAT_SPD, EB_STAT_SATK, EB_STAT_SDEF);
-		DisplayTyping(base_stats_address, pokemon + 1, rom, hWnd, CB_TYPE_1, CB_TYPE_2);
-		DisplayHoldItems(base_stats_address, pokemon + 1, rom, hWnd, CB_ITEM_23, CB_ITEM_2);
-		DisplayCaptureRate(base_stats_address, pokemon + 1, rom, hWnd, EB_CR);
-		DisplayBaseExp(base_stats_address, pokemon + 1, rom, hWnd, EB_BASE_EXP);
-		DisplayEggGroup(base_stats_address, pokemon + 1, rom, hWnd, CB_EGG_1, CB_EGG_2);
-		DisplayGenderRatio(base_stats_address, pokemon + 1, rom, hWnd, CB_GENDER);
-		DisplayHatchSteps(base_stats_address, pokemon + 1, rom, hWnd, EB_HATCH_STEP);
-		DisplayGrowthType(base_stats_address, pokemon + 1, rom, hWnd, CB_GROWTH);
-		DisplaySpriteSize(base_stats_address, pokemon + 1, rom, hWnd, CB_SPR_SIZE);
-		DisplayEvolution(level_up_table, pokemon + 1, rom, hWnd, LB_EVO);
+		DisplayLevelMoves(rom, pokemon + 1, hWnd);
+		DisplayEggMoves(rom, pokemon + 1, hWnd);
+		DisplayTM(rom, pokemon + 1, hWnd);
+		DisplayBaseStats(rom, pokemon + 1, hWnd);
+		DisplayTyping(rom, pokemon + 1, hWnd);
+		DisplayHoldItems(rom, pokemon + 1, hWnd);
+		DisplayCaptureRate(rom, pokemon + 1, hWnd);
+		DisplayBaseExp(rom, pokemon + 1, hWnd);
+		DisplayEggGroup(rom, pokemon + 1, hWnd);
+		DisplayGenderRatio(rom, pokemon + 1, hWnd);
+		DisplayHatchSteps(rom, pokemon + 1, hWnd);
+		DisplayGrowthType(rom, pokemon + 1, hWnd);
+		DisplaySpriteSize(rom, pokemon + 1, hWnd);
+		DisplayEvolution(rom, pokemon + 1, hWnd);
 	}
 
 

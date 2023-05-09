@@ -84,3 +84,22 @@ std::vector<byte> UpdatePointerTable(std::vector<byte> table, unsigned short off
 
 	return table;
 }
+
+byte* UpdatePointer(byte* pointer, unsigned short offset) {
+	unsigned short word = 0;
+	
+	word = CombineBytes(pointer[1], pointer[0]);
+	word = word + offset;
+	pointer = SeperateBytes(word);
+
+	return pointer;
+}
+
+void UpdateDuplicatePointers(std::vector<byte>& data, unsigned int address, int range, byte lw, byte hw) {
+	for (int i = 0; i < range; i++) {
+		if (data[address + (i * 2)] == lw && data[address + (i * 2)] + 1 == hw) {
+			data[address + (i * 2)] = lw;
+			data[address + (i * 2) + 1] == hw;
+		}
+	}
+}

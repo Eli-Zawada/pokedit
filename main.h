@@ -3,27 +3,29 @@
 #include <commctrl.h>
 #include <string>
 #include <vector>
-#include "resource.h"
 
-#include "dataeditor.h"
-#include "pokemontools.h"
-#include "trainertools.h"
 
-#include "guicodes.h"
-#include "address.h"
-#include "combobox.h"
+
+
+
+
 
 #pragma comment(lib, "comctl32.lib")
 
+HWND CreateCheckBox(HWND hWnd, std::wstring name, int x, int y, int w, int h, int id);
 void AddMenus(HWND hWnd);
 void AddTabs(HWND hWnd);
 void AddPokemonControls(HWND hWnd);
 void AddTrainerControls(HWND hWnd);
+void AddEncounterControls(HWND hWnd);
 void OpenFile(HWND hWnd);
 void SaveFile(HWND hWnd);
-void TogglePokemonEnables(bool update);
-void TogglePokemonTab(bool update);
+void SaveRandomOptions(HWND hWnd);
+void TogglePokemonEnables(bool update, HWND hWnd);
+void ToggleRandomElements(bool update, HWND hWnd);
+void TogglePokemonTab(bool update, HWND hWnd);
 void ToggleTrainerTab(bool update, HWND hWnd);
+void ToggleEncountersTab(bool update, HWND hWnd);
 void StartCommonControls(DWORD flags);
 HWND CreateTab(HWND hParent, HINSTANCE hInst, DWORD dwStyle, int x, int y, int width, int height, int id);
 int InsertItem(HWND hWnd, std::wstring txt, int item_index, int image_index);

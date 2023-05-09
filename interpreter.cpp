@@ -55,6 +55,10 @@ std::wstring InterpretCharacter(byte code) {
 		character = L" ";
 		break;
 	}
+	case 0x1F: {
+		character = L" ";
+		break;
+	}
 	case 0x80: {
 		character = L"A";
 		break;
@@ -1090,7 +1094,7 @@ byte TextToHex(wchar_t character) {
 		break;
 	}
 	case L'?': {
-		code = 0xBA;
+		code = 0xE6;
 		break;
 	}
 	case L'-': {
@@ -1248,7 +1252,7 @@ std::wstring InterpretPokemon(char code) {
 		break;
 	}
 	case (char)0x0C: {
-		name = L"BUTERFREE";
+		name = L"BUTTERFREE";
 		break;
 	}
 	case (char)0x0D: {
@@ -1720,7 +1724,7 @@ std::wstring InterpretPokemon(char code) {
 		break;
 	}
 	case (char)0x82: {
-		name = L"GYARDOS";
+		name = L"GYARADOS";
 		break;
 	}
 	case (char)0x83: {
@@ -1840,7 +1844,7 @@ std::wstring InterpretPokemon(char code) {
 		break;
 	}
 	case (char)0xA0: {
-		name = L"FEALIGATR";
+		name = L"FERALIGATR";
 		break;
 	}
 	case (char)0xA1: {
@@ -3706,7 +3710,7 @@ std::wstring InterpretMoves(char code) {
 		break;
 	}
 	case (char)0x78: {
-		name = L"SELFTDESTRUCT";
+		name = L"SELFDESTRUCT";
 		break;
 	}
 	case (char)0x79: {

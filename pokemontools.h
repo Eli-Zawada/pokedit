@@ -3,68 +3,75 @@
 #include <string>
 #include <vector>
 #include <windows.h>
+
 #include "dataeditor.h"
-#include "pointertools.h"
-#include "interpreter.h"
 
-void DisplayLevelMoves(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int lvl, int move);
+void DisplayLevelMoves(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-std::vector<byte> InsertLevelMoves(unsigned int address, unsigned short pokemon, std::vector<byte> data, byte lvl, byte move);
+void InsertLevelMoves(std::vector<byte>& data, byte pokemon, byte lvl, byte move);
 
-std::vector<byte> DeleteLevelMoves(unsigned int address, unsigned short pokemon, std::vector<byte> data, byte lvl, byte move);
+void DeleteLevelMoves(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-std::vector<byte> InsertEggMoves(unsigned int address, unsigned short pokemon, std::vector<byte> data, byte move);
+void ChangeLevelMoves(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-std::vector<byte> DeleteEggMoves(unsigned int address, unsigned short pokemon, std::vector<byte> data, byte move);
+void InsertEggMoves(std::vector<byte>& data, byte pokemon, byte move);
+void UnsertEggMoves(std::vector<byte>& data, byte pokemon, byte move);
 
-void DisplayEggMoves(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int inst);
+int DeleteEggMoves(std::vector<byte>& data, byte pokemon, HWND hWnd);
+int SeleteEggMoves(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-void DisplayTM(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int inst);
+void DisplayEggMoves(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-std::vector<byte> ToggleTMs(unsigned int address, unsigned short pokemon, std::vector<byte> data, byte tm);
+void DisplayTM(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-void DisplayEvolution(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int evo);
+void ToggleTMs(std::vector<byte>& data, byte pokemon, byte tm);
 
-std::vector<byte> InsertEvolution(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int met, int con, int pok, int stat);
+void DisplayEvolution(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-std::vector<byte> DeleteEvolution(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int met, int con, int pok, int stat);
+void InsertEvolution(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-void DisplayBaseStats(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int hp, int atk, int def, int spd, int satk, int sdef);
-	std::vector<byte> ChangeBaseStats(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd,
-	HWND hp, HWND atk, HWND def, HWND spd, HWND satk, HWND sdef);
+void DeleteEvolution(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-void DisplayTyping(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int type1, int type2);
+void DisplayBaseStats(std::vector<byte>& data, byte pokemon, HWND hWnd);
+	
+void ChangeBaseStats(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-std::vector<byte> ChangeTyping(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int type1, int type2);
+void DisplayTyping(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-void DisplayHoldItems(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int item23, int item2);
+void ChangeTyping(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-std::vector<byte> ChangeHoldItems(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int item23, int item2);
+void DisplayHoldItems(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-void DisplayCaptureRate(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int cr);
+void ChangeHoldItems(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-void DisplayBaseExp(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int exp);
+void DisplayCaptureRate(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-std::vector<byte> ChangeCaptureRate(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int cr);
+void DisplayBaseExp(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-std::vector<byte> ChangeBaseExp(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int exp);
+void ChangeCaptureRate(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-void DisplayEggGroup(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int egg1, int egg2);
+void ChangeBaseExp(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-std::vector<byte> ChangeEggGroup(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int egg1, int egg2);
+void DisplayEggGroup(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-void DisplayGenderRatio(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int gen);
+void ChangeEggGroup(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-std::vector<byte> ChangeGenderRatio(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int gen);
+void DisplayGenderRatio(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-void DisplayHatchSteps(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int hatch);
+void ChangeGenderRatio(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-	std::vector<byte> ChangeHatchSteps(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int hatch);
+void DisplayHatchSteps(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-void DisplayGrowthType(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int growth);
+void ChangeHatchSteps(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-	std::vector<byte> ChangeGrowthType(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int growth);
+void DisplayGrowthType(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-void DisplaySpriteSize(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int growth);
+void ChangeGrowthType(std::vector<byte>& data, byte pokemon, HWND hWnd);
 
-	std::vector<byte> ChangeSpriteSize(unsigned int address, unsigned short pokemon, std::vector<byte> data, HWND hWnd, int size);
+void DisplaySpriteSize(std::vector<byte>& data, byte pokemon, HWND hWnd);
+
+void ChangeSpriteSize(std::vector<byte>& data, byte pokemon, HWND hWnd);
+
+byte FindPokemonFamily(std::vector<byte>& data, byte pokemon);
+
+void SynchTable(std::vector<byte>& data, unsigned int address, byte marker, byte loops);
