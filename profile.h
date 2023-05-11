@@ -3527,1480 +3527,1594 @@ random_encounter g1mC = {
 							0x01,	//Map Group
 							0x0C,	//Map ID
 							13, 20,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g1mE = {
 							0x01,	//Map Group
 							0x0E,	//Map ID
 							18, 24,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g1mD = {
 							0x01,	//Map Group
 							0x0D,	//Map ID
 							13, 20,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g2m5 = {
 							0x02,	//Map Group
 							0x05,	//Map ID
 							16, 22,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							2, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							1, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g2m6 = {
 							0x02,	//Map Group
 							0x06,	//Map ID
 							16, 22,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m2 = {
 							0x03,	//Map Group
 							0x02,	//Map ID
 							3, 7,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 1,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m3 = {
 							0x03,	//Map Group
 							0x03,	//Map ID
 							3, 7,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 1,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m5 = {
 							0x03,	//Map Group
 							0x05,	//Map ID
 							25, 35,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 1, 1,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m6 = {
 							0x03,	//Map Group
 							0x06,	//Map ID
 							25, 35,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 1, 1,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m7 = {
 							0x03,	//Map Group
 							0x07,	//Map ID
 							25, 35,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 1, 1,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m8 = {
 							0x03,	//Map Group
 							0x08,	//Map ID
 							25, 35,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m9 = {
 							0x03,	//Map Group
 							0x09,	//Map ID
 							25, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3mA = {
 							0x03,	//Map Group
 							0x0A,	//Map ID
 							25, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3mB = {
 							0x03,	//Map Group
 							0x0B,	//Map ID
 							25, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3mC = {
 							0x03,	//Map Group
 							0x0C,	//Map ID
 							25, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3mD = {
 							0x03,	//Map Group
 							0x0D,	//Map ID
 							14, 20,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							1, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3mE = {
 							0x03,	//Map Group
 							0x0E,	//Map ID
 							14, 20,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3mF = {
 							0x03,	//Map Group
 							0x0F,	//Map ID
 							13, 15,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							1, 0,	//Urban, Ruins
 							0, 1, 1,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m16 = {
 							0x03,	//Map Group
 							0x16,	//Map ID
 							20, 25,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m1B = {
 							0x03,	//Map Group
 							0x1B,	//Map ID
 							8, 10,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m1D = {
 							0x03,	//Map Group
 							0x1D,	//Map ID
 							5, 9,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 0, 2,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m1E = {
 							0x03,	//Map Group
 							0x1E,	//Map ID
 							8, 10,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 0, 2,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m1F = {
 							0x03,	//Map Group
 							0x1F,	//Map ID
 							21, 30,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 0, 2,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m20 = {
 							0x03,	//Map Group
 							0x20,	//Map ID
 							6, 9,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 0, 2,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m21 = {
 							0x03,	//Map Group
 							0x21,	//Map ID
 							27, 38,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 2,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m2C = {
 							0x03,	//Map Group
 							0x2C,	//Map ID
 							6, 10,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 1,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m31 = {
 							0x03,	//Map Group
 							0x31,	//Map ID
 							15, 20,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 2,//Shore, Salt Water, Fresh Water
 							1, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m32 = {
 							0x03,	//Map Group
 							0x32,	//Map ID
 							20, 24,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							1, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 0, 1	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m33 = {
 							0x03,	//Map Group
 							0x33,	//Map ID
 							30, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 2,//Shore, Salt Water, Fresh Water
 							1, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m34 = {
 							0x03,	//Map Group
 							0x34,	//Map ID
 							18, 24,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 2,//Shore, Salt Water, Fresh Water
 							1, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m35 = {
 							0x03,	//Map Group
 							0x35,	//Map ID
 							26, 33,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m36 = {
 							0x03,	//Map Group
 							0x36,	//Map ID
 							26, 33,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m37 = {
 							0x03,	//Map Group
 							0x37,	//Map ID
 							26, 33,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m38 = {
 							0x03,	//Map Group
 							0x38,	//Map ID
 							26, 33,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m39 = {
 							0x03,	//Map Group
 							0x39,	//Map ID
 							26, 33,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m3A = {
 							0x03,	//Map Group
 							0x3A,	//Map ID
 							25, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m3B = {
 							0x03,	//Map Group
 							0x3B,	//Map ID
 							25, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m3C = {
 							0x03,	//Map Group
 							0x3C,	//Map ID
 							25, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m3D = {
 							0x03,	//Map Group
 							0x3D,	//Map ID
 							25, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m3E = {
 							0x03,	//Map Group
 							0x3E,	//Map ID
 							25, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m3F = {
 							0x03,	//Map Group
 							0x3F,	//Map ID
 							25, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m40 = {
 							0x03,	//Map Group
 							0x40,	//Map ID
 							25, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m41 = {
 							0x03,	//Map Group
 							0x41,	//Map ID
 							25, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m42 = {
 							0x03,	//Map Group
 							0x42,	//Map ID
 							50, 60,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 1,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m43 = {
 							0x03,	//Map Group
 							0x43,	//Map ID
 							50, 60,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 0, 2,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m44 = {
 							0x03,	//Map Group
 							0x44,	//Map ID
 							60, 65,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 1, 1	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m45 = {
 							0x03,	//Map Group
 							0x45,	//Map ID
 							60, 65,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							1, 1,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m46 = {
 							0x03,	//Map Group
 							0x46,	//Map ID
 							3, 6,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 1,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 2,//Shore, Salt Water, Fresh Water
 							1, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m47 = {
 							0x03,	//Map Group
 							0x47,	//Map ID
 							28, 31,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 1,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 2,//Shore, Salt Water, Fresh Water
 							1, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m49 = {
 							0x03,	//Map Group
 							0x49,	//Map ID
 							28, 31,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m4A = {
 							0x03,	//Map Group
 							0x4A,	//Map ID
 							30, 35,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 2, 2,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m4B = {
 							0x03,	//Map Group
 							0x4B,	//Map ID
 							40, 45,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							1, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m4C = {
 							0x03,	//Map Group
 							0x4C,	//Map ID
 							40, 45,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 1,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 1	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m4E = {
 							0x03,	//Map Group
 							0x4E,	//Map ID
 							45, 50,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 1,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							1, 1,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 1, 1	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m4F = {
 							0x03,	//Map Group
 							0x4F,	//Map ID
 							45, 50,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 1,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							1, 1,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							1, 1, 1	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g3m52 = {
 							0x03,	//Map Group
 							0x52,	//Map ID
 							33, 38,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							1, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g4m9 = {
 							0x04,	//Map Group
 							0x09,	//Map ID
 							18, 22,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g5m8 = {
 							0x05,	//Map Group
 							0x08,	//Map ID
 							28, 32,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g5m9 = {
 							0x05,	//Map Group
 							0x09,	//Map ID
 							2, 5,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g5mA = {
 							0x05,	//Map Group
 							0x0A,	//Map ID
 							28, 32,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g6m5 = {
 							0x06,	//Map Group
 							0x05,	//Map ID
 							40, 45,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g6m6 = {
 							0x06,	//Map Group
 							0x06,	//Map ID
 							40, 45,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g6m7 = {
 							0x06,	//Map Group
 							0x07,	//Map ID
 							40, 50,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g6m8 = {
 							0x06,	//Map Group
 							0x08,	//Map ID
 							40, 45,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g7mC = {
 							0x07,	//Map Group
 							0x0C,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							1, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g7mD = {
 							0x07,	//Map Group
 							0x0D,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 1	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g7mE = {
 							0x07,	//Map Group
 							0x0E,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 1	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g7mF = {
 							0x07,	//Map Group
 							0x0F,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g7m10 = {
 							0x07,	//Map Group
 							0x10,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							1, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g7m11 = {
 							0x07,	//Map Group
 							0x11,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g8m6 = {
 							0x08,	//Map Group
 							0x06,	//Map ID
 							5, 8,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g9m5 = {
 							0x09,	//Map Group
 							0x05,	//Map ID
 							20, 25,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 1, 0,//Field, Grasslands, Forest
 							0, 0, 1	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g9m6 = {
 							0x09,	//Map Group
 							0x06,	//Map ID
 							25, 30,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gAm1 = {
 							0x0A,	//Map Group
 							0x01,	//Map ID
 							5, 8,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 1,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gAm2 = {
 							0x0A,	//Map Group
 							0x02,	//Map ID
 							13, 16,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							2, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 1,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gAm3 = {
 							0x0A,	//Map Group
 							0x03,	//Map ID
 							12, 16,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 1, 1,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gAm4 = {
 							0x0A,	//Map Group
 							0x04,	//Map ID
 							12, 16,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 1, 1,//Field, Grasslands, Forest
 							1, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gAm5 = {
 							0x0A,	//Map Group
 							0x05,	//Map ID
 							20, 25,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							2, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gBm1 = {
 							0x0B,	//Map Group
 							0x01,	//Map ID
 							9, 13,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							1, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 1	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gCm1 = {
 							0x0C,	//Map Group
 							0x01,	//Map ID
 							30, 35,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							2, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gCm2 = {
 							0x0C,	//Map Group
 							0x02,	//Map ID
 							30, 35,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 0, 0,//Field, Grasslands, Forest
 							0, 0, 1	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gCm3 = {
 							0x0C,	//Map Group
 							0x03,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gDm1 = {
 							0x0D,	//Map Group
 							0x01,	//Map ID
 							30, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gDm2 = {
 							0x0D,	//Map Group
 							0x02,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gEm1 = {
 							0x0A,	//Map Group
 							0x04,	//Map ID
 							35, 45,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 1,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gFm1 = {
 							0x0F,	//Map Group
 							0x01,	//Map ID
 							22, 26,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter gFm2 = {
 							0x0F,	//Map Group
 							0x02,	//Map ID
 							22, 26,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g11m1 = {
 							0x11,	//Map Group
 							0x01,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g11m2 = {
 							0x11,	//Map Group
 							0x02,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g11m3 = {
 							0x11,	//Map Group
 							0x03,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g11m4 = {
 							0x11,	//Map Group
 							0x04,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g11m5 = {
 							0x11,	//Map Group
 							0x05,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							2, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g12m1 = {
 							0x12,	//Map Group
 							0x01,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 1, 0,//Field, Grasslands, Forest
 							0, 1, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g12m2 = {
 							0x12,	//Map Group
 							0x02,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g13m1 = {
 							0x13,	//Map Group
 							0x01,	//Map ID
 							50, 60,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							1, 1, 1	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g13m2 = {
 							0x13,	//Map Group
 							0x02,	//Map ID
 							50, 60,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							0, 1,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							1, 1, 1	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g15m1 = {
 							0x15,	//Map Group
 							0x01,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							1, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g15m2 = {
 							0x15,	//Map Group
 							0x02,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							1, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g15m3 = {
 							0x15,	//Map Group
 							0x02,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							1, 0,	//Urban, Ruins
 							1, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g15m4 = {
 							0x15,	//Map Group
 							0x04,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g16m1 = {
 							0x16,	//Map Group
 							0x01,	//Map ID
 							22, 26,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g16m2 = {
 							0x16,	//Map Group
 							0x02,	//Map ID
 							22, 26,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g16m3 = {
 							0x16,	//Map Group
 							0x03,	//Map ID
 							22, 26,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g17m1 = {
 							0x17,	//Map Group
 							0x01,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							1, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g17m2 = {
 							0x17,	//Map Group
 							0x01,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							3, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							1, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g17m3 = {
 							0x17,	//Map Group
 							0x03,	//Map ID
 							40, 45,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							2, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g18m1 = {
 							0x18,	//Map Group
 							0x01,	//Map ID
 							30, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g18m2 = {
 							0x18,	//Map Group
 							0x02,	//Map ID
 							30, 36,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							1, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							1, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g18m3 = {
 							0x18,	//Map Group
 							0x03,	//Map ID
 							3, 5,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 1,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g18m4 = {
 							0x18,	//Map Group
 							0x04,	//Map ID
 							25, 30,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g19m1 = {
 							0x19,	//Map Group
 							0x01,	//Map ID
 							35, 40,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 0, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							1, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g1Am1 = {
 							0x1A,	//Map Group
 							0x01,	//Map ID
 							3, 6,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							2, 0, 2,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 1,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g1Am2 = {
 							0x1A,	//Map Group
 							0x02,	//Map ID
 							3, 7,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							2, 0, 2,//Shore, Salt Water, Fresh Water
 							1, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 1, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };
 
 random_encounter g1Am3 = {
 							0x1A,	//Map Group
 							0x03,	//Map ID
 							22, 26,	//Min Level, Max Level
-							0, 0,	//Rare, Legendary
-							0, 0, 0,//Morning, Day, Night
+						{
+							128, 128,	//Rare, Legendary
 							0, 2, 0,//Shore, Salt Water, Fresh Water
 							0, 0,	//Cave, Mountain
 							0, 0,	//Urban, Ruins
 							0, 0, 0,//Field, Grasslands, Forest
 							0, 0, 0	//Hot, Cold, Electric
+						}
 };

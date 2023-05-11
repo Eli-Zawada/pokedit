@@ -43,18 +43,7 @@ struct random_encounter {
 	byte level_min;
 	byte level_max;
 
-	bool rare, legendary;
-
-	bool morning, day, night;
-
-	byte shore, salt_water, fresh_water;
-
-	byte cave, mountain;
-
-	byte urban, ruins;
-	byte field, grasslands, forest;
-
-	byte hot, cold, electric;
+	std::vector<byte> tags = std::vector<byte>(15);
 };
 
 unsigned int GetFileSize(std::wstring fileName);

@@ -139,6 +139,7 @@
 #define CB_SURF_LVL_3 3113
 #define CB_MIN_LVL 3114
 #define CB_MAX_LVL 3115
+#define CB_TAGS 3116
 
 #define BTN_ADD_MOVE 100
 #define BTN_CHNG_MOVE 101
@@ -163,7 +164,7 @@
 #define TV_ENCOUNTERS 301
 
 #define LB_LEVEL 1000
-#define LB_MOVES 1001
+#define LB_TAGS 1001
 #define LB_EGG_MOVES 1002
 #define LB_TMS 1003
 #define LB_EVO 1004
@@ -177,6 +178,7 @@
 #define EB_BASE_EXP 1017
 #define EB_HATCH_STEP 1018
 #define EB_TRAINER_NAME 1019
+#define LB_EXCLUSIVES 1020
 
 #define STC_MOVE_LEVEL 1100
 #define STC_MOVE_EGG 1101

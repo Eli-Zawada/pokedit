@@ -527,27 +527,29 @@ void AddPokemonControls(HWND hWnd) {
 	CreateWindow(L"Button", L"Delete", WS_VISIBLE | WS_CHILD, EVO_CONS_X + 75, EVO_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_DEL_EVO, NULL, NULL);
 	CreateWindow(L"Button", L"Synch", WS_VISIBLE | WS_CHILD, EVO_CONS_X + 75, ROM_CONS_Y, 50, 25, hWnd, (HMENU)BTN_SYNCH_POKE, NULL, NULL);
 
-	CreateCheckBox(hWnd, L"Rare", RAND_CONS_X + 100, RAND_CONS_Y, 100, 25, CHB_RARE);
-	CreateCheckBox(hWnd, L"Legend", RAND_CONS_X + 100, RAND_CONS_Y + 25, 100, 25, CHB_LEGEND);
-	CreateCheckBox(hWnd, L"Morning", RAND_CONS_X + 200, RAND_CONS_Y, 100, 25, CHB_MOR);
-	CreateCheckBox(hWnd, L"Day", RAND_CONS_X + 200, RAND_CONS_Y + 25, 100, 25, CHB_DAY);
-	CreateCheckBox(hWnd, L"Night", RAND_CONS_X + 200, RAND_CONS_Y + 50, 100, 25, CHB_NGT);
-	CreateCheckBox(hWnd, L"Shore", RAND_CONS_X + 300, RAND_CONS_Y, 100, 25, CHB_SHORE);
-	CreateCheckBox(hWnd, L"Salt Water", RAND_CONS_X + 300, RAND_CONS_Y + 25, 100, 25, CHB_SALT);
-	CreateCheckBox(hWnd, L"Fresh Water", RAND_CONS_X + 300, RAND_CONS_Y + 50, 100, 25, CHB_FRESH);
-	CreateCheckBox(hWnd, L"Field", RAND_CONS_X + 420, RAND_CONS_Y, 100, 25, CHB_FIELD);
-	CreateCheckBox(hWnd, L"Grasslands", RAND_CONS_X + 420, RAND_CONS_Y + 50, 100, 25, CHB_GRASSLANDS);
-	CreateCheckBox(hWnd, L"Forest", RAND_CONS_X + 420, RAND_CONS_Y + 25, 100, 25, CHB_FOREST);
-	CreateCheckBox(hWnd, L"Urban", RAND_CONS_X + 520, RAND_CONS_Y, 80, 25, CHB_URBAN);
-	CreateCheckBox(hWnd, L"Ruins", RAND_CONS_X + 520, RAND_CONS_Y + 25, 80, 25, CHB_RUINS);
-	CreateCheckBox(hWnd, L"Mountains", RAND_CONS_X + 600, RAND_CONS_Y, 100, 25, CHB_MOUNTAIN);
-	CreateCheckBox(hWnd, L"Cave", RAND_CONS_X + 600, RAND_CONS_Y + 25, 100, 25, CHB_CAVE);
-	CreateCheckBox(hWnd, L"Hot", RAND_CONS_X + 700, RAND_CONS_Y, 100, 25, CHB_HOT);
-	CreateCheckBox(hWnd, L"Cold", RAND_CONS_X + 700, RAND_CONS_Y + 25, 100, 25, CHB_COLD);
-	CreateCheckBox(hWnd, L"Electric", RAND_CONS_X + 700, RAND_CONS_Y + 50, 100, 25, CHB_ELECTRIC);
+	
+	CreateCheckBox(hWnd, L"Morning", RAND_CONS_X + 100, RAND_CONS_Y, 100, 25, CHB_MOR);
+	CreateCheckBox(hWnd, L"Day", RAND_CONS_X + 100, RAND_CONS_Y + 25, 100, 25, CHB_DAY);
+	CreateCheckBox(hWnd, L"Night", RAND_CONS_X + 100, RAND_CONS_Y + 50, 100, 25, CHB_NGT);
+	//CreateCheckBox(hWnd, L"Rare", RAND_CONS_X + 200, RAND_CONS_Y, 100, 25, CHB_RARE);
+	//CreateCheckBox(hWnd, L"Legend", RAND_CONS_X + 200, RAND_CONS_Y + 25, 100, 25, CHB_LEGEND);
+	//CreateCheckBox(hWnd, L"Shore", RAND_CONS_X + 300, RAND_CONS_Y, 100, 25, CHB_SHORE);
+	//CreateCheckBox(hWnd, L"Salt Water", RAND_CONS_X + 300, RAND_CONS_Y + 25, 100, 25, CHB_SALT);
+	//CreateCheckBox(hWnd, L"Fresh Water", RAND_CONS_X + 300, RAND_CONS_Y + 50, 100, 25, CHB_FRESH);
+	//CreateCheckBox(hWnd, L"Field", RAND_CONS_X + 420, RAND_CONS_Y, 100, 25, CHB_FIELD);
+	//CreateCheckBox(hWnd, L"Grasslands", RAND_CONS_X + 420, RAND_CONS_Y + 50, 100, 25, CHB_GRASSLANDS);
+	//CreateCheckBox(hWnd, L"Forest", RAND_CONS_X + 420, RAND_CONS_Y + 25, 100, 25, CHB_FOREST);
+	//CreateCheckBox(hWnd, L"Urban", RAND_CONS_X + 520, RAND_CONS_Y, 80, 25, CHB_URBAN);
+	//CreateCheckBox(hWnd, L"Ruins", RAND_CONS_X + 520, RAND_CONS_Y + 25, 80, 25, CHB_RUINS);
+	//CreateCheckBox(hWnd, L"Mountains", RAND_CONS_X + 600, RAND_CONS_Y, 100, 25, CHB_MOUNTAIN);
+	//CreateCheckBox(hWnd, L"Cave", RAND_CONS_X + 600, RAND_CONS_Y + 25, 100, 25, CHB_CAVE);
+	//CreateCheckBox(hWnd, L"Hot", RAND_CONS_X + 700, RAND_CONS_Y, 100, 25, CHB_HOT);
+	//CreateCheckBox(hWnd, L"Cold", RAND_CONS_X + 700, RAND_CONS_Y + 25, 100, 25, CHB_COLD);
+	//CreateCheckBox(hWnd, L"Electric", RAND_CONS_X + 700, RAND_CONS_Y + 50, 100, 25, CHB_ELECTRIC);
+	CreateWindow(L"ListBox", L"Tags", WS_VISIBLE | WS_CHILD | WS_BORDER, RAND_CONS_X + 200, RAND_CONS_Y, 150, 100, hWnd, (HMENU)LB_TAGS, NULL, NULL);
+	CreateWindow(L"ListBox", L"Tags", WS_VISIBLE | WS_CHILD | WS_BORDER, RAND_CONS_X + 400, RAND_CONS_Y, 150, 100, hWnd, (HMENU)LB_EXCLUSIVES, NULL, NULL);
 
 	CreateWindow(L"ListBox", L"Level", WS_VISIBLE | WS_CHILD | WS_BORDER, LVL_CONS_X, LVL_CONS_Y + 75, 150, 300, hWnd, (HMENU)LB_LEVEL, NULL, NULL);
-	//CreateWindow(L"ListBox", L"Moves", WS_VISIBLE | WS_CHILD | WS_BORDER, LVL_CONS_X + 30, LVL_CONS_Y + 75, 120, 300, hWnd, (HMENU)LB_MOVES, NULL, NULL);
 	CreateWindow(L"ListBox", L"Egg Moves", WS_VISIBLE | WS_CHILD | WS_BORDER, EGG_CONS_X, EGG_CONS_Y + 75, 150, 300, hWnd, (HMENU)LB_EGG_MOVES, NULL, NULL);
 	CreateWindow(L"ListBox", L"TMs", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, TM_CONS_X, TM_CONS_Y + 75, 170, 300, hWnd, (HMENU)LB_TMS, NULL, NULL);
 	CreateWindow(L"ListBox", L"Evolution", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, EVO_CONS_X, EVO_CONS_Y + 150, 150, 225, hWnd, (HMENU)LB_EVO, NULL, NULL);
@@ -908,6 +910,9 @@ void ToggleRandomElements(bool update, HWND hWnd) {
 	ShowWindow(GetDlgItem(hWnd, CB_MIN_LVL), update);
 	ShowWindow(GetDlgItem(hWnd, CB_MAX_LVL), update);
 
+	ShowWindow(GetDlgItem(hWnd, LB_TAGS), update);
+	ShowWindow(GetDlgItem(hWnd, LB_EXCLUSIVES), update);
+
 	SaveRandomOptions(hWnd);
 }
 
@@ -978,7 +983,6 @@ void TogglePokemonTab(bool update, HWND hWnd) {
 	ShowWindow(GetDlgItem(hWnd, STC_EVOLUTION), update);
 
 	ShowWindow(GetDlgItem(hWnd, LB_LEVEL), update);
-	ShowWindow(GetDlgItem(hWnd, LB_MOVES), update);
 	ShowWindow(GetDlgItem(hWnd, LB_EGG_MOVES), update);
 	ShowWindow(GetDlgItem(hWnd, LB_TMS), update);
 	ShowWindow(GetDlgItem(hWnd, LB_EVO), update);
@@ -1086,9 +1090,9 @@ void ToggleEncountersTab(bool update, HWND hWnd) {
 void SelectPokemon(HWND hWnd) {
 
 	SendMessage(GetDlgItem(hWnd, LB_LEVEL), LB_RESETCONTENT, NULL, NULL);
-	SendMessage(GetDlgItem(hWnd, LB_MOVES), LB_RESETCONTENT, NULL, NULL);
 	SendMessage(GetDlgItem(hWnd, LB_EGG_MOVES), LB_RESETCONTENT, NULL, NULL);
 	SendMessage(GetDlgItem(hWnd, LB_TMS), LB_RESETCONTENT, NULL, NULL);
+	SendMessage(GetDlgItem(hWnd, LB_TAGS), LB_RESETCONTENT, NULL, NULL);
 
 	pokemon = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, NULL, NULL);
 

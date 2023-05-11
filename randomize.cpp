@@ -322,7 +322,7 @@ std::vector<random_pokemon> GeneratePokemonList(HWND hWnd) {
 	return list;
 }
 
-std::vector<random_pokemon> GeneratePokemonList(random_encounter enc, byte bit) {
+std::vector<random_pokemon> GGeneratePokemonList(random_encounter enc, byte bit) {
 	std::vector<random_pokemon> profile = LoadPokemonProfile();
 	std::vector<random_pokemon> list;
 	bool added = false;
@@ -330,72 +330,72 @@ std::vector<random_pokemon> GeneratePokemonList(random_encounter enc, byte bit) 
 
 	for (random_pokemon p : profile) {
 
-		b = (p.tags[10] == CheckBit(enc.grasslands, bit));
+		b = (p.tags[10] == CheckBit(enc.tags[10], bit));
 		if (p.tags[10] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[11] == CheckBit(enc.forest, bit));
+		b = (p.tags[11] == CheckBit(enc.tags[11], bit));
 		if (p.tags[11] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[9] == CheckBit(enc.field, bit));
+		b = (p.tags[9] == CheckBit(enc.tags[9], bit));
 		if (p.tags[9] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[2] == CheckBit(enc.shore, bit));
+		b = (p.tags[2] == CheckBit(enc.tags[2], bit));
 		if (p.tags[2] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[3] == CheckBit(enc.salt_water, bit));
+		b = (p.tags[3] == CheckBit(enc.tags[3], bit));
 		if (p.tags[3] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[4] == CheckBit(enc.fresh_water, bit));
+		b = (p.tags[4] == CheckBit(enc.tags[4], bit));
 		if (p.tags[4] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[0] == enc.rare);
+		b = (p.tags[0] == enc.tags[0]);
 		if (p.tags[0] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[5] == CheckBit(enc.cave, bit));
+		b = (p.tags[5] == CheckBit(enc.tags[5], bit));
 		if (p.tags[5] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[6] == CheckBit(enc.mountain, bit));
+		b = (p.tags[6] == CheckBit(enc.tags[6], bit));
 		if (p.tags[6] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[7] == CheckBit(enc.urban, bit));
+		b = (p.tags[7] == CheckBit(enc.tags[7], bit));
 		if (p.tags[7] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[8] == CheckBit(enc.ruins, bit));
+		b = (p.tags[8] == CheckBit(enc.tags[8], bit));
 		if (p.tags[8] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[12] == CheckBit(enc.hot, bit));
+		b = (p.tags[12] == CheckBit(enc.tags[12], bit));
 		if (p.tags[12] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[13] == CheckBit(enc.cold, bit));
+		b = (p.tags[13] == CheckBit(enc.tags[13], bit));
 		if (p.tags[13] == true && b == true) {
 			added = true;
 		}
 
-		b = (p.tags[14] == CheckBit(enc.electric, bit));
+		b = (p.tags[14] == CheckBit(enc.tags[14], bit));
 		if (p.tags[14] == true && b == true) {
 			added = true;
 		}
@@ -408,7 +408,7 @@ std::vector<random_pokemon> GeneratePokemonList(random_encounter enc, byte bit) 
 			added = false;
 		}
 
-		b = (p.tags[1] == enc.legendary);
+		b = (p.tags[1] == enc.tags[1]);
 		if (p.tags[1] == true && b == false) {
 			added = false;
 		}
@@ -422,30 +422,36 @@ std::vector<random_pokemon> GeneratePokemonList(random_encounter enc, byte bit) 
 	return list;
 }
 
-std::vector<random_pokemon> GGeneratePokemonList(random_encounter enc, byte bit) {
+std::vector<random_pokemon> GeneratePokemonList(random_encounter enc, byte bit) {
 	std::vector<random_pokemon> profile = LoadPokemonProfile();
 	std::vector<random_pokemon> list;
 	bool added = false;
 	bool b = false;
 	unsigned int size = tag_names.size();
-	std::vector<byte> dummy = {0,0,0,0,0,0,0};
-	std::vector<bool> dummy2 = { 0,0,0,0,0,0,0 };
 
 	for (random_pokemon p : profile) {
 
 		for (unsigned int i = 0; i < size; i++) {
-			bool exclusive = CheckBit(dummy[i], 7);
+			bool exclusive = CheckBit(enc.tags[i], 7);
 			if (exclusive == 1) {//Check to see if tag is exclusive
-				if (dummy2[i] == 1 && CheckBit(dummy[i], bit) == 0) {
+				if (p.tags[i] == 1 && CheckBit(enc.tags[i], bit) == 0) {
 					added = false;
 					break;
 				}
 			}
 			else {//Check for Non-exclusive tags
-				if (dummy2[i] == 1 && CheckBit(dummy[i], bit) == 1) {
+				if (p.tags[i] == 1 && CheckBit(enc.tags[i], bit) == 1) {
 					added = true;
 				}
 			}
+		}
+
+		if (p.level_min < enc.level_min && p.level_max < enc.level_max) {
+			added = false;
+		}
+
+		if (p.level_min > enc.level_min && p.level_max > enc.level_max) {
+			added = false;
 		}
 
 		if (added == true) {
