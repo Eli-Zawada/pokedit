@@ -3,6 +3,7 @@
 #include <string>
 
 #include "interpreter.h"
+#include "randomencounters.h"
 
 HWND AddRomCombo(HWND, int, int, int, int, int);
 HWND AddPokemonCombo(HWND hWnd, int x, int y, int width, int height, int inst, int control);
@@ -19,3 +20,4 @@ HWND AddEvoMethodCombo(HWND, int, int, int, int, int);
 HWND AddEvoStatCombo(HWND, int, int, int, int, int);
 HWND AddNumberCombo(HWND hWnd, int x, int y, int width, int height, int inst, int range);
 void ChangeEvoCombos(HWND, HWND, HWND, HWND);
+void CreateTagsCombo(HWND hWnd, int x, int y, int width, int height, int inst);

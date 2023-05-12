@@ -142,23 +142,29 @@
     <ClInclude Include="address.h" />
     <ClInclude Include="combobox.h" />
     <ClInclude Include="dataeditor.h" />
+    <ClInclude Include="encounters.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="guicodes.h" />
     <ClInclude Include="interpreter.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="pointertools.h" />
     <ClInclude Include="pokemontools.h" />
+    <ClInclude Include="profile.h" />
+    <ClInclude Include="randomencounters.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="trainertools.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="address.cpp" />
     <ClCompile Include="combobox.cpp" />
     <ClCompile Include="dataeditor.cpp" />
+    <ClCompile Include="encounters.cpp" />
     <ClCompile Include="interpreter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pointerstool.cpp" />
     <ClCompile Include="pokemontools.cpp" />
+    <ClCompile Include="randomize.cpp" />
     <ClCompile Include="trainertools.cpp" />
   </ItemGroup>
   <ItemGroup>

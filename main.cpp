@@ -315,6 +315,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					GetGrassSwarmData(rom, hti, hWnd);
 					GetSurfEncounterData(rom, hti, hWnd);
 					GetSurfSwarmData(rom, hti, hWnd);
+					DisplayRandomMap(hWnd, hti);
 				}
 				break;
 			}
@@ -514,6 +515,7 @@ void AddPokemonControls(HWND hWnd) {
 	AddEvoStatCombo(hWnd, EVO_CONS_X, EVO_CONS_Y + 125, 150, 175, CB_EVO_STAT);
 	AddLevelsCombo(hWnd, RAND_CONS_X, RAND_CONS_Y, 50, 200, CB_MIN_LVL, 1);
 	AddLevelsCombo(hWnd, RAND_CONS_X, RAND_CONS_Y + 50, 50, 200, CB_MAX_LVL, 1);
+	CreateTagsCombo(hWnd, RAND_CONS_X + 200, RAND_CONS_Y, 150, 100, CB_TAGS);
 
 	CreateWindow(L"Button", L"Add", WS_VISIBLE | WS_CHILD, LVL_CONS_X + 12, LVL_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_ADD_MOVE, NULL, NULL);
 	CreateWindow(L"Button", L"Delete", WS_VISIBLE | WS_CHILD, LVL_CONS_X + 88, LVL_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_DEL_MOVE, NULL, NULL);
@@ -531,23 +533,8 @@ void AddPokemonControls(HWND hWnd) {
 	CreateCheckBox(hWnd, L"Morning", RAND_CONS_X + 100, RAND_CONS_Y, 100, 25, CHB_MOR);
 	CreateCheckBox(hWnd, L"Day", RAND_CONS_X + 100, RAND_CONS_Y + 25, 100, 25, CHB_DAY);
 	CreateCheckBox(hWnd, L"Night", RAND_CONS_X + 100, RAND_CONS_Y + 50, 100, 25, CHB_NGT);
-	//CreateCheckBox(hWnd, L"Rare", RAND_CONS_X + 200, RAND_CONS_Y, 100, 25, CHB_RARE);
-	//CreateCheckBox(hWnd, L"Legend", RAND_CONS_X + 200, RAND_CONS_Y + 25, 100, 25, CHB_LEGEND);
-	//CreateCheckBox(hWnd, L"Shore", RAND_CONS_X + 300, RAND_CONS_Y, 100, 25, CHB_SHORE);
-	//CreateCheckBox(hWnd, L"Salt Water", RAND_CONS_X + 300, RAND_CONS_Y + 25, 100, 25, CHB_SALT);
-	//CreateCheckBox(hWnd, L"Fresh Water", RAND_CONS_X + 300, RAND_CONS_Y + 50, 100, 25, CHB_FRESH);
-	//CreateCheckBox(hWnd, L"Field", RAND_CONS_X + 420, RAND_CONS_Y, 100, 25, CHB_FIELD);
-	//CreateCheckBox(hWnd, L"Grasslands", RAND_CONS_X + 420, RAND_CONS_Y + 50, 100, 25, CHB_GRASSLANDS);
-	//CreateCheckBox(hWnd, L"Forest", RAND_CONS_X + 420, RAND_CONS_Y + 25, 100, 25, CHB_FOREST);
-	//CreateCheckBox(hWnd, L"Urban", RAND_CONS_X + 520, RAND_CONS_Y, 80, 25, CHB_URBAN);
-	//CreateCheckBox(hWnd, L"Ruins", RAND_CONS_X + 520, RAND_CONS_Y + 25, 80, 25, CHB_RUINS);
-	//CreateCheckBox(hWnd, L"Mountains", RAND_CONS_X + 600, RAND_CONS_Y, 100, 25, CHB_MOUNTAIN);
-	//CreateCheckBox(hWnd, L"Cave", RAND_CONS_X + 600, RAND_CONS_Y + 25, 100, 25, CHB_CAVE);
-	//CreateCheckBox(hWnd, L"Hot", RAND_CONS_X + 700, RAND_CONS_Y, 100, 25, CHB_HOT);
-	//CreateCheckBox(hWnd, L"Cold", RAND_CONS_X + 700, RAND_CONS_Y + 25, 100, 25, CHB_COLD);
-	//CreateCheckBox(hWnd, L"Electric", RAND_CONS_X + 700, RAND_CONS_Y + 50, 100, 25, CHB_ELECTRIC);
-	CreateWindow(L"ListBox", L"Tags", WS_VISIBLE | WS_CHILD | WS_BORDER, RAND_CONS_X + 200, RAND_CONS_Y, 150, 100, hWnd, (HMENU)LB_TAGS, NULL, NULL);
-	CreateWindow(L"ListBox", L"Tags", WS_VISIBLE | WS_CHILD | WS_BORDER, RAND_CONS_X + 400, RAND_CONS_Y, 150, 100, hWnd, (HMENU)LB_EXCLUSIVES, NULL, NULL);
+	CreateWindow(L"ListBox", L"Tags", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, RAND_CONS_X + 400, RAND_CONS_Y, 150, 100, hWnd, (HMENU)LB_TAGS, NULL, NULL);
+	CreateWindow(L"ListBox", L"Tags", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, RAND_CONS_X + 600, RAND_CONS_Y, 150, 100, hWnd, (HMENU)LB_EXCLUSIVES, NULL, NULL);
 
 	CreateWindow(L"ListBox", L"Level", WS_VISIBLE | WS_CHILD | WS_BORDER, LVL_CONS_X, LVL_CONS_Y + 75, 150, 300, hWnd, (HMENU)LB_LEVEL, NULL, NULL);
 	CreateWindow(L"ListBox", L"Egg Moves", WS_VISIBLE | WS_CHILD | WS_BORDER, EGG_CONS_X, EGG_CONS_Y + 75, 150, 300, hWnd, (HMENU)LB_EGG_MOVES, NULL, NULL);
@@ -577,63 +564,63 @@ void AddTrainerControls(HWND hWnd) {
 		(HMENU)STC_TRAINER_CODE, NULL, NULL);
 	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, BS_CONS_X - BS_CONS_W - 100, 50, 50, 25, hWnd,
 		(HMENU)STC_TRAINER_TYPE, NULL, NULL);
-	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_1_CONS_X, TRA_CONS_Y + 300, 170 , 25, hWnd,
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_1_CONS_X, TRA_CONS_Y + 25, 148 , 20, hWnd,
 		(HMENU)STC_POKE_EXP1, NULL, NULL);
-	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_2_CONS_X, TRA_CONS_Y + 300, 170, 25, hWnd,
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_2_CONS_X, TRA_CONS_Y + 25, 148, 20, hWnd,
 		(HMENU)STC_POKE_EXP2, NULL, NULL);
-	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_3_CONS_X, TRA_CONS_Y + 300, 170, 25, hWnd,
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_3_CONS_X, TRA_CONS_Y + 25, 148, 20, hWnd,
 		(HMENU)STC_POKE_EXP3, NULL, NULL);
-	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_4_CONS_X, TRA_CONS_Y + 300, 170, 25, hWnd,
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_4_CONS_X, TRA_CONS_Y + 25, 148, 20, hWnd,
 		(HMENU)STC_POKE_EXP4, NULL, NULL);
-	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_5_CONS_X, TRA_CONS_Y + 300, 170, 25, hWnd,
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_5_CONS_X, TRA_CONS_Y + 25, 148, 20, hWnd,
 		(HMENU)STC_POKE_EXP5, NULL, NULL);
-	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_6_CONS_X, TRA_CONS_Y + 300, 170, 25, hWnd,
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_6_CONS_X, TRA_CONS_Y + 25, 148, 20, hWnd,
 		(HMENU)STC_POKE_EXP6, NULL, NULL);
-	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_2_CONS_X, TRA_CONS_Y + 400, 170, 25, hWnd,
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_2_CONS_X, TRA_CONS_Y + 300, 148, 25, hWnd,
 		(HMENU)STC_EXP_TOTAL, NULL, NULL);
 
-	AddPokemonCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y, 170, 150, CB_TRA_POKE1, 0);
-	AddPokemonCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y, 170, 150, CB_TRA_POKE2, 0);
-	AddPokemonCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y, 170, 150, CB_TRA_POKE3, 0);
-	AddPokemonCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y, 170, 150, CB_TRA_POKE4, 0);
-	AddPokemonCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y, 170, 150, CB_TRA_POKE5, 0);
-	AddPokemonCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y, 170, 150, CB_TRA_POKE6, 0);
-	AddMovesCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y + 100, 170, 150, CB_TRA_MOVE1_1, 0);
-	AddMovesCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y + 125, 170, 150, CB_TRA_MOVE1_2, 0);
-	AddMovesCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y + 150, 170, 150, CB_TRA_MOVE1_3, 0);
-	AddMovesCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y + 175, 170, 150, CB_TRA_MOVE1_4, 0);
-	AddItemsCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y + 225, 170, 150, CB_TRA_ITEM_1, 0);
-	AddMovesCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y + 100, 170, 150, CB_TRA_MOVE2_1, 0);
-	AddMovesCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y + 125, 170, 150, CB_TRA_MOVE2_2, 0);
-	AddMovesCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y + 150, 170, 150, CB_TRA_MOVE2_3, 0);
-	AddMovesCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y + 175, 170, 150, CB_TRA_MOVE2_4, 0);
-	AddItemsCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y + 225, 170, 150, CB_TRA_ITEM_2, 0);
-	AddMovesCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y + 100, 170, 150, CB_TRA_MOVE3_1, 0);
-	AddMovesCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y + 125, 170, 150, CB_TRA_MOVE3_2, 0);
-	AddMovesCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y + 150, 170, 150, CB_TRA_MOVE3_3, 0);
-	AddMovesCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y + 175, 170, 150, CB_TRA_MOVE3_4, 0);
-	AddItemsCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y + 225, 170, 150, CB_TRA_ITEM_3, 0);
-	AddMovesCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y + 100, 170, 150, CB_TRA_MOVE4_1, 0);
-	AddMovesCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y + 125, 170, 150, CB_TRA_MOVE4_2, 0);
-	AddMovesCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y + 150, 170, 150, CB_TRA_MOVE4_3, 0);
-	AddMovesCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y + 175, 170, 150, CB_TRA_MOVE4_4, 0);
-	AddItemsCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y + 225, 170, 150, CB_TRA_ITEM_4, 0);
-	AddMovesCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y + 100, 170, 150, CB_TRA_MOVE5_1, 0);
-	AddMovesCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y + 125, 170, 150, CB_TRA_MOVE5_2, 0);
-	AddMovesCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y + 150, 170, 150, CB_TRA_MOVE5_3, 0);
-	AddMovesCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y + 175, 170, 150, CB_TRA_MOVE5_4, 0);
-	AddItemsCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y + 225, 170, 150, CB_TRA_ITEM_5, 0);
-	AddMovesCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y + 100, 170, 150, CB_TRA_MOVE6_1, 0);
-	AddMovesCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y + 125, 170, 150, CB_TRA_MOVE6_2, 0);
-	AddMovesCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y + 150, 170, 150, CB_TRA_MOVE6_3, 0);
-	AddMovesCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y + 175, 170, 150, CB_TRA_MOVE6_4, 0);
-	AddItemsCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y + 225, 170, 150, CB_TRA_ITEM_6, 0);
-	AddLevelsCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y + 50, 170, 150, CB_TRA_LVL_1, 0);
-	AddLevelsCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y + 50, 170, 150, CB_TRA_LVL_2, 0);
-	AddLevelsCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y + 50, 170, 150, CB_TRA_LVL_3, 0);
-	AddLevelsCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y + 50, 170, 150, CB_TRA_LVL_4, 0);
-	AddLevelsCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y + 50, 170, 150, CB_TRA_LVL_5, 0);
-	AddLevelsCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y + 50, 170, 150, CB_TRA_LVL_6, 0);
+	AddPokemonCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y, 150, 150, CB_TRA_POKE1, 0);
+	AddPokemonCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y, 150, 150, CB_TRA_POKE2, 0);
+	AddPokemonCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y, 150, 150, CB_TRA_POKE3, 0);
+	AddPokemonCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y, 150, 150, CB_TRA_POKE4, 0);
+	AddPokemonCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y, 150, 150, CB_TRA_POKE5, 0);
+	AddPokemonCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y, 150, 150, CB_TRA_POKE6, 0);
+	AddMovesCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y + 100, 150, 150, CB_TRA_MOVE1_1, 0);
+	AddMovesCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y + 125, 150, 150, CB_TRA_MOVE1_2, 0);
+	AddMovesCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y + 150, 150, 150, CB_TRA_MOVE1_3, 0);
+	AddMovesCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y + 175, 150, 150, CB_TRA_MOVE1_4, 0);
+	AddItemsCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y + 225, 150, 150, CB_TRA_ITEM_1, 0);
+	AddMovesCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y + 100, 150, 150, CB_TRA_MOVE2_1, 0);
+	AddMovesCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y + 125, 150, 150, CB_TRA_MOVE2_2, 0);
+	AddMovesCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y + 150, 150, 150, CB_TRA_MOVE2_3, 0);
+	AddMovesCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y + 175, 150, 150, CB_TRA_MOVE2_4, 0);
+	AddItemsCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y + 225, 150, 150, CB_TRA_ITEM_2, 0);
+	AddMovesCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y + 100, 150, 150, CB_TRA_MOVE3_1, 0);
+	AddMovesCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y + 125, 150, 150, CB_TRA_MOVE3_2, 0);
+	AddMovesCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y + 150, 150, 150, CB_TRA_MOVE3_3, 0);
+	AddMovesCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y + 175, 150, 150, CB_TRA_MOVE3_4, 0);
+	AddItemsCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y + 225, 150, 150, CB_TRA_ITEM_3, 0);
+	AddMovesCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y + 100, 150, 150, CB_TRA_MOVE4_1, 0);
+	AddMovesCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y + 125, 150, 150, CB_TRA_MOVE4_2, 0);
+	AddMovesCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y + 150, 150, 150, CB_TRA_MOVE4_3, 0);
+	AddMovesCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y + 175, 150, 150, CB_TRA_MOVE4_4, 0);
+	AddItemsCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y + 225, 150, 150, CB_TRA_ITEM_4, 0);
+	AddMovesCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y + 100, 150, 150, CB_TRA_MOVE5_1, 0);
+	AddMovesCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y + 125, 150, 150, CB_TRA_MOVE5_2, 0);
+	AddMovesCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y + 150, 150, 150, CB_TRA_MOVE5_3, 0);
+	AddMovesCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y + 175, 150, 150, CB_TRA_MOVE5_4, 0);
+	AddItemsCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y + 225, 150, 150, CB_TRA_ITEM_5, 0);
+	AddMovesCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y + 100, 150, 150, CB_TRA_MOVE6_1, 0);
+	AddMovesCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y + 125, 150, 150, CB_TRA_MOVE6_2, 0);
+	AddMovesCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y + 150, 150, 150, CB_TRA_MOVE6_3, 0);
+	AddMovesCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y + 175, 150, 150, CB_TRA_MOVE6_4, 0);
+	AddItemsCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y + 225, 150, 150, CB_TRA_ITEM_6, 0);
+	AddLevelsCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y + 50, 150, 150, CB_TRA_LVL_1, 0);
+	AddLevelsCombo(hWnd, TRA_2_CONS_X, TRA_CONS_Y + 50, 150, 150, CB_TRA_LVL_2, 0);
+	AddLevelsCombo(hWnd, TRA_3_CONS_X, TRA_CONS_Y + 50, 150, 150, CB_TRA_LVL_3, 0);
+	AddLevelsCombo(hWnd, TRA_4_CONS_X, TRA_CONS_Y + 50, 150, 150, CB_TRA_LVL_4, 0);
+	AddLevelsCombo(hWnd, TRA_5_CONS_X, TRA_CONS_Y + 50, 150, 150, CB_TRA_LVL_5, 0);
+	AddLevelsCombo(hWnd, TRA_6_CONS_X, TRA_CONS_Y + 50, 150, 150, CB_TRA_LVL_6, 0);
 
 	CreateWindow(L"COMBOBOX", NULL, WS_CHILD | WS_VISIBLE | CBS_DROPDOWN |
 		CBS_HASSTRINGS | WS_VSCROLL, desk_width - 200, 100, 50, 150, hWnd, (HMENU)CB_TRAINER_CONTROL, NULL, NULL );
@@ -909,9 +896,9 @@ void ToggleRandomElements(bool update, HWND hWnd) {
 
 	ShowWindow(GetDlgItem(hWnd, CB_MIN_LVL), update);
 	ShowWindow(GetDlgItem(hWnd, CB_MAX_LVL), update);
+	ShowWindow(GetDlgItem(hWnd, CB_TAGS), update);
 
 	ShowWindow(GetDlgItem(hWnd, LB_TAGS), update);
-	ShowWindow(GetDlgItem(hWnd, LB_EXCLUSIVES), update);
 
 	SaveRandomOptions(hWnd);
 }
@@ -1085,6 +1072,8 @@ void ToggleEncountersTab(bool update, HWND hWnd) {
 
 	ShowWindow(GetDlgItem(hWnd, BTN_UPDATE_ENCOUNTER), update);
 	ShowWindow(GetDlgItem(hWnd, BTN_RAND_ENCOUNTER), update);
+
+	ShowWindow(GetDlgItem(hWnd, LB_EXCLUSIVES), update);
 }
 
 void SelectPokemon(HWND hWnd) {

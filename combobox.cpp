@@ -396,3 +396,14 @@ void ChangeEvoCombos(HWND met, HWND con, HWND poke, HWND stat) {
 
 
 }
+
+void CreateTagsCombo(HWND hWnd, int x, int y, int width, int height, int inst) {
+	std::vector<std::wstring> tags = GetTagNames();
+
+	CreateWindow(L"COMBOBOX", NULL, WS_VISIBLE | WS_CHILD | CBS_DROPDOWN |
+		CBS_HASSTRINGS | WS_VSCROLL, x, y, width, height, hWnd, (HMENU)inst, NULL, NULL);
+
+	for (std::wstring s : tags) {
+		SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)s.c_str());
+	}
+}

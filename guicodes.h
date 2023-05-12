@@ -247,12 +247,12 @@
 #define EVO_CONS_X 1005
 #define EVO_CONS_Y 100
 
-#define TRA_1_CONS_X 200
+#define TRA_1_CONS_X 220
 #define TRA_2_CONS_X 390
-#define TRA_3_CONS_X 580
-#define TRA_4_CONS_X 770
-#define TRA_5_CONS_X 960
-#define TRA_6_CONS_X 1150
+#define TRA_3_CONS_X 560
+#define TRA_4_CONS_X 730
+#define TRA_5_CONS_X 900
+#define TRA_6_CONS_X 1070
 #define TRA_CONS_Y 150
 
 #define ENC_CONS_X 210

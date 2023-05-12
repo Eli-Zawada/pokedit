@@ -56,6 +56,7 @@ std::vector<random_encounter> LoadMapProfile() {
 void DisplayRandomPokemon(HWND hWnd, byte id) {
 	random_pokemon selected = { 0 };
 	std::vector<random_pokemon> pokemon = LoadPokemonProfile();
+	std::vector<std::wstring> names = GetTagNames();
 	
 	for (random_pokemon p : pokemon) {
 		if (p.pokemon == id) {
@@ -67,6 +68,7 @@ void DisplayRandomPokemon(HWND hWnd, byte id) {
 	if (selected.pokemon != 0) {
 		SendMessage(GetDlgItem(hWnd, CB_MIN_LVL), CB_SETCURSEL, selected.level_min - 1, NULL);
 		SendMessage(GetDlgItem(hWnd, CB_MAX_LVL), CB_SETCURSEL, selected.level_max - 1, NULL);
+		
 		if (selected.morning == 1) {
 			SendMessage(GetDlgItem(hWnd, CHB_MOR), BM_SETCHECK, BST_CHECKED, NULL);
 		}
@@ -85,119 +87,62 @@ void DisplayRandomPokemon(HWND hWnd, byte id) {
 		else {
 			SendMessage(GetDlgItem(hWnd, CHB_NGT), BM_SETCHECK, BST_UNCHECKED, NULL);
 		}
-		if (selected.tags[10] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_GRASSLANDS), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_GRASSLANDS), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[11] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_FOREST), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_FOREST), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[9] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_FIELD), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_FIELD), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[2] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_SHORE), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_SHORE), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[3] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_SALT), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_SALT), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[4] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_FRESH), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_FRESH), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[0] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_RARE), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_RARE), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[1] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_LEGEND), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_LEGEND), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[5] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_CAVE), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_CAVE), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[6] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_MOUNTAIN), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_MOUNTAIN), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[7] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_URBAN), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_URBAN), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[8] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_RUINS), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_RUINS), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[12] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_HOT), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_HOT), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[13] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_COLD), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_COLD), BM_SETCHECK, BST_UNCHECKED, NULL);
-		}
-		if (selected.tags[14] == 1) {
-			SendMessage(GetDlgItem(hWnd, CHB_ELECTRIC), BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			SendMessage(GetDlgItem(hWnd, CHB_ELECTRIC), BM_SETCHECK, BST_UNCHECKED, NULL);
+
+		for (int i = 0; i < selected.tags.size(); i++) {
+			if (selected.tags[i] == 1) {
+				SendMessage(GetDlgItem(hWnd, LB_TAGS), LB_ADDSTRING, 0, (LPARAM)(names[i].c_str()));
+			}
 		}
 	}
 	else {
 		SendMessage(GetDlgItem(hWnd, CHB_MOR), BM_SETCHECK, BST_UNCHECKED, NULL);
 		SendMessage(GetDlgItem(hWnd, CHB_DAY), BM_SETCHECK, BST_UNCHECKED, NULL);
 		SendMessage(GetDlgItem(hWnd, CHB_NGT), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_GRASSLANDS), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_FOREST), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_FIELD), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_SHORE), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_SALT), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_FRESH), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_RARE), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_LEGEND), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_CAVE), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_MOUNTAIN), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_URBAN), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_RUINS), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_HOT), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_HOT), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_COLD), BM_SETCHECK, BST_UNCHECKED, NULL);
-		SendMessage(GetDlgItem(hWnd, CHB_ELECTRIC), BM_SETCHECK, BST_UNCHECKED, NULL);
 	}
 
+}
+
+void DisplayRandomMap(HWND hWnd, HTREEITEM hti) {
+	HWND hWndtv = GetDlgItem(hWnd, TV_ENCOUNTERS);
+	random_encounter selected = { 0 };
+	std::vector<random_encounter> map = LoadMapProfile();
+	std::vector<std::wstring> names = GetTagNames();
+	byte group = 0;
+	byte id = 0;
+
+	SendMessage(GetDlgItem(hWnd, LB_TAGS), LB_RESETCONTENT, NULL, NULL);
+
+	TVITEM it;
+	it.mask = TVIF_PARAM;
+	it.hItem = hti;
+	it.lParam = NULL;
+
+	TreeView_GetItem(hWndtv, &it);
+	id = (byte)it.lParam;
+
+	hti = TreeView_GetParent(hWndtv, hti);
+	it.hItem = hti;
+	TreeView_GetItem(hWndtv, &it);
+	group = (byte)it.lParam;
+
+	for (random_encounter m : map) {
+		if (m.map_group == group && m.map_id == id) {
+			selected = m;
+			break;
+		}
+	}
+
+	SendMessage(GetDlgItem(hWnd, CB_MIN_LVL), CB_SETCURSEL, selected.level_min - 1, NULL);
+	SendMessage(GetDlgItem(hWnd, CB_MAX_LVL), CB_SETCURSEL, selected.level_max - 1, NULL);
+
+	for (int i = 0; i < selected.tags.size(); i++) {
+		if (CheckBit(selected.tags[i], 7) == 1 && selected.tags[i]%128 > 0) {
+			SendMessage(GetDlgItem(hWnd, LB_EXCLUSIVES), LB_ADDSTRING, 0, (LPARAM)(names[i].c_str()));
+		}
+		if (CheckBit(selected.tags[i], 7) == 0 && selected.tags[i] > 0) {
+			SendMessage(GetDlgItem(hWnd, LB_TAGS), LB_ADDSTRING, 0, (LPARAM)(names[i].c_str()));
+		}
+	}
 }
 
 std::vector<random_pokemon> GeneratePokemonList(HWND hWnd) {
@@ -684,4 +629,8 @@ int RandomizeTables(std::vector<byte>& data) {
 	}
 
 	return 0;
+}
+
+std::vector<std::wstring> GetTagNames() {
+	return tag_names;
 }

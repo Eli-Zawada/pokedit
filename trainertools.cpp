@@ -177,13 +177,13 @@ void GetTrainerData(std::vector<byte>& data, HTREEITEM item, HWND hWnd) {
 			SendMessage(GetDlgItem(hWnd, CB_TRA_ITEM_1 + (i * 5)), CB_SETCURSEL, (WPARAM)poke.item, 0);
 
 			exp = GetBaseExp(data, poke.pokemon) * (int)poke.level * 1.5 / 7;
-			SetDlgItemText(hWnd, STC_POKE_EXP1 + i, std::to_wstring(exp).c_str());
+			SetDlgItemText(hWnd, STC_POKE_EXP1 + i, (std::to_wstring(exp) + L"  XP").c_str());
 			exp_total += exp;
 		}
 
 	}
 
-	SetDlgItemText(hWnd, STC_EXP_TOTAL, std::to_wstring(exp_total).c_str());
+	SetDlgItemText(hWnd, STC_EXP_TOTAL, (std::to_wstring(exp_total) + L"  XP").c_str());
 
 	DisableTrainerControls(hWnd, control);
 

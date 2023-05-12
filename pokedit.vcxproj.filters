@@ -51,6 +51,15 @@
     <ClInclude Include="trainertools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="encounters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="randomencounters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="profile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -72,6 +81,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="trainertools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="encounters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="randomize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="address.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
