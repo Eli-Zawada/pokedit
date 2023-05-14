@@ -72,6 +72,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case SAVE_FILE:
 			SaveFile(hWnd);
 			break;
+		case SAVE_PROFILE:
+			SaveProfile(hWnd);
+			break;
+		case OPEN_PROFILE:
+			OpenProfile(hWnd);
+			break;
 		case BTN_ROM:
 			SelectRom(GetDlgItem(hWnd, CB_ROM));
 			if (rom.empty() == false) {
@@ -364,6 +370,7 @@ HWND CreateCheckBox(HWND hWnd, std::wstring name, int x, int y, int w, int h, in
 void AddMenus(HWND hWnd) {
 	hMenu = CreateMenu();
 	HMENU hFileMenu = CreateMenu();
+	HMENU hProfileMenu = CreateMenu();
 
 	AppendMenu(hFileMenu, MF_STRING, OPEN_FILE, L"Open");
 	AppendMenu(hFileMenu, MF_SEPARATOR, NULL, NULL);
@@ -372,6 +379,12 @@ void AddMenus(HWND hWnd) {
 	AppendMenu(hFileMenu, MF_STRING, CLOSE_WINDOW, L"Exit");
 
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"File");
+
+	AppendMenu(hProfileMenu, MF_STRING, OPEN_PROFILE, L"Open");
+	AppendMenu(hProfileMenu, MF_SEPARATOR, NULL, NULL);
+	AppendMenu(hProfileMenu, MF_STRING, SAVE_PROFILE, L"Save");
+
+	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hProfileMenu, L"Profiles");
 
 	SetMenu(hWnd, hMenu);
 }
@@ -816,6 +829,52 @@ void SaveFile(HWND hWnd) {
 
 	if (ofn.lpstrFile[0] != '\0') {
 		SaveData(rom, ofn.lpstrFile);
+		MessageBox(NULL, ofn.lpstrFile, L"", MB_OK);
+	}
+}
+
+void OpenProfile(HWND hWnd) {
+	OPENFILENAME ofn;
+
+	wchar_t file_name[100];
+
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = hWnd;
+	ofn.lpstrFile = file_name;
+	ofn.lpstrFile[0] = '\0';
+	ofn.nMaxFile = 100;
+	ofn.lpstrFilter = L"Profile Files\0*.pl\0";
+	ofn.nFilterIndex = 1;
+
+	GetOpenFileName(&ofn);
+
+	if (ofn.lpstrFile[0] != '\0') {
+		LoadProfileData(ofn.lpstrFile);
+	}
+
+}
+
+void SaveProfile(HWND hWnd) {
+	OPENFILENAME ofn;
+
+	wchar_t file_name[100];
+
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = hWnd;
+	ofn.lpstrFile = file_name;
+	ofn.lpstrFile[0] = '\0';
+	ofn.nMaxFile = 100;
+	ofn.lpstrFilter = L"Profile Files\0*.pl\0";
+	ofn.nFilterIndex = 1;
+
+	GetSaveFileName(&ofn);
+
+	if (ofn.lpstrFile[0] != '\0') {
+		SaveProfileData(ofn.lpstrFile);
 		MessageBox(NULL, ofn.lpstrFile, L"", MB_OK);
 	}
 }

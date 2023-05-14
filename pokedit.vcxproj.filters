@@ -92,6 +92,9 @@
     <ClCompile Include="address.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="profile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="pokedit.rc">

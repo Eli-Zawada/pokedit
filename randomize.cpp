@@ -6,56 +6,9 @@
 #include "main.h"
 #include "guicodes.h"
 
-std::vector<random_pokemon> LoadPokemonProfile() {
-	return std::vector<random_pokemon> {
-		bulbasaur, ivysaur, venusaur, charmander, charmeleon, charizard, squirtle, wartortle, blastoise,
-		caterpie, metapod, butterfree, weedle, kakuna, beedrill, pidgey, pidgeotto, pidgeot, rattata,
-		ratticate, spearow, fearow, ekans, arbok, pikachu, raichu, sandshrew, sandslash, nidoranf,
-		nidorina, nidoqueen, nidoranm, nidorino, nidoking, clefairy, clefable, vulpix, ninetails,
-		jigglypuff, wigglytuff, zubat, golbat, oddish, gloom, vileplume, paras, parasect, venonat,
-		venomoth, diglett, dugtrio, meowth, persian, psyduck, golduck, mankey, primeape, growlithe,
-		arcanine, poliwag, poliwhirl, poliwrath, abra, kadabra, alakazam, machop, machoke, machamp,
-		bellsprout, weepinbell, victreebel, tentacool, tentacruel, geodude, graveler, golem, ponyta,
-		rapidash, slowpoke, slowbro, magnemite, magneton, farfetchd, doduo, dodrio, seel, dewgong,
-		grimer, muk, shellder, cloyster, gastly, haunter, gengar, onix, drowzee, hypno, krabby, kingler, 
-		voltorb, electrode, exeggcute, exeggutor, cubone, marowak, hitmonlee, hitmonchan, lickitung,
-		koffing, weezing, rhyhorn, rhydon, chansey, tangela, kangaskhan, horsea, seadra, goldeen, seaking,
-		staryu, starmie, mrmime, scyther, jynx, electabuzz, magmar, pinsir, tauros, magikarp, gyarados,
-		lapras, ditto, eevee, vaporeon, jolteon, flareon, porygon, omanyte, omastar, kabuto, kabutops,
-		aerodactyl, snorlax, articuno, zapdos, moltres, dratini, dragonair, dragonite, mewtwo, mew,
-		chikorita, bayleef, meganium, cyndaquil, quilava, typhlosion, totodile, croconaw, feraligatr,
-		sentret, furret, hoothoot, noctowl, ledyba, ledian, spinarak, ariados, crobat, chinchou, lanturn,
-		pichu, cleffa, igglybuff, togepi, togetic, natu, xatu, mareep, flaaffy, ampharos, bellossom,
-		marill, azumarill, sudowoodo, politoed, hoppip, skiploom, jumpluff, aipom, sunkern, sunflora,
-		yanma, wooper, quagsire, espeon, umbreon, murkrow, slowking, misdreavus, unown, wobbuffet,
-		girafarig, pineco, forretress, dunsparce, gligar, steelix, snubbull, granbull, qwilfish, scizor,
-		shuckle, heracross, sneasel, teddiursa, ursaring, slugma, magcargo, swinub, piloswine, corsola,
-		remoraid, octillery, delibird, mantine, skarmory, houndour, houndoom, kingdra, phanpy, donphan,
-		porygon2, stantler, smeargle, tyrogue, hitmontop, smoochum, elekid, magby, miltank, blissey,
-		raikou, entei, suicune, larvitar, pupitar, tyranitar, lugia, hooh, celebi
-	};
-}
-
-std::vector<random_encounter> LoadMapProfile() {
-	return std::vector<random_encounter> {
-		g1mC,	g1mD,	g1mE,	g2m5,	g2m6,	g3m2,	g3m3,	g3m5,	g3m6,	g3m7,
-		g3m8,	g3m9,	g3mA,	g3mB,	g3mC,	g3mD,	g3mE,	g3mF,	g3m16,	g3m1B,
-		g3m1D,	g3m1E,	g3m1F,	g3m20,	g3m21,	g3m2C,	g3m31,	g3m32,	g3m33,	g3m34, 
-		g3m35,	g3m36,	g3m37,	g3m38,	g3m39,	g3m3A,	g3m3B,	g3m3C,	g3m3D,	g3m3E,
-		g3m3F,	g3m40,	g3m41,	g3m42,	g3m43,	g3m44,	g3m45,	g3m46,	g3m47,	g3m49,
-		g3m4A,	g3m4B,	g3m4C,	g3m4E,	g3m4F,	g3m52,	g4m9,	g5m8,	g5m9,	g5mA,
-		g6m5,	g6m6,	g6m7,	g6m8,	g7mC,	g7mD,	g7mE,	g7mF,	g7m10,	g7m11,
-		g8m6,	g9m5,	g9m6,	gAm1,	gAm2,	gAm3,	gAm4,	gAm5,	gBm1,	gCm1,
-		gCm2,	gCm3,	gDm1,	gDm2,	gEm1,	gFm1,	gFm2,	g11m1,	g11m2,	g11m3,
-		g11m4,	g11m5,	g12m1,	g12m2,	g13m1,	g13m2,	g15m1,	g15m2,	g15m3,	g15m4,
-		g16m1,	g16m2,	g16m3,	g17m1,	g17m2,	g17m3,	g18m1,	g18m2,	g18m3,	g18m4,
-		g19m1,	g1Am1,	g1Am2, g1Am3
-	};
-}
-
 void DisplayRandomPokemon(HWND hWnd, byte id) {
 	random_pokemon selected = { 0 };
-	std::vector<random_pokemon> pokemon = LoadPokemonProfile();
+	std::vector<random_pokemon> pokemon = GetPokemonProfile();
 	std::vector<std::wstring> names = GetTagNames();
 	
 	for (random_pokemon p : pokemon) {
@@ -105,7 +58,7 @@ void DisplayRandomPokemon(HWND hWnd, byte id) {
 void DisplayRandomMap(HWND hWnd, HTREEITEM hti) {
 	HWND hWndtv = GetDlgItem(hWnd, TV_ENCOUNTERS);
 	random_encounter selected = { 0 };
-	std::vector<random_encounter> map = LoadMapProfile();
+	std::vector<random_encounter> map = GetMapProfile();
 	std::vector<std::wstring> names = GetTagNames();
 	byte group = 0;
 	byte id = 0;
@@ -146,7 +99,7 @@ void DisplayRandomMap(HWND hWnd, HTREEITEM hti) {
 }
 
 std::vector<random_pokemon> GeneratePokemonList(HWND hWnd) {
-	std::vector<random_pokemon> profile = LoadPokemonProfile();
+	std::vector<random_pokemon> profile = GetPokemonProfile();
 	std::vector<random_pokemon> list;
 	bool added = false;
 	bool b = false;
@@ -267,112 +220,12 @@ std::vector<random_pokemon> GeneratePokemonList(HWND hWnd) {
 	return list;
 }
 
-std::vector<random_pokemon> GGeneratePokemonList(random_encounter enc, byte bit) {
-	std::vector<random_pokemon> profile = LoadPokemonProfile();
-	std::vector<random_pokemon> list;
-	bool added = false;
-	bool b = false;
-
-	for (random_pokemon p : profile) {
-
-		b = (p.tags[10] == CheckBit(enc.tags[10], bit));
-		if (p.tags[10] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[11] == CheckBit(enc.tags[11], bit));
-		if (p.tags[11] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[9] == CheckBit(enc.tags[9], bit));
-		if (p.tags[9] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[2] == CheckBit(enc.tags[2], bit));
-		if (p.tags[2] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[3] == CheckBit(enc.tags[3], bit));
-		if (p.tags[3] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[4] == CheckBit(enc.tags[4], bit));
-		if (p.tags[4] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[0] == enc.tags[0]);
-		if (p.tags[0] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[5] == CheckBit(enc.tags[5], bit));
-		if (p.tags[5] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[6] == CheckBit(enc.tags[6], bit));
-		if (p.tags[6] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[7] == CheckBit(enc.tags[7], bit));
-		if (p.tags[7] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[8] == CheckBit(enc.tags[8], bit));
-		if (p.tags[8] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[12] == CheckBit(enc.tags[12], bit));
-		if (p.tags[12] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[13] == CheckBit(enc.tags[13], bit));
-		if (p.tags[13] == true && b == true) {
-			added = true;
-		}
-
-		b = (p.tags[14] == CheckBit(enc.tags[14], bit));
-		if (p.tags[14] == true && b == true) {
-			added = true;
-		}
-
-		if (p.level_min < enc.level_min && p.level_max < enc.level_max) {
-			added = false;
-		}
-
-		if (p.level_min > enc.level_min && p.level_max > enc.level_max) {
-			added = false;
-		}
-
-		b = (p.tags[1] == enc.tags[1]);
-		if (p.tags[1] == true && b == false) {
-			added = false;
-		}
-
-		if (added == true) {
-			list.push_back(p);
-		}
-		added = false;
-	}
-
-	return list;
-}
-
 std::vector<random_pokemon> GeneratePokemonList(random_encounter enc, byte bit) {
-	std::vector<random_pokemon> profile = LoadPokemonProfile();
+	std::vector<random_pokemon> profile = GetPokemonProfile();
 	std::vector<random_pokemon> list;
 	bool added = false;
 	bool b = false;
-	unsigned int size = tag_names.size();
+	unsigned int size = GetTagNames().size();
 
 	for (random_pokemon p : profile) {
 
@@ -620,7 +473,7 @@ int RandomizeSurfEntry(std::vector<byte>& data, random_encounter enc) {
 }
 
 int RandomizeTables(std::vector<byte>& data) {
-	std::vector<random_encounter> maps = LoadMapProfile();
+	std::vector<random_encounter> maps = GetMapProfile();
 	int size_m = maps.size();
 
 	for (int i = 0; i < size_m; i++) {
@@ -629,8 +482,4 @@ int RandomizeTables(std::vector<byte>& data) {
 	}
 
 	return 0;
-}
-
-std::vector<std::wstring> GetTagNames() {
-	return tag_names;
 }

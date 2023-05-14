@@ -20,6 +20,8 @@ void AddTrainerControls(HWND hWnd);
 void AddEncounterControls(HWND hWnd);
 void OpenFile(HWND hWnd);
 void SaveFile(HWND hWnd);
+void SaveProfile(HWND hWnd);
+void OpenProfile(HWND hWnd);
 void SaveRandomOptions(HWND hWnd);
 void TogglePokemonEnables(bool update, HWND hWnd);
 void ToggleRandomElements(bool update, HWND hWnd);

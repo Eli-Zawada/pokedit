@@ -1,4 +1,5 @@
 #include "combobox.h"
+#include "profile.h"
 
 HWND AddPokemonCombo(HWND hWnd, int x, int y, int width, int height, int inst, int control) {
 	HWND poke = CreateWindow(L"COMBOBOX", NULL, WS_VISIBLE | WS_CHILD | CBS_DROPDOWN |

@@ -1,8 +1,10 @@
 #pragma once
 
-#define CLOSE_WINDOW 2000
+#define CLOSE_WINDOW 1
 #define OPEN_FILE 2
 #define SAVE_FILE 3
+#define OPEN_PROFILE 4
+#define SAVE_PROFILE 5
 
 #define CHB_RARE 2001
 #define CHB_LEGEND 2002

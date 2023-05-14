@@ -31,9 +31,9 @@ struct random_pokemon {
 	byte level_min;
 	byte level_max;
 
-	bool morning, day, night;
+	byte morning, day, night;
 
-	std::vector<bool> tags = std::vector<bool>(15);
+	std::vector<byte> tags = std::vector<byte>();
 };
 
 struct random_encounter {
@@ -43,12 +43,14 @@ struct random_encounter {
 	byte level_min;
 	byte level_max;
 
-	std::vector<byte> tags = std::vector<byte>(15);
+	std::vector<byte> tags = std::vector<byte>();
 };
 
 unsigned int GetFileSize(std::wstring fileName);
 std::vector<byte> LoadData(std::wstring fileName);
 void SaveData(std::vector<byte>& vec, std::wstring fileName);
+void SaveProfileData(std::wstring fileName);
+void LoadProfileData(std::wstring fileName);
 std::vector<byte> CopyData(std::vector<byte>& data, unsigned int start_address, unsigned int end_address);
 void PasteData(std::vector<byte>& data, unsigned int start_address, std::vector<byte>& copy);
 bool CheckForRom(std::vector<byte> rom);

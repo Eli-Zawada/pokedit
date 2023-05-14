@@ -164,6 +164,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pointerstool.cpp" />
     <ClCompile Include="pokemontools.cpp" />
+    <ClCompile Include="profile.cpp" />
     <ClCompile Include="randomize.cpp" />
     <ClCompile Include="trainertools.cpp" />
   </ItemGroup>
