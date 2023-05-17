@@ -11,6 +11,7 @@
 #include "pokemontools.h"
 #include "randomencounters.h"
 #include "trainertools.h"
+#include "profile.h"
 
 std::vector<BYTE> rom;
 
@@ -241,8 +242,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			//RandomizeEncounters(hWnd);
 			RandomizeTables(rom);
 			break;
-		}
 
+		case BTN_ADD_TAG:
+			AddTag(hWnd);
+			break;
+		}
 
 		if (CBN_SELCHANGE == HIWORD(wParam)) {
 			if (LOWORD(wParam) == CB_POKEMON) {
@@ -541,14 +545,15 @@ void AddPokemonControls(HWND hWnd) {
 	CreateWindow(L"Button", L"Add", WS_VISIBLE | WS_CHILD, EVO_CONS_X, EVO_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_ADD_EVO, NULL, NULL);
 	CreateWindow(L"Button", L"Delete", WS_VISIBLE | WS_CHILD, EVO_CONS_X + 75, EVO_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_DEL_EVO, NULL, NULL);
 	CreateWindow(L"Button", L"Synch", WS_VISIBLE | WS_CHILD, EVO_CONS_X + 75, ROM_CONS_Y, 50, 25, hWnd, (HMENU)BTN_SYNCH_POKE, NULL, NULL);
+	CreateWindow(L"Button", L"Add", WS_VISIBLE | WS_CHILD, RAND_CONS_X + 800, RAND_CONS_Y + 75, 50, 25, hWnd, (HMENU)BTN_ADD_TAG, NULL, NULL);
 
-	
 	CreateCheckBox(hWnd, L"Morning", RAND_CONS_X + 100, RAND_CONS_Y, 100, 25, CHB_MOR);
 	CreateCheckBox(hWnd, L"Day", RAND_CONS_X + 100, RAND_CONS_Y + 25, 100, 25, CHB_DAY);
 	CreateCheckBox(hWnd, L"Night", RAND_CONS_X + 100, RAND_CONS_Y + 50, 100, 25, CHB_NGT);
+	CreateCheckBox(hWnd, L"Exclusive", RAND_CONS_X + 800, RAND_CONS_Y + 25, 100, 25, CHB_EXCLUSIVE);
+
 	CreateWindow(L"ListBox", L"Tags", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, RAND_CONS_X + 400, RAND_CONS_Y, 150, 100, hWnd, (HMENU)LB_TAGS, NULL, NULL);
 	CreateWindow(L"ListBox", L"Tags", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, RAND_CONS_X + 600, RAND_CONS_Y, 150, 100, hWnd, (HMENU)LB_EXCLUSIVES, NULL, NULL);
-
 	CreateWindow(L"ListBox", L"Level", WS_VISIBLE | WS_CHILD | WS_BORDER, LVL_CONS_X, LVL_CONS_Y + 75, 150, 300, hWnd, (HMENU)LB_LEVEL, NULL, NULL);
 	CreateWindow(L"ListBox", L"Egg Moves", WS_VISIBLE | WS_CHILD | WS_BORDER, EGG_CONS_X, EGG_CONS_Y + 75, 150, 300, hWnd, (HMENU)LB_EGG_MOVES, NULL, NULL);
 	CreateWindow(L"ListBox", L"TMs", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, TM_CONS_X, TM_CONS_Y + 75, 170, 300, hWnd, (HMENU)LB_TMS, NULL, NULL);
@@ -563,6 +568,7 @@ void AddPokemonControls(HWND hWnd) {
 	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 25, 100, 20, hWnd, (HMENU)EB_CR, NULL, NULL);
 	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 75, 100, 20, hWnd, (HMENU)EB_BASE_EXP, NULL, NULL);
 	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 225, 100, 20, hWnd, (HMENU)EB_HATCH_STEP, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, RAND_CONS_X + 800, RAND_CONS_Y, 150, 25, hWnd, (HMENU)EB_TAG_NAMES, NULL, NULL);
 
 	TogglePokemonEnables(false, hWnd);
 	EnableWindow(GetDlgItem(hWnd, CB_EVO_CON), false);
@@ -885,12 +891,12 @@ void SaveRandomOptions(HWND hWnd) {
 	unsigned int temp;
 	int n;
 
-	for (int i = 0; i < 18; i++) {
-		temp = SendMessage(GetDlgItem(hWnd, CHB_RARE + i), BM_GETCHECK, NULL, NULL);
+	for (int i = 0; i < 3; i++) {
+		temp = SendMessage(GetDlgItem(hWnd, CHB_MOR + i), BM_GETCHECK, NULL, NULL);
 		if (values[i] != 0) {
-			SendMessage(GetDlgItem(hWnd, CHB_RARE + i), BM_SETCHECK, values[i], NULL);
+			SendMessage(GetDlgItem(hWnd, CHB_MOR + i), BM_SETCHECK, values[i], NULL);
 		}
-		else SendMessage(GetDlgItem(hWnd, CHB_RARE + i), BM_SETCHECK, BST_UNCHECKED, NULL);
+		else SendMessage(GetDlgItem(hWnd, CHB_MOR + i), BM_SETCHECK, BST_UNCHECKED, NULL);
 		values[i] = temp;
 	}
 
@@ -934,30 +940,19 @@ void TogglePokemonEnables(bool update, HWND hWnd) {
 }
 
 void ToggleRandomElements(bool update, HWND hWnd) {
-	ShowWindow(GetDlgItem(hWnd, CHB_RARE), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_LEGEND), update);
+	ShowWindow(GetDlgItem(hWnd, CHB_EXCLUSIVE), update);
 	ShowWindow(GetDlgItem(hWnd, CHB_MOR), update);
 	ShowWindow(GetDlgItem(hWnd, CHB_DAY), update);
 	ShowWindow(GetDlgItem(hWnd, CHB_NGT), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_HOT), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_COLD), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_ELECTRIC), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_GRASSLANDS), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_FOREST), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_FIELD), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_MOUNTAIN), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_CAVE), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_URBAN), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_RUINS), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_SHORE), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_SALT), update);
-	ShowWindow(GetDlgItem(hWnd, CHB_FRESH), update);
 
 	ShowWindow(GetDlgItem(hWnd, CB_MIN_LVL), update);
 	ShowWindow(GetDlgItem(hWnd, CB_MAX_LVL), update);
 	ShowWindow(GetDlgItem(hWnd, CB_TAGS), update);
 
 	ShowWindow(GetDlgItem(hWnd, LB_TAGS), update);
+	ShowWindow(GetDlgItem(hWnd, EB_TAG_NAMES), update);
+
+	ShowWindow(GetDlgItem(hWnd, BTN_ADD_TAG), update);
 
 	SaveRandomOptions(hWnd);
 }

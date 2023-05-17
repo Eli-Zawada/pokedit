@@ -11,7 +11,7 @@ void DisplayRandomPokemon(HWND hWnd, byte id) {
 	std::vector<random_pokemon> pokemon = GetPokemonProfile();
 	std::vector<std::wstring> names = GetTagNames();
 	
-	for (random_pokemon p : pokemon) {
+	for (random_pokemon& p : pokemon) {
 		if (p.pokemon == id) {
 			selected = p;
 			break;
@@ -121,81 +121,6 @@ std::vector<random_pokemon> GeneratePokemonList(HWND hWnd) {
 			added = true;
 		}
 
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_GRASSLANDS), BM_GETCHECK, NULL, NULL));
-		if (p.tags[10] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_FOREST), BM_GETCHECK, NULL, NULL));
-		if (p.tags[11] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_FIELD), BM_GETCHECK, NULL, NULL));
-		if (p.tags[9] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_SHORE), BM_GETCHECK, NULL, NULL));
-		if (p.tags[2] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_SALT), BM_GETCHECK, NULL, NULL));
-		if (p.tags[3] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_FRESH), BM_GETCHECK, NULL, NULL));
-		if (p.tags[4] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_RARE), BM_GETCHECK, NULL, NULL));
-		if (p.tags[0] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_LEGEND), BM_GETCHECK, NULL, NULL));
-		if (p.tags[1] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_CAVE), BM_GETCHECK, NULL, NULL));
-		if (p.tags[5] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_MOUNTAIN), BM_GETCHECK, NULL, NULL));
-		if (p.tags[6] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_URBAN), BM_GETCHECK, NULL, NULL));
-		if (p.tags[7] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_RUINS), BM_GETCHECK, NULL, NULL));
-		if (p.tags[8] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_HOT), BM_GETCHECK, NULL, NULL));
-		if (p.tags[12] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_COLD), BM_GETCHECK, NULL, NULL));
-		if (p.tags[13] == true && b == true) {
-			added = true;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_ELECTRIC), BM_GETCHECK, NULL, NULL));
-		if (p.tags[14] == true && b == true) {
-			added = true;
-		}
-
 		if (p.level_min < SendMessage(GetDlgItem(hWnd, CB_MIN_LVL), CB_GETCURSEL, NULL, NULL) + 1 &&
 			p.level_max < SendMessage(GetDlgItem(hWnd, CB_MIN_LVL), CB_GETCURSEL, NULL, NULL) + 1) {
 			added = false;
@@ -203,11 +128,6 @@ std::vector<random_pokemon> GeneratePokemonList(HWND hWnd) {
 
 		if (p.level_min > SendMessage(GetDlgItem(hWnd, CB_MAX_LVL), CB_GETCURSEL, NULL, NULL) + 1 &&
 			p.level_max > SendMessage(GetDlgItem(hWnd, CB_MAX_LVL), CB_GETCURSEL, NULL, NULL) + 1) {
-			added = false;
-		}
-
-		b = (BST_CHECKED == SendMessage(GetDlgItem(hWnd, CHB_LEGEND), BM_GETCHECK, NULL, NULL));
-		if (p.tags[1] == true && b == false) {
 			added = false;
 		}
 

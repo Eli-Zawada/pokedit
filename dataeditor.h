@@ -37,7 +37,6 @@ struct random_pokemon {
 };
 
 struct random_encounter {
-	//std::wstring name;
 	byte map_group;
 	byte map_id;
 	byte level_min;

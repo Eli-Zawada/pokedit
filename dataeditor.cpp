@@ -93,7 +93,7 @@ void SaveProfileData(std::wstring fileName) {
 	typename std::vector<random_pokemon>::size_type size_p = poke.size();
 	profile.write((char*)&size_p, sizeof(size_p));//Get the Size of the Pokemon Profile
 
-	for (random_pokemon p : poke) {
+	for (random_pokemon& p : poke) {
 		profile.write((char*)&p.pokemon, sizeof(byte));
 		profile.write((char*)&p.level_min, sizeof(byte));
 		profile.write((char*)&p.level_max, sizeof(byte));
@@ -108,7 +108,7 @@ void SaveProfileData(std::wstring fileName) {
 	typename std::vector<random_encounter>::size_type size_e = enc.size();
 	profile.write((char*)&size_e, sizeof(size_e));
 
-	for (random_encounter e : enc) {
+	for (random_encounter& e : enc) {
 		profile.write((char*)&e.map_group, sizeof(byte));
 		profile.write((char*)&e.map_id, sizeof(byte));
 		profile.write((char*)&e.level_min, sizeof(byte));
@@ -120,7 +120,7 @@ void SaveProfileData(std::wstring fileName) {
 	typename std::vector<std::wstring>::size_type size_n = tags.size();
 	profile.write((char*)&size_n, sizeof(size_n));
 
-	for (std::wstring n : tags) {
+	for (std::wstring& n : tags) {
 
 		WriteString(profile, n);
 	}

@@ -6,24 +6,12 @@
 #define OPEN_PROFILE 4
 #define SAVE_PROFILE 5
 
-#define CHB_RARE 2001
-#define CHB_LEGEND 2002
-#define CHB_MOR 2003
-#define CHB_DAY 2004
-#define CHB_NGT 2005
-#define CHB_SHORE 2006
-#define CHB_SALT 2007
-#define CHB_FRESH 2008
-#define CHB_CAVE 2009
-#define CHB_MOUNTAIN 2010
-#define CHB_GRASSLANDS 2011
-#define CHB_FIELD 2012
-#define CHB_FOREST 2013
-#define CHB_URBAN 2014
-#define CHB_RUINS 2015
-#define CHB_HOT 2016
-#define CHB_COLD 2017
-#define CHB_ELECTRIC 2018
+
+#define CHB_MOR 2000
+#define CHB_DAY 2001
+#define CHB_NGT 2002
+#define CHB_EXCLUSIVE 2003
+
 
 #define CB_POKEMON 3000
 #define CB_MOVES 3001
@@ -159,6 +147,7 @@
 #define BTN_UPDATE_ENCOUNTER 113
 #define BTN_SYNCH_POKE 114
 #define BTN_RAND_ENCOUNTER 115
+#define BTN_ADD_TAG 116
 
 #define IDC_TAB 200
 
@@ -181,6 +170,7 @@
 #define EB_HATCH_STEP 1018
 #define EB_TRAINER_NAME 1019
 #define LB_EXCLUSIVES 1020
+#define EB_TAG_NAMES 1021
 
 #define STC_MOVE_LEVEL 1100
 #define STC_MOVE_EGG 1101

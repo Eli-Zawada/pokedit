@@ -1,5 +1,6 @@
 #pragma once
 #include "dataeditor.h"
+#include "guicodes.h"
 
 std::vector<random_pokemon> LoadDefaultPokemonProfile();
 std::vector<random_pokemon> GetPokemonProfile();
@@ -11,3 +12,4 @@ void SetMapProfile(std::vector<random_encounter>& m);
 
 std::vector<std::wstring> GetTagNames();
 void SetTagNames(std::vector<std::wstring>& s);
+void AddTag(HWND hWnd);

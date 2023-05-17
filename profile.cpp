@@ -5191,3 +5191,29 @@ std::vector<std::wstring> GetTagNames() {
 void SetTagNames(std::vector<std::wstring>& s) {
 	tag_names = s;
 }
+
+void AddTag(HWND hWnd) {
+	std::vector<std::wstring> tags = GetTagNames();
+	std::vector<random_pokemon> poke = GetPokemonProfile();
+	std::vector<random_encounter> maps = GetMapProfile();
+	wchar_t input[20] = {L'\0'};
+
+	GetWindowText(GetDlgItem(hWnd, EB_TAG_NAMES), input, 20);
+
+	tags.push_back(input);
+	SetTagNames(tags);
+
+	SendMessage(GetDlgItem(hWnd, CB_TAGS), CB_ADDSTRING, 0, (LPARAM)input);
+
+	for (random_pokemon& p : poke) {
+		p.tags.push_back(0);
+	}
+
+	SetPokemonProfile(poke);
+
+	for (random_encounter& e : maps) {
+		e.tags.push_back(0);
+	}
+
+	SetMapProfile(maps);
+}
