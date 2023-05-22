@@ -1269,3 +1269,156 @@ byte FindPokemonFamily(std::vector<byte>& data, byte pokemon) {
 
 	return pokemon;
 }
+
+byte GetRedValue(std::vector<byte>& data, HWND hWnd, byte pal) {
+	unsigned int current = GetAddress(ADD_POKEMON_COLORS);
+	byte id = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, 0, 0);
+	byte buff = 0;
+	byte red = 0;
+
+	if (data.size() == 0) return 0xFF;
+
+	current += (id * 8) + (pal * 2);
+
+	red = data[current++];
+	red &= 0x1F;//Keep bits 0001 1111
+
+	switch (pal) {
+	case 0:
+		SetDlgItemText(hWnd, EB_POKE_RED1, std::to_wstring(InterpretNumbers(red) * 8).c_str());
+		break;
+	case 1:
+		SetDlgItemText(hWnd, EB_POKE_RED2, std::to_wstring(InterpretNumbers(red) * 8).c_str());
+		break;
+	case 2:
+		SetDlgItemText(hWnd, EB_SHINY_RED1, std::to_wstring(InterpretNumbers(red) * 8).c_str());
+		break;
+	case 3:
+		SetDlgItemText(hWnd, EB_SHINY_RED2, std::to_wstring(InterpretNumbers(red) * 8).c_str());
+		break;
+	}
+
+	return red * 8;
+}
+
+byte GetGreenValue(std::vector<byte>& data, HWND hWnd, byte pal) {
+	unsigned int current = GetAddress(ADD_POKEMON_COLORS);
+	byte id = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, 0, 0);
+	byte buff = 0;
+	byte green = 0;
+
+	if (data.size() == 0) return 0xFF;
+
+	current += (id * 8) + (pal * 2);
+
+	green = data[current++];
+	green = green >> 5;//1110 0000 -> 0000 0111
+	green &= 7;//Keep bits 0000 0111
+	buff = data[current++];
+	buff &= 0x03;//Keep bits 0000 0011
+	buff = buff << 3;//0000 0011 -> 0001 1000
+	green += buff;//Merge bits 0001 1000 + 0000 0111 = 0001 1111
+
+	switch (pal) {
+	case 0:
+		SetDlgItemText(hWnd, EB_POKE_GRN1, std::to_wstring(InterpretNumbers(green) * 8).c_str());
+		break;
+	case 1:
+		SetDlgItemText(hWnd, EB_POKE_GRN2, std::to_wstring(InterpretNumbers(green) * 8).c_str());
+		break;
+	case 2:
+		SetDlgItemText(hWnd, EB_SHINY_GRN1, std::to_wstring(InterpretNumbers(green) * 8).c_str());
+		break;
+	case 3:
+		SetDlgItemText(hWnd, EB_SHINY_GRN2, std::to_wstring(InterpretNumbers(green) * 8).c_str());
+		break;
+	}
+
+	return green * 8;
+}
+
+byte GetBlueValue(std::vector<byte>& data, HWND hWnd, byte pal) {
+	unsigned int current = GetAddress(ADD_POKEMON_COLORS);
+	byte id = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, 0, 0);
+	byte blue = 0;
+
+	if (data.size() == 0) return 0xFF;
+
+	current += (id * 8) + (pal * 2) + 1;
+
+	blue = data[current++];
+	blue = blue >> 2;//0111 1100 -> 0001 1111
+	blue &= 0x1F;//Keep bits 0001 1111
+
+	switch (pal) {
+	case 0:
+		SetDlgItemText(hWnd, EB_POKE_BLU1, std::to_wstring(InterpretNumbers(blue) * 8).c_str());
+		break;
+	case 1:
+		SetDlgItemText(hWnd, EB_POKE_BLU2, std::to_wstring(InterpretNumbers(blue) * 8).c_str());
+		break;
+	case 2:
+		SetDlgItemText(hWnd, EB_SHINY_BLU1, std::to_wstring(InterpretNumbers(blue) * 8).c_str());
+		break;
+	case 3:
+		SetDlgItemText(hWnd, EB_SHINY_BLU2, std::to_wstring(InterpretNumbers(blue) * 8).c_str());
+		break;
+	}
+
+	return blue * 8;
+}
+
+int SetColorValue(std::vector<byte>& data, HWND hWnd, byte pal) {
+	unsigned int current = GetAddress(ADD_POKEMON_COLORS);
+	byte id = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, 0, 0);
+	byte red = 0;
+	byte green = 0;
+	byte blue = 0;
+	short color = 0;
+	unsigned int temp = 0;
+	wchar_t buff[4];
+	std::wstring string;
+
+	GetWindowText(GetDlgItem(hWnd, EB_POKE_RED1 + pal), (LPWSTR)buff, 4);
+	string = buff;
+	if (CheckIfNumber(string) == true) {
+		temp = std::stoi(string) / 8;
+		red = (byte)temp;
+		red &= 0x1F;
+
+	}
+	else return - 1;
+	GetWindowText(GetDlgItem(hWnd, EB_POKE_GRN1 + pal), (LPWSTR)buff, 4);
+	string = buff;
+	if (CheckIfNumber(string) == true) {
+		temp = std::stoi(string) / 8;
+		green = (byte)temp;
+		green &= 0x1F;
+	}
+	else return -1;
+	GetWindowText(GetDlgItem(hWnd, EB_POKE_BLU1 + pal), (LPWSTR)buff, 4);
+	string = buff;
+	if (CheckIfNumber(string) == true) {
+		temp = std::stoi(string) / 8;
+		blue = (byte)temp;
+		blue &= 0x1F;
+	}
+	else return -1;
+
+	color = blue;
+	color = color << 5;
+	color += green;
+	color = color << 5;
+	color += red;
+
+	red = color;//Save the first byte
+	color = color >> 8;
+	blue = color;//Save the second byte
+
+	current += (id * 8) + (2 * pal);
+
+	data[current++] = red;
+	data[current] = blue;
+
+	return 0;
+}

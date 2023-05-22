@@ -27,11 +27,11 @@ struct trainer_pokemon {
 };
 
 struct random_pokemon {
-	byte pokemon;
-	byte level_min;
-	byte level_max;
+	byte pokemon = 0;
+	byte level_min = 0;
+	byte level_max = 0;
 
-	byte morning, day, night;
+	byte morning, day, night = 0;
 
 	std::vector<byte> tags = std::vector<byte>();
 };

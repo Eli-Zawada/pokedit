@@ -148,6 +148,9 @@
 #define BTN_SYNCH_POKE 114
 #define BTN_RAND_ENCOUNTER 115
 #define BTN_ADD_TAG 116
+#define BTN_SAVE_P_TAG 117
+#define BTN_ADD_P_TAG 118
+#define BTN_DEL_P_TAG 119
 
 #define IDC_TAB 200
 
@@ -171,6 +174,18 @@
 #define EB_TRAINER_NAME 1019
 #define LB_EXCLUSIVES 1020
 #define EB_TAG_NAMES 1021
+#define EB_POKE_RED1 1022
+#define EB_POKE_RED2 1023
+#define EB_SHINY_RED1 1024
+#define EB_SHINY_RED2 1025
+#define EB_POKE_GRN1 1026
+#define EB_POKE_GRN2 1027
+#define EB_SHINY_GRN1 1028
+#define EB_SHINY_GRN2 1029
+#define EB_POKE_BLU1 1030
+#define EB_POKE_BLU2 1031
+#define EB_SHINY_BLU1 1032
+#define EB_SHINY_BLU2 1033
 
 #define STC_MOVE_LEVEL 1100
 #define STC_MOVE_EGG 1101
@@ -215,6 +230,10 @@
 #define STC_ENC_60 1140
 #define STC_ENC_32 1141
 #define STC_ENC_11 1142
+#define STC_COLOR1 1143
+#define STC_COLOR2 1144
+#define STC_SHINY1 1145
+#define STC_SHINY2 1146
 
 ///////////////////////////////////////Window Positions//////////////////////////////////////////////
 #define LVL_CONS_X 50
@@ -238,6 +257,9 @@
 
 #define EVO_CONS_X 1005
 #define EVO_CONS_Y 100
+
+#define CLR_CON_X 1175
+#define CLR_CON_Y 100
 
 #define TRA_1_CONS_X 220
 #define TRA_2_CONS_X 390

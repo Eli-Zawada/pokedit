@@ -10,6 +10,8 @@ void DisplayRandomPokemon(HWND hWnd, byte id) {
 	random_pokemon selected = { 0 };
 	std::vector<random_pokemon> pokemon = GetPokemonProfile();
 	std::vector<std::wstring> names = GetTagNames();
+
+	SendMessage(GetDlgItem(hWnd, LB_TAGS), LB_RESETCONTENT, 0, 0);
 	
 	for (random_pokemon& p : pokemon) {
 		if (p.pokemon == id) {

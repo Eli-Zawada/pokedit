@@ -13,3 +13,5 @@ void SetMapProfile(std::vector<random_encounter>& m);
 std::vector<std::wstring> GetTagNames();
 void SetTagNames(std::vector<std::wstring>& s);
 void AddTag(HWND hWnd);
+void ChangePokemonTags(HWND hWnd);
+int UpdatePokemonTag(HWND hWnd, byte value);

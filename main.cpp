@@ -38,6 +38,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	char type1_sel = SendMessage(GetDlgItem(hWnd, CB_TYPE_1), CB_GETCURSEL, 0, 0);
 	char type2_sel = SendMessage(GetDlgItem(hWnd, CB_TYPE_2), CB_GETCURSEL, 0, 0);
 	bool filled = true;
+	DWORD label = 0;
 
 	switch (msg) {
 
@@ -78,6 +79,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			break;
 		case OPEN_PROFILE:
 			OpenProfile(hWnd);
+			tab_sel = TabCtrl_GetCurSel(hTabCntrl);
+			if (tab_sel == 0) DisplayRandomPokemon(hWnd, pokemon + 1);
+			if (tab_sel == 2) DisplayRandomMap(hWnd, hti);
 			break;
 		case BTN_ROM:
 			SelectRom(GetDlgItem(hWnd, CB_ROM));
@@ -194,6 +198,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			if (item23_sel != -1 && item2_sel != -1) {
 				ChangeHoldItems(rom, pokemon + 1, hWnd);
 			}
+			SetColorValue(rom, hWnd, 0);
+			SetColorValue(rom, hWnd, 1);
+			SetColorValue(rom, hWnd, 2);
+			SetColorValue(rom, hWnd, 3);
 
 			SelectPokemon(hWnd);
 			break;
@@ -246,12 +254,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case BTN_ADD_TAG:
 			AddTag(hWnd);
 			break;
+
+		case BTN_SAVE_P_TAG:
+			ChangePokemonTags(hWnd);
+			DisplayRandomPokemon(hWnd, pokemon + 1);
+			break;
+
+		case BTN_ADD_P_TAG:
+			UpdatePokemonTag(hWnd, 1);
+			DisplayRandomPokemon(hWnd, pokemon + 1);
+			break;
+
+		case BTN_DEL_P_TAG:
+			UpdatePokemonTag(hWnd, 0);
+			DisplayRandomPokemon(hWnd, pokemon + 1);
+			break;
 		}
 
 		if (CBN_SELCHANGE == HIWORD(wParam)) {
 			if (LOWORD(wParam) == CB_POKEMON) {
 				SelectPokemon(hWnd);
-				DisplayRandomPokemon(hWnd, SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, NULL, NULL) + 1);
 			}
 			if (LOWORD(wParam) == CB_TRAINER_CONTROL) {
 				DisableTrainerControls(hWnd, SendMessage(GetDlgItem(hWnd, CB_TRAINER_CONTROL), CB_GETCURSEL, NULL, NULL));
@@ -333,6 +355,59 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		}
 		
+		return 0;
+
+	case WM_CTLCOLORSTATIC:
+		label = GetDlgCtrlID((HWND)lParam);
+		static HBRUSH hBrush = CreateSolidBrush(RGB(255, 255, 255));
+		static HDC hdcStatic = (HDC)wParam;
+
+		switch (label) {
+		case STC_COLOR1:
+			hBrush = CreateSolidBrush(RGB(
+				GetRedValue(rom, hWnd, 0),
+				GetGreenValue(rom, hWnd, 0),
+				GetBlueValue(rom, hWnd, 0)));
+			//HDC hdcStatic = (HDC)wParam;
+			//SetTextColor(hdcStatic, RGB(red,blue,green));
+			//SetBkColor(hdcStatic, RGB(0, 0, 0));
+			SetBkMode(hdcStatic, TRANSPARENT);
+			return (INT_PTR)hBrush;
+
+		case STC_COLOR2:
+			hBrush = CreateSolidBrush(RGB(
+				GetRedValue(rom, hWnd, 1),
+				GetGreenValue(rom, hWnd, 1),
+				GetBlueValue(rom, hWnd, 1)));
+			//HDC hdcStatic = (HDC)wParam;
+			//SetTextColor(hdcStatic, RGB(red,blue,green));
+			//SetBkColor(hdcStatic, RGB(0, 0, 0));
+			SetBkMode(hdcStatic, TRANSPARENT);
+			return (INT_PTR)hBrush;
+
+		case STC_SHINY1:
+			hBrush = CreateSolidBrush(RGB(
+				GetRedValue(rom, hWnd, 2),
+				GetGreenValue(rom, hWnd, 2),
+				GetBlueValue(rom, hWnd, 2)));
+			//HDC hdcStatic = (HDC)wParam;
+			//SetTextColor(hdcStatic, RGB(red,blue,green));
+			//SetBkColor(hdcStatic, RGB(0, 0, 0));
+			SetBkMode(hdcStatic, TRANSPARENT);
+			return (INT_PTR)hBrush;
+
+		case STC_SHINY2:
+			hBrush = CreateSolidBrush(RGB(
+				GetRedValue(rom, hWnd, 3),
+				GetGreenValue(rom, hWnd, 3),
+				GetBlueValue(rom, hWnd, 3)));
+			//HDC hdcStatic = (HDC)wParam;
+			//SetTextColor(hdcStatic, RGB(red,blue,green));
+			//SetBkColor(hdcStatic, RGB(0, 0, 0));
+			SetBkMode(hdcStatic, TRANSPARENT);
+			return (INT_PTR)hBrush;
+
+		}
 		return 0;
 
 	default:
@@ -418,7 +493,7 @@ HTREEITEM InsertTreeItem(HWND hWndTV, LPWSTR name, int nLevel, HTREEITEM hPrev, 
 	//Set up the item to be inserted into the tree
 	item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
 	item.pszText = name;
-	item.cchTextMax = sizeof(item.pszText) / sizeof(item.pszText[0]);
+	item.cchTextMax = sizeof(*item.pszText) / sizeof(item.pszText[0]);
 	item.lParam = lParam;
 	//item.iItem = 
 	//item.iSelectedImage = 
@@ -511,6 +586,16 @@ void AddPokemonControls(HWND hWnd) {
 	CreateWindowW(L"Static", L"Evolution", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, EVO_CONS_X, EVO_CONS_Y, 150, 25, hWnd,
 		(HMENU)STC_EVOLUTION, NULL, NULL);
 
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, CLR_CON_X + 12, CLR_CON_Y, 25, 25, hWnd,
+		(HMENU)STC_COLOR1, NULL, NULL);
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, CLR_CON_X + 76, CLR_CON_Y, 25, 25, hWnd,
+		(HMENU)STC_COLOR2, NULL, NULL);
+
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, CLR_CON_X + 12, CLR_CON_Y + 150, 25, 25, hWnd,
+		(HMENU)STC_SHINY1, NULL, NULL);
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, CLR_CON_X + 76, CLR_CON_Y + 150, 25, 25, hWnd,
+		(HMENU)STC_SHINY2, NULL, NULL);
+
 	AddRomCombo(hWnd, ROM_CONS_X, ROM_CONS_Y, 125, 100, CB_ROM);
 	AddPokemonCombo(hWnd, (desk_width / 2) - 75, 25, 170, 150, CB_POKEMON, 1);
 	AddMovesCombo(hWnd, LVL_CONS_X, LVL_CONS_Y + 25, 150, 175, CB_MOVES, 1);
@@ -546,6 +631,9 @@ void AddPokemonControls(HWND hWnd) {
 	CreateWindow(L"Button", L"Delete", WS_VISIBLE | WS_CHILD, EVO_CONS_X + 75, EVO_CONS_Y + 375, 50, 25, hWnd, (HMENU)BTN_DEL_EVO, NULL, NULL);
 	CreateWindow(L"Button", L"Synch", WS_VISIBLE | WS_CHILD, EVO_CONS_X + 75, ROM_CONS_Y, 50, 25, hWnd, (HMENU)BTN_SYNCH_POKE, NULL, NULL);
 	CreateWindow(L"Button", L"Add", WS_VISIBLE | WS_CHILD, RAND_CONS_X + 800, RAND_CONS_Y + 75, 50, 25, hWnd, (HMENU)BTN_ADD_TAG, NULL, NULL);
+	CreateWindow(L"Button", L"Save", WS_VISIBLE | WS_CHILD, RAND_CONS_X - 100, RAND_CONS_Y, 50, 25, hWnd, (HMENU)BTN_SAVE_P_TAG, NULL, NULL);
+	CreateWindow(L"Button", L"Add", WS_VISIBLE | WS_CHILD, RAND_CONS_X + 200, RAND_CONS_Y + 50, 50, 25, hWnd, (HMENU)BTN_ADD_P_TAG, NULL, NULL);
+	CreateWindow(L"Button", L"Delete", WS_VISIBLE | WS_CHILD, RAND_CONS_X + 275, RAND_CONS_Y + 50, 50, 25, hWnd, (HMENU)BTN_DEL_P_TAG, NULL, NULL);
 
 	CreateCheckBox(hWnd, L"Morning", RAND_CONS_X + 100, RAND_CONS_Y, 100, 25, CHB_MOR);
 	CreateCheckBox(hWnd, L"Day", RAND_CONS_X + 100, RAND_CONS_Y + 25, 100, 25, CHB_DAY);
@@ -569,6 +657,20 @@ void AddPokemonControls(HWND hWnd) {
 	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 75, 100, 20, hWnd, (HMENU)EB_BASE_EXP, NULL, NULL);
 	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, BS_CONS_X + BS_CONS_W + 25, BS_CONS_Y + 225, 100, 20, hWnd, (HMENU)EB_HATCH_STEP, NULL, NULL);
 	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, RAND_CONS_X + 800, RAND_CONS_Y, 150, 25, hWnd, (HMENU)EB_TAG_NAMES, NULL, NULL);
+
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, CLR_CON_X, CLR_CON_Y + 35, 50, 20, hWnd, (HMENU)EB_POKE_RED1, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, CLR_CON_X, CLR_CON_Y + 65, 50, 20, hWnd, (HMENU)EB_POKE_GRN1, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, CLR_CON_X, CLR_CON_Y + 95, 50, 20, hWnd, (HMENU)EB_POKE_BLU1, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, CLR_CON_X + 60, CLR_CON_Y + 35, 50, 20, hWnd, (HMENU)EB_POKE_RED2, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, CLR_CON_X + 60, CLR_CON_Y + 65, 50, 20, hWnd, (HMENU)EB_POKE_GRN2, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, CLR_CON_X + 60, CLR_CON_Y + 95, 50, 20, hWnd, (HMENU)EB_POKE_BLU2, NULL, NULL);
+
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, CLR_CON_X, CLR_CON_Y + 190, 50, 20, hWnd, (HMENU)EB_SHINY_RED1, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, CLR_CON_X, CLR_CON_Y + 220, 50, 20, hWnd, (HMENU)EB_SHINY_GRN1, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, CLR_CON_X, CLR_CON_Y + 250, 50, 20, hWnd, (HMENU)EB_SHINY_BLU1, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, CLR_CON_X + 60, CLR_CON_Y + 190, 50, 20, hWnd, (HMENU)EB_SHINY_RED2, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, CLR_CON_X + 60, CLR_CON_Y + 220, 50, 20, hWnd, (HMENU)EB_SHINY_GRN2, NULL, NULL);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, CLR_CON_X + 60, CLR_CON_Y + 250, 50, 20, hWnd, (HMENU)EB_SHINY_BLU2, NULL, NULL);
 
 	TogglePokemonEnables(false, hWnd);
 	EnableWindow(GetDlgItem(hWnd, CB_EVO_CON), false);
@@ -1154,9 +1256,13 @@ void SelectPokemon(HWND hWnd) {
 		DisplayGrowthType(rom, pokemon + 1, hWnd);
 		DisplaySpriteSize(rom, pokemon + 1, hWnd);
 		DisplayEvolution(rom, pokemon + 1, hWnd);
+		DisplayRandomPokemon(hWnd, pokemon + 1);
 	}
 
-
+	RedrawWindow(GetDlgItem(hWnd, STC_COLOR1), NULL, NULL, RDW_INVALIDATE);
+	RedrawWindow(GetDlgItem(hWnd, STC_COLOR2), NULL, NULL, RDW_INVALIDATE);
+	RedrawWindow(GetDlgItem(hWnd, STC_SHINY1), NULL, NULL, RDW_INVALIDATE);
+	RedrawWindow(GetDlgItem(hWnd, STC_SHINY2), NULL, NULL, RDW_INVALIDATE);
 }
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE prevInst, LPSTR pStr, int nCmd) {

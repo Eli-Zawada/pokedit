@@ -5217,3 +5217,58 @@ void AddTag(HWND hWnd) {
 
 	SetMapProfile(maps);
 }
+
+void ChangePokemonTags(HWND hWnd) {
+	std::vector<random_pokemon> poke = GetPokemonProfile();
+	std::vector<std::wstring> tags = GetTagNames();
+	wchar_t buff[20] = { 0 };
+	std::wstring str;
+	byte id = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, 0, 0) + 1;
+	int amount = SendMessage(GetDlgItem(hWnd, LB_TAGS), LB_GETCOUNT, 0, 0);
+	byte pokemon_id = 0;
+
+	while (poke[pokemon_id].pokemon != id) pokemon_id++;
+
+	for (byte& t : poke[pokemon_id].tags) {
+		t = 0;
+	}
+
+	for (int i = 0; i < amount; i++) {
+		for (size_t j = 0; j < tags.size(); j++) {
+			SendMessage(GetDlgItem(hWnd, LB_TAGS), LB_GETTEXT, i, (LPARAM)buff);
+			str = buff;
+			if (str == tags[j]) {
+				poke[pokemon_id].tags[j] = 1;
+			}
+		}
+	}
+
+	poke[pokemon_id].morning = SendMessage(GetDlgItem(hWnd, CHB_MOR), BM_GETCHECK, 0, 0);
+	poke[pokemon_id].day = SendMessage(GetDlgItem(hWnd, CHB_DAY), BM_GETCHECK, 0, 0);
+	poke[pokemon_id].night = SendMessage(GetDlgItem(hWnd, CHB_NGT), BM_GETCHECK, 0, 0);
+
+	poke[pokemon_id].level_min = SendMessage(GetDlgItem(hWnd, CB_MIN_LVL), CB_GETCURSEL, 0, 0) + 1;
+	poke[pokemon_id].level_max = SendMessage(GetDlgItem(hWnd, CB_MAX_LVL), CB_GETCURSEL, 0, 0) + 1;
+
+	SetPokemonProfile(poke);
+}
+
+int UpdatePokemonTag(HWND hWnd, byte value) {
+	std::vector<random_pokemon> poke = GetPokemonProfile();
+	std::vector<std::wstring> tags = GetTagNames();
+	wchar_t buff[20] = { 0 };
+	std::wstring str;
+	byte id = SendMessage(GetDlgItem(hWnd, CB_POKEMON), CB_GETCURSEL, 0, 0) + 1;
+	int tag_id = SendMessage(GetDlgItem(hWnd, CB_TAGS), CB_GETCURSEL, 0, 0);
+	byte pokemon_id = 0;
+
+	if (tag_id < 0) return -1;
+
+	while (poke[pokemon_id].pokemon != id) pokemon_id++;
+
+	poke[pokemon_id].tags[tag_id] = value;
+
+	SetPokemonProfile(poke);
+
+	return 0;
+}

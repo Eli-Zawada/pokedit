@@ -75,3 +75,11 @@ void ChangeSpriteSize(std::vector<byte>& data, byte pokemon, HWND hWnd);
 byte FindPokemonFamily(std::vector<byte>& data, byte pokemon);
 
 void SynchTable(std::vector<byte>& data, unsigned int address, byte marker, byte loops);
+
+byte GetRedValue(std::vector<byte>& data, HWND hWnd, byte pal);
+
+byte GetGreenValue(std::vector<byte>& data, HWND hWnd, byte pal);
+
+byte GetBlueValue(std::vector<byte>& data, HWND hWnd, byte pal);
+
+int SetColorValue(std::vector<byte>& data, HWND hWnd, byte pal);

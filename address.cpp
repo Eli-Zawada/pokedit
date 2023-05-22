@@ -65,6 +65,11 @@ const unsigned int GS_JP_SWARM_SURF = (unsigned int)0x2BFBF;
 const unsigned int C_SWARM_SURF = (unsigned int)0x2B92F;
 const unsigned int C_JP_SWARM_SURF = (unsigned int)0x2B952;
 
+const unsigned int GS_POKEMON_COLORS = 0xAD45;
+const unsigned int GS_JP_POKEMON_COLORS = 0xACCB;
+const unsigned int C_POKEMON_COLORS = 0xA8D6;
+const unsigned int C_JP_POKEMON_COLORS = 0xA893;
+
 unsigned int address_level_table = GS_LEVEL_TABLE;
 unsigned int address_egg_table = GS_EGG_TABLE;
 unsigned int address_base_stats = GS_BASE_STATS;
@@ -78,6 +83,7 @@ unsigned int address_johto_surf = GS_JOHTO_SURF;
 unsigned int address_kanto_surf = GS_KANTO_SURF;
 unsigned int address_swarm_grass = GS_SWARM_GRASS;
 unsigned int address_swarm_surf = GS_SWARM_SURF;
+unsigned int address_pokemon_colors = GS_POKEMON_COLORS;
 
 unsigned int GetAddress(int type) {
 
@@ -120,6 +126,9 @@ unsigned int GetAddress(int type) {
 
 	case ADD_SWARM_SURF:
 		return address_swarm_surf;
+
+	case ADD_POKEMON_COLORS:
+		return address_pokemon_colors;
 	}
 
 	return 0;
@@ -178,6 +187,10 @@ void SetAddress(int type, unsigned int address) {
 
 	case ADD_SWARM_SURF:
 		address_swarm_surf = address;
+		break;
+
+	case ADD_POKEMON_COLORS:
+		address_pokemon_colors = address;
 		break;
 	}
 

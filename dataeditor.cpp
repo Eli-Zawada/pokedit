@@ -29,6 +29,8 @@ std::vector<byte> LoadData(std::wstring fileName) {
 		std::istream_iterator<byte>(file),
 		std::istream_iterator<byte>());
 
+	file.close();
+
 	return vec;
 }
 
@@ -181,6 +183,8 @@ void LoadProfileData(std::wstring fileName) {
 	tags = ReadString(profile, size);
 
 	SetTagNames(tags);
+
+	profile.close();
 }
 
 std::vector<byte> CopyData(std::vector<byte>& data, unsigned int start_address, unsigned int end_address) {
