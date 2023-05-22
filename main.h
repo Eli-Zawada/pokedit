@@ -34,3 +34,5 @@ int InsertItem(HWND hWnd, std::wstring txt, int item_index, int image_index);
 HTREEITEM InsertTreeItem(HWND hWndTV, LPWSTR name, int nLevel, HTREEITEM hPrev, HTREEITEM hPrevRootItem, HTREEITEM hPrevLev2Item, LPARAM lParam);
 void SelectRom(HWND hWnd);
 void SelectPokemon(HWND hWnd);
+INT_PTR ColorStaticBackground(HWND& hWnd, HDC& hdcStatic, byte pal);
+INT_PTR UpdateStaticColor(HWND hWnd, HDC hdcStatic, byte pal);

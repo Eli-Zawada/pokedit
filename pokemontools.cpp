@@ -1381,6 +1381,7 @@ int SetColorValue(std::vector<byte>& data, HWND hWnd, byte pal) {
 
 	GetWindowText(GetDlgItem(hWnd, EB_POKE_RED1 + pal), (LPWSTR)buff, 4);
 	string = buff;
+	if (string.empty() == true) string = L"0";
 	if (CheckIfNumber(string) == true) {
 		temp = std::stoi(string) / 8;
 		red = (byte)temp;
@@ -1390,6 +1391,7 @@ int SetColorValue(std::vector<byte>& data, HWND hWnd, byte pal) {
 	else return - 1;
 	GetWindowText(GetDlgItem(hWnd, EB_POKE_GRN1 + pal), (LPWSTR)buff, 4);
 	string = buff;
+	if (string.empty() == true) string = L"0";
 	if (CheckIfNumber(string) == true) {
 		temp = std::stoi(string) / 8;
 		green = (byte)temp;
@@ -1398,6 +1400,7 @@ int SetColorValue(std::vector<byte>& data, HWND hWnd, byte pal) {
 	else return -1;
 	GetWindowText(GetDlgItem(hWnd, EB_POKE_BLU1 + pal), (LPWSTR)buff, 4);
 	string = buff;
+	if (string.empty() == true) string = L"0";
 	if (CheckIfNumber(string) == true) {
 		temp = std::stoi(string) / 8;
 		blue = (byte)temp;

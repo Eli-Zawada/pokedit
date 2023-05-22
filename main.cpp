@@ -39,6 +39,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	char type2_sel = SendMessage(GetDlgItem(hWnd, CB_TYPE_2), CB_GETCURSEL, 0, 0);
 	bool filled = true;
 	DWORD label = 0;
+	static bool clr_change;//Variable used to determine whether to update the Color Static Labels because of a change in Pokemon or a change in Edit box values
 
 	switch (msg) {
 
@@ -48,6 +49,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		AddPokemonControls(hWnd);
 		AddTrainerControls(hWnd);
 		AddEncounterControls(hWnd);
+		clr_change = false;
 		break;
 
 	case WM_DESTROY:
@@ -291,6 +293,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 			}
 		}
+
+
+		if (EN_CHANGE == HIWORD(wParam)) {
+			RECT r = { 0, 0, 25, 25 };
+			if (LOWORD(wParam) == EB_POKE_RED1 || LOWORD(wParam) == EB_POKE_GRN1 || LOWORD(wParam) == EB_POKE_BLU1) {
+				clr_change = true;
+				InvalidateRect(GetDlgItem(hWnd, STC_COLOR1), &r, true);
+				UpdateWindow(GetDlgItem(hWnd, STC_COLOR1));
+			}
+			if (LOWORD(wParam) == EB_POKE_RED2 || LOWORD(wParam) == EB_POKE_GRN2 || LOWORD(wParam) == EB_POKE_BLU2) {
+				clr_change = true;
+				InvalidateRect(GetDlgItem(hWnd, STC_COLOR2), &r, true);
+				UpdateWindow(GetDlgItem(hWnd, STC_COLOR2));
+			}
+			if (LOWORD(wParam) == EB_SHINY_RED1 || LOWORD(wParam) == EB_SHINY_GRN1 || LOWORD(wParam) == EB_SHINY_BLU1) {
+				clr_change = true;
+				InvalidateRect(GetDlgItem(hWnd, STC_COLOR2), &r, true);
+				UpdateWindow(GetDlgItem(hWnd, STC_COLOR2));
+			}
+			if (LOWORD(wParam) == EB_SHINY_RED2 || LOWORD(wParam) == EB_SHINY_GRN2 || LOWORD(wParam) == EB_SHINY_BLU2) {
+				clr_change = true;
+				InvalidateRect(GetDlgItem(hWnd, STC_COLOR2), &r, true);
+				UpdateWindow(GetDlgItem(hWnd, STC_COLOR2));
+			}
+		}
 		
 		return 0;
 
@@ -364,49 +391,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		switch (label) {
 		case STC_COLOR1:
-			hBrush = CreateSolidBrush(RGB(
-				GetRedValue(rom, hWnd, 0),
-				GetGreenValue(rom, hWnd, 0),
-				GetBlueValue(rom, hWnd, 0)));
-			//HDC hdcStatic = (HDC)wParam;
-			//SetTextColor(hdcStatic, RGB(red,blue,green));
-			//SetBkColor(hdcStatic, RGB(0, 0, 0));
-			SetBkMode(hdcStatic, TRANSPARENT);
-			return (INT_PTR)hBrush;
+			if (clr_change == false) return ColorStaticBackground(hWnd, hdcStatic, 0);
+			clr_change = false;
+			return UpdateStaticColor(hWnd, hdcStatic, 0);
 
 		case STC_COLOR2:
-			hBrush = CreateSolidBrush(RGB(
-				GetRedValue(rom, hWnd, 1),
-				GetGreenValue(rom, hWnd, 1),
-				GetBlueValue(rom, hWnd, 1)));
-			//HDC hdcStatic = (HDC)wParam;
-			//SetTextColor(hdcStatic, RGB(red,blue,green));
-			//SetBkColor(hdcStatic, RGB(0, 0, 0));
-			SetBkMode(hdcStatic, TRANSPARENT);
-			return (INT_PTR)hBrush;
+			if (clr_change == false) return ColorStaticBackground(hWnd, hdcStatic, 1);
+			clr_change = false;
+			return UpdateStaticColor(hWnd, hdcStatic, 1);
 
 		case STC_SHINY1:
-			hBrush = CreateSolidBrush(RGB(
-				GetRedValue(rom, hWnd, 2),
-				GetGreenValue(rom, hWnd, 2),
-				GetBlueValue(rom, hWnd, 2)));
-			//HDC hdcStatic = (HDC)wParam;
-			//SetTextColor(hdcStatic, RGB(red,blue,green));
-			//SetBkColor(hdcStatic, RGB(0, 0, 0));
-			SetBkMode(hdcStatic, TRANSPARENT);
-			return (INT_PTR)hBrush;
+			if (clr_change == false) return ColorStaticBackground(hWnd, hdcStatic, 2);
+			clr_change = false;
+			return UpdateStaticColor(hWnd, hdcStatic, 2);
 
 		case STC_SHINY2:
-			hBrush = CreateSolidBrush(RGB(
-				GetRedValue(rom, hWnd, 3),
-				GetGreenValue(rom, hWnd, 3),
-				GetBlueValue(rom, hWnd, 3)));
-			//HDC hdcStatic = (HDC)wParam;
-			//SetTextColor(hdcStatic, RGB(red,blue,green));
-			//SetBkColor(hdcStatic, RGB(0, 0, 0));
-			SetBkMode(hdcStatic, TRANSPARENT);
-			return (INT_PTR)hBrush;
-
+			if (clr_change == false) return ColorStaticBackground(hWnd, hdcStatic, 3);
+			clr_change = false;
+			return UpdateStaticColor(hWnd, hdcStatic, 3);
 		}
 		return 0;
 
@@ -1230,6 +1232,51 @@ void ToggleEncountersTab(bool update, HWND hWnd) {
 	ShowWindow(GetDlgItem(hWnd, BTN_RAND_ENCOUNTER), update);
 
 	ShowWindow(GetDlgItem(hWnd, LB_EXCLUSIVES), update);
+}
+
+INT_PTR ColorStaticBackground(HWND& hWnd, HDC& hdcStatic, byte pal) {
+	HBRUSH hBrush = CreateSolidBrush(RGB(
+		GetRedValue(rom, hWnd, pal),
+		GetGreenValue(rom, hWnd, pal),
+		GetBlueValue(rom, hWnd, pal)));
+	//HDC hdcStatic = (HDC)wParam;
+	//SetTextColor(hdcStatic, RGB(red,blue,green));
+	//SetBkColor(hdcStatic, RGB(0, 0, 0));
+	SetBkMode(hdcStatic, TRANSPARENT);
+
+	return (INT_PTR)hBrush;
+}
+
+INT_PTR UpdateStaticColor(HWND hWnd, HDC hdcStatic, byte pal) {
+	wchar_t buff[4] = { 0 };
+	std::wstring str = L"";
+	byte red = 0;
+	byte blue = 0;
+	byte green = 0;
+	
+	GetWindowText(GetDlgItem(hWnd, EB_POKE_RED1 + pal), (LPWSTR)buff, 4);
+	str = buff;
+	if (CheckIfNumber(str) == true) {
+		red = std::stoi(str);
+	}
+	GetWindowText(GetDlgItem(hWnd, EB_POKE_GRN1 + pal), (LPWSTR)buff, 4);
+	str = buff;
+	if (CheckIfNumber(str) == true) {
+		green = std::stoi(str);
+	}
+	GetWindowText(GetDlgItem(hWnd, EB_POKE_BLU1 + pal), (LPWSTR)buff, 4);
+	str = buff;
+	if (CheckIfNumber(str) == true) {
+		blue = std::stoi(str);
+	}
+
+	HBRUSH hBrush = CreateSolidBrush(RGB(red, green, blue));
+	//HDC hdcStatic = (HDC)wParam;
+	//SetTextColor(hdcStatic, RGB(red,blue,green));
+	//SetBkColor(hdcStatic, RGB(0, 0, 0));
+	SetBkMode(hdcStatic, TRANSPARENT);
+
+	return (INT_PTR)hBrush;
 }
 
 void SelectPokemon(HWND hWnd) {
