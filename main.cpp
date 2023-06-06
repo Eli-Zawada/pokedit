@@ -49,6 +49,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		AddPokemonControls(hWnd);
 		AddTrainerControls(hWnd);
 		AddEncounterControls(hWnd);
+		AddMartControls(hWnd);
 		clr_change = false;
 		break;
 
@@ -331,30 +332,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				ToggleTrainerTab(false, hWnd);
 				ToggleEncountersTab(false, hWnd);
 				ToggleRandomElements(true, hWnd);
+				ToggleMartTab(false, hWnd);
 				break;
 			case 1:
 				TogglePokemonTab(false, hWnd);
 				ToggleTrainerTab(true, hWnd);
 				ToggleEncountersTab(false, hWnd);
 				ToggleRandomElements(false, hWnd);
+				ToggleMartTab(false, hWnd);
 				break;
 			case 2:
 				TogglePokemonTab(false, hWnd);
 				ToggleTrainerTab(false, hWnd);
 				ToggleEncountersTab(true, hWnd);
 				ToggleRandomElements(true, hWnd);
+				ToggleMartTab(false, hWnd);
 				break;
 			case 3:
 				TogglePokemonTab(false, hWnd);
 				ToggleTrainerTab(false, hWnd);
 				ToggleEncountersTab(false, hWnd);
 				ToggleRandomElements(false, hWnd);
+				ToggleMartTab(true, hWnd);
 				break;
 			case 4:
 				TogglePokemonTab(false, hWnd);
 				ToggleTrainerTab(false, hWnd);
 				ToggleEncountersTab(false, hWnd);
 				ToggleRandomElements(false, hWnd);
+				ToggleMartTab(false, hWnd);
 				break;
 			}
 		}
@@ -699,7 +705,7 @@ void AddTrainerControls(HWND hWnd) {
 		(HMENU)STC_POKE_EXP5, NULL, NULL);
 	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_6_CONS_X, TRA_CONS_Y + 25, 148, 20, hWnd,
 		(HMENU)STC_POKE_EXP6, NULL, NULL);
-	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_2_CONS_X, TRA_CONS_Y + 300, 148, 25, hWnd,
+	CreateWindowW(L"Static", L"", WS_VISIBLE | WS_CHILD | DT_CENTER | WS_BORDER, TRA_5_CONS_X, 50, 148, 25, hWnd,
 		(HMENU)STC_EXP_TOTAL, NULL, NULL);
 
 	AddPokemonCombo(hWnd, TRA_1_CONS_X, TRA_CONS_Y, 150, 150, CB_TRA_POKE1, 0);
@@ -810,6 +816,18 @@ void AddEncounterControls(HWND hWnd) {
 	SetDlgItemText(hWnd, STC_ENC_1, L"1%");
 
 	ToggleEncountersTab(false, hWnd);
+}
+
+void AddMartControls(HWND hWnd) {
+	CreateWindowEx(0, WC_TREEVIEW, L"Tree", WS_VISIBLE | WS_CHILD | WS_BORDER | TVS_HASLINES, 20, 50, 150, 250, hWnd, (HMENU)TV_MARTS, 0, 0);
+
+	CreateWindow(L"ListBox", L"Tags", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, MART_CONS_X, MART_CONS_Y, 150, 250, hWnd, (HMENU)LB_MART_ITEMS, NULL, NULL);
+
+	CreateWindow(L"Button", L"Change", WS_VISIBLE | WS_CHILD, MART_CONS_X + 170, MART_CONS_Y, 60, 25, hWnd, (HMENU)BTN_CHNG_ITEM, NULL, NULL);
+
+	AddItemsCombo(hWnd, MART_CONS_X + 250, MART_CONS_Y, 150, 250, CB_MART_ITEMS, 1);
+
+	ToggleMartTab(false, hWnd);
 }
 
 void SelectRom(HWND hWnd) {
@@ -1093,6 +1111,9 @@ void TogglePokemonTab(bool update, HWND hWnd) {
 	ShowWindow(GetDlgItem(hWnd, BTN_ADD_EVO), update);
 	ShowWindow(GetDlgItem(hWnd, BTN_DEL_EVO), update);
 	ShowWindow(GetDlgItem(hWnd, BTN_SYNCH_POKE), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_SAVE_P_TAG), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_ADD_P_TAG), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_DEL_P_TAG), update);
 
 	ShowWindow(GetDlgItem(hWnd, EB_STAT_HP), update);
 	ShowWindow(GetDlgItem(hWnd, EB_STAT_ATK), update);
@@ -1103,6 +1124,18 @@ void TogglePokemonTab(bool update, HWND hWnd) {
 	ShowWindow(GetDlgItem(hWnd, EB_CR), update);
 	ShowWindow(GetDlgItem(hWnd, EB_BASE_EXP), update);
 	ShowWindow(GetDlgItem(hWnd, EB_HATCH_STEP), update);
+	ShowWindow(GetDlgItem(hWnd, EB_POKE_RED1), update);
+	ShowWindow(GetDlgItem(hWnd, EB_POKE_RED2), update);
+	ShowWindow(GetDlgItem(hWnd, EB_POKE_GRN1), update);
+	ShowWindow(GetDlgItem(hWnd, EB_POKE_GRN2), update);
+	ShowWindow(GetDlgItem(hWnd, EB_POKE_BLU1), update);
+	ShowWindow(GetDlgItem(hWnd, EB_POKE_BLU2), update);
+	ShowWindow(GetDlgItem(hWnd, EB_SHINY_RED1), update);
+	ShowWindow(GetDlgItem(hWnd, EB_SHINY_RED2), update);
+	ShowWindow(GetDlgItem(hWnd, EB_SHINY_GRN1), update);
+	ShowWindow(GetDlgItem(hWnd, EB_SHINY_GRN2), update);
+	ShowWindow(GetDlgItem(hWnd, EB_SHINY_BLU1), update);
+	ShowWindow(GetDlgItem(hWnd, EB_SHINY_BLU2), update);
 
 	ShowWindow(GetDlgItem(hWnd, STC_MOVE_LEVEL), update);
 	ShowWindow(GetDlgItem(hWnd, STC_MOVE_EGG), update);
@@ -1126,6 +1159,10 @@ void TogglePokemonTab(bool update, HWND hWnd) {
 	ShowWindow(GetDlgItem(hWnd, STC_TYPE_1), update);
 	ShowWindow(GetDlgItem(hWnd, STC_TYPE_2), update);
 	ShowWindow(GetDlgItem(hWnd, STC_EVOLUTION), update);
+	ShowWindow(GetDlgItem(hWnd, STC_COLOR1), update);
+	ShowWindow(GetDlgItem(hWnd, STC_COLOR2), update);
+	ShowWindow(GetDlgItem(hWnd, STC_SHINY1), update);
+	ShowWindow(GetDlgItem(hWnd, STC_SHINY2), update);
 
 	ShowWindow(GetDlgItem(hWnd, LB_LEVEL), update);
 	ShowWindow(GetDlgItem(hWnd, LB_EGG_MOVES), update);
@@ -1232,6 +1269,13 @@ void ToggleEncountersTab(bool update, HWND hWnd) {
 	ShowWindow(GetDlgItem(hWnd, BTN_RAND_ENCOUNTER), update);
 
 	ShowWindow(GetDlgItem(hWnd, LB_EXCLUSIVES), update);
+}
+
+void ToggleMartTab(bool update, HWND hWnd) {
+	ShowWindow(GetDlgItem(hWnd, TV_MARTS), update);
+	ShowWindow(GetDlgItem(hWnd, LB_MART_ITEMS), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_CHNG_ITEM), update);
+	ShowWindow(GetDlgItem(hWnd, CB_MART_ITEMS), update);
 }
 
 INT_PTR ColorStaticBackground(HWND& hWnd, HDC& hdcStatic, byte pal) {
