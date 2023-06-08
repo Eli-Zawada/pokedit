@@ -84,6 +84,15 @@ extern const unsigned int C_JP_SWARM_SURF;
 
 #define ADD_POKEMON_COLORS 13
 extern const unsigned int GS_POKEMON_COLORS;
+extern const unsigned int GS_JP_POKEMON_COLORS;
+extern const unsigned int C_POKEMON_COLORS;
+extern const unsigned int C_JP_POKEMON_COLORS;
+
+#define ADD_MARTS 14
+extern const unsigned int GS_MARTS;
+
+#define ADD_MARTS_TOTAL 15
+extern const unsigned int GS_MARTS_TOTAL;
 #endif
 
 unsigned int GetAddress(int type);

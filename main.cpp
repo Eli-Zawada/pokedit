@@ -7,11 +7,12 @@
 #include "resource.h"
 #include "guicodes.h"
 #include "interpreter.h"
+#include "items.h"
 #include "pointertools.h"
 #include "pokemontools.h"
+#include "profile.h"
 #include "randomencounters.h"
 #include "trainertools.h"
-#include "profile.h"
 
 std::vector<BYTE> rom;
 
@@ -72,6 +73,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				TogglePokemonEnables(true, hWnd);
 				FillTrainerTree(rom, hWnd);
 				FillEncountersTree(rom, GetDlgItem(hWnd, TV_ENCOUNTERS));
+				FillMarts(rom, hWnd);
 			}
 			break;
 		case SAVE_FILE:
@@ -272,6 +274,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			UpdatePokemonTag(hWnd, 0);
 			DisplayRandomPokemon(hWnd, pokemon + 1);
 			break;
+
 		}
 
 		if (CBN_SELCHANGE == HIWORD(wParam)) {
@@ -293,8 +296,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				}
 
 			}
+			if (LOWORD(wParam) == CB_MART) {
+				DisplayMart(rom, hWnd);
+			}
 		}
-
 
 		if (EN_CHANGE == HIWORD(wParam)) {
 			RECT r = { 0, 0, 25, 25 };
@@ -364,6 +369,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				break;
 			}
 		}
+
 		if (((LPNMHDR)lParam)->code == TVN_SELCHANGED) {
 			switch (((LPNMHDR)lParam)->idFrom) {
 			
@@ -384,7 +390,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				}
 				break;
 			}
-			
 
 		}
 		
@@ -819,13 +824,11 @@ void AddEncounterControls(HWND hWnd) {
 }
 
 void AddMartControls(HWND hWnd) {
-	CreateWindowEx(0, WC_TREEVIEW, L"Tree", WS_VISIBLE | WS_CHILD | WS_BORDER | TVS_HASLINES, 20, 50, 150, 250, hWnd, (HMENU)TV_MARTS, 0, 0);
+	CreateWindow(L"Combobox", L"Marts", WS_VISIBLE | WS_CHILD | CBS_DROPDOWN | CBS_HASSTRINGS | WS_VSCROLL, MART_CONS_X, MART_CONS_Y, 150, 250, hWnd, (HMENU)CB_MART, NULL, NULL);
+	CreateWindow(L"ListBox", L"Items", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL | LBS_NOTIFY, MART_CONS_X + 300, MART_CONS_Y, 150, 250, hWnd, (HMENU)LB_MART_ITEMS, NULL, NULL);
+	CreateWindow(L"Button", L"Change", WS_VISIBLE | WS_CHILD, MART_CONS_X + 470, MART_CONS_Y, 60, 25, hWnd, (HMENU)BTN_CHNG_ITEM, NULL, NULL);
 
-	CreateWindow(L"ListBox", L"Tags", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, MART_CONS_X, MART_CONS_Y, 150, 250, hWnd, (HMENU)LB_MART_ITEMS, NULL, NULL);
-
-	CreateWindow(L"Button", L"Change", WS_VISIBLE | WS_CHILD, MART_CONS_X + 170, MART_CONS_Y, 60, 25, hWnd, (HMENU)BTN_CHNG_ITEM, NULL, NULL);
-
-	AddItemsCombo(hWnd, MART_CONS_X + 250, MART_CONS_Y, 150, 250, CB_MART_ITEMS, 1);
+	AddItemsCombo(hWnd, MART_CONS_X + 550, MART_CONS_Y, 150, 250, CB_MART_ITEMS, 1);
 
 	ToggleMartTab(false, hWnd);
 }
@@ -1272,7 +1275,7 @@ void ToggleEncountersTab(bool update, HWND hWnd) {
 }
 
 void ToggleMartTab(bool update, HWND hWnd) {
-	ShowWindow(GetDlgItem(hWnd, TV_MARTS), update);
+	ShowWindow(GetDlgItem(hWnd, CB_MART), update);
 	ShowWindow(GetDlgItem(hWnd, LB_MART_ITEMS), update);
 	ShowWindow(GetDlgItem(hWnd, BTN_CHNG_ITEM), update);
 	ShowWindow(GetDlgItem(hWnd, CB_MART_ITEMS), update);
