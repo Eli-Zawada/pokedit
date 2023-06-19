@@ -49,7 +49,7 @@ unsigned int GetFileSize(std::wstring fileName);
 std::vector<byte> LoadData(std::wstring fileName);
 void SaveData(std::vector<byte>& vec, std::wstring fileName);
 void SaveProfileData(std::wstring fileName);
-void LoadProfileData(std::wstring fileName);
+void LoadProfileData(std::wstring fileName, HWND hWnd);
 std::vector<byte> CopyData(std::vector<byte>& data, unsigned int start_address, unsigned int end_address);
 void PasteData(std::vector<byte>& data, unsigned int start_address, std::vector<byte>& copy);
 bool CheckForRom(std::vector<byte> rom);

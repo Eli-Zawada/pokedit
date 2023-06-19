@@ -408,3 +408,72 @@ void CreateTagsCombo(HWND hWnd, int x, int y, int width, int height, int inst) {
 		SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)s.c_str());
 	}
 }
+
+void AddHoldEffectsCombo(HWND hWnd, int x, int y, int width, int height, int inst) {
+	CreateWindow(L"COMBOBOX", NULL, WS_VISIBLE | WS_CHILD | CBS_DROPDOWN |
+		CBS_HASSTRINGS | WS_VSCROLL, x, y, width, height, hWnd, (HMENU)inst, NULL, NULL);
+
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"NONE");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HEALING");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HELD 2");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"LEFTOVERS");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HELD 5");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"PP RESTORE");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"CLEANSE TAG");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HEAL POISON");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HEAL FREEZE");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HEAL BURN");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HEAL SLEEP");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HEAL PARALYZE");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HEAL STATUS");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HEAL CONFUSION");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"PREVENT POISON");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"PREVENT BURN");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"PREVENT FREEZE");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"PREVENT SLEEP");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"PREVENT PARALYZE");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"PREVENT CONFUSION");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HELD 3O");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"ATTACK UP");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"DEFENSE UP");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"SPEED UP");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"SPECIAL ATTACK UP");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"SPECIAL DEFENSE UP");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"ACCURACY UP");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"EVASION UP");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HELD 38");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"METAL POWDER");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"NORMAL BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"FIGHTING BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"FLYING BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"POISON BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"GROUND BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"ROCK BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"BUG BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"GHOST BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"FIRE BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"WATER BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"GRASS BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"ELECTRIC BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"PSYCHIC BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"ICE BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"DRAGON BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"DARK BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"STEEL BOOST");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"CATCH CHANCE");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"HELD 71");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"ESCAPE");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"CRITICAL UP");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"QUICK CLAW");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"FLINCH");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"AMULET COIN");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"BRIGHTPOWDER");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"FOCUS BAND");
+	SendMessage(GetDlgItem(hWnd, inst), CB_ADDSTRING, 0, (LPARAM)L"UNDEFINED");
+
+}
+
+void AddBlankCombo(HWND hWnd, int x, int y, int width, int height, int inst) {
+	CreateWindow(L"COMBOBOX", NULL, WS_VISIBLE | WS_CHILD | CBS_DROPDOWN |
+		CBS_HASSTRINGS | WS_VSCROLL, x, y, width, height, hWnd, (HMENU)inst, NULL, NULL);
+}

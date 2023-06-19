@@ -131,6 +131,15 @@
 #define CB_MAX_LVL 3115
 #define CB_TAGS 3116
 #define CB_MART_ITEMS 3117
+#define CB_MART 3118
+#define CB_CHNG_TM 3119
+#define CB_ITEMS 3120
+#define CB_ITEM_HOLD 3121
+#define CB_ITEM_MENU 3122
+#define CB_ITEM_TYPE 3123
+#define CB_ITEM_USE 3124
+#define CB_ITEM_MENU2 3125
+#define CB_HOLD_CHANCE 3126
 
 #define BTN_ADD_MOVE 100
 #define BTN_CHNG_MOVE 101
@@ -153,12 +162,13 @@
 #define BTN_ADD_P_TAG 118
 #define BTN_DEL_P_TAG 119
 #define BTN_CHNG_ITEM 120
+#define BTN_CHNG_TM 121
+#define BTN_CHNG_ITEM_STATS 122
 
 #define IDC_TAB 200
 
 #define TV_TRAINERS 300
 #define TV_ENCOUNTERS 301
-#define TV_MARTS 302
 
 #define LB_LEVEL 1000
 #define LB_TAGS 1001
@@ -190,6 +200,8 @@
 #define EB_SHINY_BLU1 1032
 #define EB_SHINY_BLU2 1033
 #define LB_MART_ITEMS 1034
+#define LB_TM_MOVES 1035
+#define EB_ITEM_PRICE 1036
 
 #define STC_MOVE_LEVEL 1100
 #define STC_MOVE_EGG 1101
@@ -279,5 +291,8 @@
 #define POKE_COMBO_WIDTH 120
 #define LVL_COMBO_WIDTH 80
 
-#define MART_CONS_X 300
+#define MART_CONS_X 20
 #define MART_CONS_Y 50
+
+#define ITEM_CONS_X 20
+#define ITEM_CONS_Y 400

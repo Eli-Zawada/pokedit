@@ -74,6 +74,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				FillTrainerTree(rom, hWnd);
 				FillEncountersTree(rom, GetDlgItem(hWnd, TV_ENCOUNTERS));
 				FillMarts(rom, hWnd);
+				DisplayTMs(rom, hWnd);
 			}
 			break;
 		case SAVE_FILE:
@@ -275,6 +276,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			DisplayRandomPokemon(hWnd, pokemon + 1);
 			break;
 
+		case BTN_CHNG_ITEM:
+			ChangeMartItem(rom, hWnd);
+			DisplayMart(rom, hWnd);
+			break;
+
+		case BTN_CHNG_TM:
+			ChangeTMMoves(rom, hWnd);
+			DisplayTMs(rom, hWnd);
+			break;
+
+		case BTN_CHNG_ITEM_STATS:
+			ChangeItemPrice(rom, hWnd);
+			ChangeItemEffect(rom, hWnd);
+			break;
+
 		}
 
 		if (CBN_SELCHANGE == HIWORD(wParam)) {
@@ -299,6 +315,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			if (LOWORD(wParam) == CB_MART) {
 				DisplayMart(rom, hWnd);
 			}
+			if (LOWORD(wParam) == CB_ITEMS) {
+				DisplayItemPrice(rom, hWnd);
+				DisplayItemEffect(rom, hWnd);
+				DisplayItemType(rom, hWnd);
+				DisplayItemLimits(rom, hWnd);
+				DisplayItemMenu(rom, hWnd);
+			}
 		}
 
 		if (EN_CHANGE == HIWORD(wParam)) {
@@ -315,13 +338,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			}
 			if (LOWORD(wParam) == EB_SHINY_RED1 || LOWORD(wParam) == EB_SHINY_GRN1 || LOWORD(wParam) == EB_SHINY_BLU1) {
 				clr_change = true;
-				InvalidateRect(GetDlgItem(hWnd, STC_COLOR2), &r, true);
-				UpdateWindow(GetDlgItem(hWnd, STC_COLOR2));
+				InvalidateRect(GetDlgItem(hWnd, STC_SHINY1), &r, true);
+				UpdateWindow(GetDlgItem(hWnd, STC_SHINY1));
 			}
 			if (LOWORD(wParam) == EB_SHINY_RED2 || LOWORD(wParam) == EB_SHINY_GRN2 || LOWORD(wParam) == EB_SHINY_BLU2) {
 				clr_change = true;
-				InvalidateRect(GetDlgItem(hWnd, STC_COLOR2), &r, true);
-				UpdateWindow(GetDlgItem(hWnd, STC_COLOR2));
+				InvalidateRect(GetDlgItem(hWnd, STC_SHINY2), &r, true);
+				UpdateWindow(GetDlgItem(hWnd, STC_SHINY2));
 			}
 		}
 		
@@ -491,8 +514,8 @@ void AddTabs(HWND hWnd) {
 	InsertTabItem(hTabCntrl, L"Pokemon", 0, 0);
 	InsertTabItem(hTabCntrl, L"Trainers", 1, 0);
 	InsertTabItem(hTabCntrl, L"Encounters", 2, 0);
-	InsertTabItem(hTabCntrl, L"Shops", 3, 0);
-	InsertTabItem(hTabCntrl, L"Addresses", 4, 0);
+	InsertTabItem(hTabCntrl, L"Items", 3, 0);
+	InsertTabItem(hTabCntrl, L"Moves", 4, 0);
 }
 
 HTREEITEM InsertTreeItem(HWND hWndTV, LPWSTR name, int nLevel, HTREEITEM hPrev, HTREEITEM hPrevRootItem, HTREEITEM hPrevLev2Item, LPARAM lParam) {
@@ -825,10 +848,39 @@ void AddEncounterControls(HWND hWnd) {
 
 void AddMartControls(HWND hWnd) {
 	CreateWindow(L"Combobox", L"Marts", WS_VISIBLE | WS_CHILD | CBS_DROPDOWN | CBS_HASSTRINGS | WS_VSCROLL, MART_CONS_X, MART_CONS_Y, 150, 250, hWnd, (HMENU)CB_MART, NULL, NULL);
-	CreateWindow(L"ListBox", L"Items", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL | LBS_NOTIFY, MART_CONS_X + 300, MART_CONS_Y, 150, 250, hWnd, (HMENU)LB_MART_ITEMS, NULL, NULL);
-	CreateWindow(L"Button", L"Change", WS_VISIBLE | WS_CHILD, MART_CONS_X + 470, MART_CONS_Y, 60, 25, hWnd, (HMENU)BTN_CHNG_ITEM, NULL, NULL);
+	CreateWindow(L"ListBox", L"Items", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL, MART_CONS_X, MART_CONS_Y + 30, 150, 250, hWnd, (HMENU)LB_MART_ITEMS, NULL, NULL);
+	CreateWindow(L"Button", L"Change", WS_VISIBLE | WS_CHILD, MART_CONS_X + 170, MART_CONS_Y, 60, 25, hWnd, (HMENU)BTN_CHNG_ITEM, NULL, NULL);
+	AddItemsCombo(hWnd, MART_CONS_X + 250, MART_CONS_Y, 150, 250, CB_MART_ITEMS, 1);
 
-	AddItemsCombo(hWnd, MART_CONS_X + 550, MART_CONS_Y, 150, 250, CB_MART_ITEMS, 1);
+	CreateWindow(L"ListBox", L"TMs", WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL | LBS_NOTIFY, MART_CONS_X + 750, MART_CONS_Y, 200, 250, hWnd, (HMENU)LB_TM_MOVES, NULL, NULL);
+	CreateWindow(L"Button", L"Change", WS_VISIBLE | WS_CHILD, MART_CONS_X + 970, MART_CONS_Y, 60, 25, hWnd, (HMENU)BTN_CHNG_TM, NULL, NULL);
+	AddMovesCombo(hWnd, MART_CONS_X + 1050, MART_CONS_Y, 150, 250, CB_CHNG_TM, 1);
+
+	AddItemsCombo(hWnd, ITEM_CONS_X, ITEM_CONS_Y, 150, 250, CB_ITEMS, 1);
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, ITEM_CONS_X + 175, ITEM_CONS_Y, 125, 25, hWnd, (HMENU)EB_ITEM_PRICE, NULL, NULL);
+	AddHoldEffectsCombo(hWnd, ITEM_CONS_X + 325, ITEM_CONS_Y, 150, 250, CB_ITEM_HOLD);
+	AddNumberCombo(hWnd, ITEM_CONS_X + 325, ITEM_CONS_Y + 50, 75, 200, CB_HOLD_CHANCE, 256);
+	AddBlankCombo(hWnd, ITEM_CONS_X + 500, ITEM_CONS_Y, 150, 250, CB_ITEM_USE);
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_USE), CB_ADDSTRING, 0, (LPARAM)L"NO LIMITS");
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_USE), CB_ADDSTRING, 0, (LPARAM)L"CAN'T SELECT");
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_USE), CB_ADDSTRING, 0, (LPARAM)L"CAN'T TOSS");
+	AddBlankCombo(hWnd, ITEM_CONS_X + 675, ITEM_CONS_Y, 150, 250, CB_ITEM_TYPE);
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_TYPE), CB_ADDSTRING, 0, (LPARAM)L"ITEM");
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_TYPE), CB_ADDSTRING, 0, (LPARAM)L"KEY ITEM");
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_TYPE), CB_ADDSTRING, 0, (LPARAM)L"BALL");
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_TYPE), CB_ADDSTRING, 0, (LPARAM)L"TM/HM");
+	AddBlankCombo(hWnd, ITEM_CONS_X + 850, ITEM_CONS_Y, 150, 250, CB_ITEM_MENU);
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU), CB_ADDSTRING, 0, (LPARAM)L"NO MENU");
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU), CB_ADDSTRING, 0, (LPARAM)L"CURRENT MENU");
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU), CB_ADDSTRING, 0, (LPARAM)L"PARTY MENU");
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU), CB_ADDSTRING, 0, (LPARAM)L"CLOSE MENU");
+	AddBlankCombo(hWnd, ITEM_CONS_X + 1025, ITEM_CONS_Y, 150, 250, CB_ITEM_MENU2);
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU2), CB_ADDSTRING, 0, (LPARAM)L"NO MENU");
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU2), CB_ADDSTRING, 0, (LPARAM)L"CURRENT MENU");
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU2), CB_ADDSTRING, 0, (LPARAM)L"PARTY MENU");
+	SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU2), CB_ADDSTRING, 0, (LPARAM)L"CLOSE MENU");
+
+	CreateWindow(L"Button", L"Change", WS_VISIBLE | WS_CHILD, ITEM_CONS_X, ITEM_CONS_Y + 75, 60, 25, hWnd, (HMENU)BTN_CHNG_ITEM_STATS, NULL, NULL);
 
 	ToggleMartTab(false, hWnd);
 }
@@ -982,7 +1034,7 @@ void OpenProfile(HWND hWnd) {
 	GetOpenFileName(&ofn);
 
 	if (ofn.lpstrFile[0] != '\0') {
-		LoadProfileData(ofn.lpstrFile);
+		LoadProfileData(ofn.lpstrFile, hWnd);
 	}
 
 }
@@ -1276,9 +1328,22 @@ void ToggleEncountersTab(bool update, HWND hWnd) {
 
 void ToggleMartTab(bool update, HWND hWnd) {
 	ShowWindow(GetDlgItem(hWnd, CB_MART), update);
+	ShowWindow(GetDlgItem(hWnd, CB_CHNG_TM), update);
 	ShowWindow(GetDlgItem(hWnd, LB_MART_ITEMS), update);
 	ShowWindow(GetDlgItem(hWnd, BTN_CHNG_ITEM), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_CHNG_TM), update);
 	ShowWindow(GetDlgItem(hWnd, CB_MART_ITEMS), update);
+	ShowWindow(GetDlgItem(hWnd, LB_TM_MOVES), update);
+
+	ShowWindow(GetDlgItem(hWnd, CB_ITEMS), update);
+	ShowWindow(GetDlgItem(hWnd, EB_ITEM_PRICE), update);
+	ShowWindow(GetDlgItem(hWnd, CB_ITEM_HOLD), update);
+	ShowWindow(GetDlgItem(hWnd, CB_HOLD_CHANCE), update);
+	ShowWindow(GetDlgItem(hWnd, CB_ITEM_MENU), update);
+	ShowWindow(GetDlgItem(hWnd, CB_ITEM_TYPE), update);
+	ShowWindow(GetDlgItem(hWnd, CB_ITEM_USE), update);
+	ShowWindow(GetDlgItem(hWnd, CB_ITEM_MENU2), update);
+	ShowWindow(GetDlgItem(hWnd, BTN_CHNG_ITEM_STATS), update);
 }
 
 INT_PTR ColorStaticBackground(HWND& hWnd, HDC& hdcStatic, byte pal) {

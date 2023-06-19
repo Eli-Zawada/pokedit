@@ -93,6 +93,12 @@ extern const unsigned int GS_MARTS;
 
 #define ADD_MARTS_TOTAL 15
 extern const unsigned int GS_MARTS_TOTAL;
+
+#define ADD_TM_MOVES 16
+extern const unsigned int GS_TM_MOVES;
+
+#define ADD_ITEMS 17
+extern const unsigned int GS_ITEMS;
 #endif
 
 unsigned int GetAddress(int type);

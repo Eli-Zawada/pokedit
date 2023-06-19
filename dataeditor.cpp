@@ -128,7 +128,7 @@ void SaveProfileData(std::wstring fileName) {
 	}
 }
 
-void LoadProfileData(std::wstring fileName) {
+void LoadProfileData(std::wstring fileName, HWND hWnd) {
 	std::ifstream profile(fileName, std::ios::binary);
 	profile.unsetf(std::ios::skipws);
 
@@ -183,6 +183,10 @@ void LoadProfileData(std::wstring fileName) {
 	tags = ReadString(profile, size);
 
 	SetTagNames(tags);
+	SendMessage(GetDlgItem(hWnd, CB_TAGS), CB_RESETCONTENT, 0, 0);
+	for (std::wstring& t: tags) {
+		SendMessage(GetDlgItem(hWnd, CB_TAGS), CB_ADDSTRING, 0, (LPARAM)t.c_str());
+	}
 
 	profile.close();
 }

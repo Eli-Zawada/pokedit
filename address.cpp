@@ -74,6 +74,12 @@ const unsigned int GS_MARTS = 0x162FE;
 
 const unsigned int GS_MARTS_TOTAL = 0x15D1E;
 
+const unsigned int GS_TM_MOVES = 0x11A66;
+
+const unsigned int GS_ITEMS = 0x68A0;
+
+const unsigned int GS_POKE_NAME_PNTR = 0x368A;//0x35EF could also be important
+
 unsigned int address_level_table = GS_LEVEL_TABLE;
 unsigned int address_egg_table = GS_EGG_TABLE;
 unsigned int address_base_stats = GS_BASE_STATS;
@@ -90,6 +96,8 @@ unsigned int address_swarm_surf = GS_SWARM_SURF;
 unsigned int address_pokemon_colors = GS_POKEMON_COLORS;
 unsigned int address_marts = GS_MARTS;
 unsigned int address_marts_total = GS_MARTS_TOTAL;
+unsigned int address_tm_moves = GS_TM_MOVES;
+unsigned int address_items = GS_ITEMS;
 
 unsigned int GetAddress(int type) {
 
@@ -141,6 +149,11 @@ unsigned int GetAddress(int type) {
 
 	case ADD_MARTS_TOTAL:
 		return address_marts_total;
+
+	case ADD_TM_MOVES:
+		return address_tm_moves;
+	case ADD_ITEMS:
+		return address_items;
 	}
 
 	return 0;
@@ -206,7 +219,15 @@ void SetAddress(int type, unsigned int address) {
 		break;
 
 	case ADD_MARTS:
-		address_marts;
+		address_marts = address;
+		break;
+
+	case ADD_TM_MOVES:
+		address_tm_moves = address;
+		break;
+
+	case ADD_ITEMS:
+		address_items = address;
 		break;
 	}
 

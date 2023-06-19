@@ -21,3 +21,5 @@ HWND AddEvoStatCombo(HWND, int, int, int, int, int);
 HWND AddNumberCombo(HWND hWnd, int x, int y, int width, int height, int inst, int range);
 void ChangeEvoCombos(HWND, HWND, HWND, HWND);
 void CreateTagsCombo(HWND hWnd, int x, int y, int width, int height, int inst);
+void AddHoldEffectsCombo(HWND hWnd, int x, int y, int width, int height, int inst);
+void AddBlankCombo(HWND hWnd, int x, int y, int width, int height, int inst);
