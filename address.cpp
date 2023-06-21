@@ -78,7 +78,13 @@ const unsigned int GS_TM_MOVES = 0x11A66;
 
 const unsigned int GS_ITEMS = 0x68A0;
 
-const unsigned int GS_POKE_NAME_PNTR = 0x368A;//0x35EF could also be important
+const unsigned int GS_ITEM_STR_PNTR = 0x35F8;
+
+const unsigned int GS_TRNR_STR_PNTR = 0x3601;
+
+const unsigned int GS_POKE_STR_PNTR = 0x368A;//0x35EF could also be important
+
+const unsigned int GS_MOVE_STR_PNTR = 0x35F2;
 
 unsigned int address_level_table = GS_LEVEL_TABLE;
 unsigned int address_egg_table = GS_EGG_TABLE;
@@ -98,6 +104,11 @@ unsigned int address_marts = GS_MARTS;
 unsigned int address_marts_total = GS_MARTS_TOTAL;
 unsigned int address_tm_moves = GS_TM_MOVES;
 unsigned int address_items = GS_ITEMS;
+unsigned int address_item_str_pntr = GS_ITEM_STR_PNTR;
+unsigned int address_trnr_str_pntr = GS_TRNR_STR_PNTR;
+unsigned int address_poke_str_pntr = GS_POKE_STR_PNTR;
+unsigned int address_move_str_pntr = GS_MOVE_STR_PNTR;
+
 
 unsigned int GetAddress(int type) {
 
@@ -152,8 +163,21 @@ unsigned int GetAddress(int type) {
 
 	case ADD_TM_MOVES:
 		return address_tm_moves;
+
 	case ADD_ITEMS:
 		return address_items;
+
+	case ADD_ITEM_STR_PNTR:
+		return address_item_str_pntr;
+
+	case ADD_TRNR_STR_PNTR:
+		return address_trnr_str_pntr;
+
+	case ADD_POKE_STR_PNTR:
+		return address_poke_str_pntr;
+
+	case ADD_MOVE_STR_PNTR:
+		return address_move_str_pntr;
 	}
 
 	return 0;
@@ -229,6 +253,18 @@ void SetAddress(int type, unsigned int address) {
 	case ADD_ITEMS:
 		address_items = address;
 		break;
+
+	case ADD_ITEM_STR_PNTR:
+		address_item_str_pntr = address;
+
+	case ADD_TRNR_STR_PNTR:
+		address_trnr_str_pntr = address;
+
+	case ADD_POKE_STR_PNTR:
+		address_poke_str_pntr = address;
+
+	case ADD_MOVE_STR_PNTR:
+		address_move_str_pntr = address;
 	}
 
 }

@@ -602,3 +602,83 @@ int ChangeItemEffect(std::vector<byte>& data, HWND hWnd) {
 
 	return 0;
 }
+
+int ChangeItemType(std::vector<byte>& data, HWND hWnd) {
+	if (data.empty() == true) return -1;
+	unsigned int cur = GetAddress(ADD_ITEMS);
+	byte item = SendMessage(GetDlgItem(hWnd, CB_ITEMS), CB_GETCURSEL, 0, 0);
+	cur += (item * 7) + 5;
+
+	data[cur] = (byte) SendMessage(GetDlgItem(hWnd, CB_ITEM_TYPE), CB_GETCURSEL, 0, 0) + 1;
+
+	return 0;
+}
+
+int ChangeItemLimits(std::vector<byte>& data, HWND hWnd) {
+	if (data.empty() == true) return -1;
+	unsigned int cur = GetAddress(ADD_ITEMS);
+	byte item = SendMessage(GetDlgItem(hWnd, CB_ITEMS), CB_GETCURSEL, 0, 0);
+	cur += (item * 7) + 4;
+
+	switch (SendMessage(GetDlgItem(hWnd, CB_ITEM_USE), CB_GETCURSEL, 0, 0)) {
+	case 0://No Limits
+		data[cur] = 0x00;
+		break;
+	case 1://Can't Use
+		data[cur] = 0x40;
+		break;
+	case 2://Can't Toss
+		data[cur] = 0x80;
+		break;
+	}
+
+	return 0;
+}
+
+int ChangeItemMenu(std::vector<byte>& data, HWND hWnd) {
+	if (data.empty() == true) return -1;
+	unsigned int cur = GetAddress(ADD_ITEMS);
+	byte item = SendMessage(GetDlgItem(hWnd, CB_ITEMS), CB_GETCURSEL, 0, 0);
+	cur += (item * 7) + 6;
+	byte menu = 0;
+
+	switch (SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU), CB_GETCURSEL, 0, 0)) {
+	case 0://No Menu
+		menu = 0x00;
+		break;
+	case 1://Current Menu
+		menu = 0x04;
+		break;
+	case 2://Party Menu
+		menu = 0x05;
+		break;
+	case 3://Close Menu
+		menu = 0x06;
+		break;
+	default:
+		return -1;
+	}
+
+	menu = menu << 4;
+
+	switch (SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU2), CB_GETCURSEL, 0, 0)) {
+	case 0://No Menu
+		menu += 0x00;
+		break;
+	case 1://Current Menu
+		menu += 0x04;
+		break;
+	case 2://Party Menu
+		menu += 0x05;
+		break;
+	case 3://Close Menu
+		menu += 0x06;
+		break;
+	default:
+		return -1;
+	}
+
+	data[cur] = menu;
+
+	return 0;
+}

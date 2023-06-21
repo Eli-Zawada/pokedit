@@ -1,4 +1,7 @@
 #include "interpreter.h"
+#include "dataeditor.h"
+#include "pointertools.h"
+#include "address.h"
 
 std::wstring InterpretCharacter(byte code) {
 	std::wstring character;
@@ -5273,6 +5276,98 @@ std::wstring InterpretItems(char code) {
 	}
 
 	return name;
+}
+
+std::wstring InterpretItems(std::vector<byte>& data, byte code) {
+	unsigned int add = GetAddress(ADD_ITEM_STR_PNTR);
+	byte pointer[3] = { 0 };
+
+	pointer[2] = data[add - 1];
+	pointer[1] = data[add + 1];
+	pointer[0] = data[add];
+
+	add = PointerToAddress(pointer);
+
+	for (int i = 0; i < code; i++) {
+		while (data[add] != 0x50) {
+			add++;
+		}
+		add++;
+	}
+
+	game_string str = GetGameString(data, add, 0x50);
+
+	return str.wstring;
+}
+
+std::wstring InterpretTrainerClass(std::vector<byte>& data, byte code) {
+	unsigned int add = GetAddress(ADD_TRNR_STR_PNTR);
+	byte pointer[3] = { 0 };
+
+	pointer[2] = data[add - 1];
+	pointer[1] = data[add + 1];
+	pointer[0] = data[add];
+
+	add = PointerToAddress(pointer);
+
+	for (int i = 0; i < code; i++) {
+		while (data[add] != 0x50) {
+			add++;
+		}
+		add++;
+	}
+
+	game_string str = GetGameString(data, add, 0x50);
+
+	return str.wstring;
+}
+
+std::wstring InterpretPokemon(std::vector<byte>& data, byte code) {
+	unsigned int add = GetAddress(ADD_POKE_STR_PNTR);
+	byte pointer[3] = { 0 };
+
+	pointer[2] = data[add - 7];
+	pointer[1] = data[add + 1];
+	pointer[0] = data[add];
+
+	add = PointerToAddress(pointer);
+
+	for (int i = 0; i < code; i++) {
+		while (data[add] != 0x50) {
+			add++;
+		}
+		add++;
+	}
+
+	std::wstring str = L"";
+
+	for (int i = 0; i < 10; i++) {
+		str += InterpretCharacter(data[add++]);
+	}
+
+	return str;
+}
+
+std::wstring InterpretMoves(std::vector<byte>& data, byte code) {
+	unsigned int add = GetAddress(ADD_MOVE_STR_PNTR);
+	byte pointer[3] = { 0 };
+
+	pointer[2] = data[add - 1];
+	pointer[1] = data[add + 1];
+	pointer[0] = data[add];
+
+	add = PointerToAddress(pointer);
+
+	for (int i = 0; i < code; i++) {
+		while (data[add] != 0x50) {
+			add++;
+		}
+		add++;
+	}
+
+	game_string str = GetGameString(data, add, 0x50);
+
+	return str.wstring;
 }
 
 std::wstring InterpretConds(byte type, byte code) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <wtypes.h>
 
 std::wstring InterpretCharacter(byte code);
@@ -17,6 +18,10 @@ char InterpretSizeCombo(int code);
 std::wstring InterpretPokemon(char code);
 std::wstring InterpretMoves(char code);
 std::wstring InterpretItems(char code);
+std::wstring InterpretItems(std::vector<byte>& data, byte code);
+std::wstring InterpretTrainerClass(std::vector<byte>& data, byte code);
+std::wstring InterpretPokemon(std::vector<byte>& data, byte code);
+std::wstring InterpretMoves(std::vector<byte>& data, byte code);
 std::wstring InterpretConds(unsigned char type, unsigned char code);
 std::wstring InterpretTM1(byte bit);
 std::wstring InterpretTM2(byte bit);

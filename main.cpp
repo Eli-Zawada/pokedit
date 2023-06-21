@@ -289,6 +289,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case BTN_CHNG_ITEM_STATS:
 			ChangeItemPrice(rom, hWnd);
 			ChangeItemEffect(rom, hWnd);
+			ChangeItemType(rom, hWnd);
+			ChangeItemLimits(rom, hWnd);
+			ChangeItemMenu(rom, hWnd);
 			break;
 
 		}

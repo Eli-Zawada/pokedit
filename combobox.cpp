@@ -477,3 +477,41 @@ void AddBlankCombo(HWND hWnd, int x, int y, int width, int height, int inst) {
 	CreateWindow(L"COMBOBOX", NULL, WS_VISIBLE | WS_CHILD | CBS_DROPDOWN |
 		CBS_HASSTRINGS | WS_VSCROLL, x, y, width, height, hWnd, (HMENU)inst, NULL, NULL);
 }
+
+int UpdateComboBox(std::vector<byte>& data, HWND hWnd, byte code) {
+	if (data.empty() == true) return -1;
+	SendMessage(hWnd, CB_RESETCONTENT, 0, 0);
+	std::wstring str = L"";
+
+	switch (code) {
+	case 0:
+		for (int i = 0; i < 256; i++) {
+			str = InterpretItems(data, i);
+			SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)str.c_str());
+		}
+		break;
+
+	case 1:
+		for (int i = 0; i < 256; i++) {
+			str = InterpretTrainerClass(data, i);
+			SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)str.c_str());
+		}
+		break;
+
+	case 2:
+		for (int i = 0; i < 256; i++) {
+			str = InterpretPokemon(data, i);
+			SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)str.c_str());
+		}
+		break;
+
+	case 3:
+		for (int i = 0; i < 256; i++) {
+			str = InterpretMoves(data, i);
+			SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)str.c_str());
+		}
+		break;
+	}
+
+	return 0;
+}

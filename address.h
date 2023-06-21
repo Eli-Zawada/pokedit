@@ -99,6 +99,18 @@ extern const unsigned int GS_TM_MOVES;
 
 #define ADD_ITEMS 17
 extern const unsigned int GS_ITEMS;
+
+#define ADD_ITEM_STR_PNTR 18
+extern const unsigned int GS_ITEM_STR_PNTR;
+
+#define ADD_TRNR_STR_PNTR 19
+extern const unsigned int GS_TRNR_STR_PNTR;
+
+#define ADD_POKE_STR_PNTR 20
+extern const unsigned int GS_POKE_STR_PNTR;
+
+#define ADD_MOVE_STR_PNTR 21
+extern const unsigned int GS_MOVE_STR_PNTR;
 #endif
 
 unsigned int GetAddress(int type);

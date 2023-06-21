@@ -14,3 +14,6 @@ int DisplayItemLimits(std::vector<byte>& data, HWND hWnd);
 int DisplayItemMenu(std::vector<byte>& data, HWND hWnd);
 int ChangeItemPrice(std::vector<byte>& data, HWND hWnd);
 int ChangeItemEffect(std::vector<byte>& data, HWND hWnd);
+int ChangeItemType(std::vector<byte>& data, HWND hWnd);
+int ChangeItemLimits(std::vector<byte>& data, HWND hWnd);
+int ChangeItemMenu(std::vector<byte>& data, HWND hWnd);
