@@ -81,23 +81,31 @@ void FillTrainerTree(std::vector<byte>& data, HWND hWnd) {
 		if(i != type_quantity) htr = TreeView_GetNextItem(hWndtv, hti, TVGN_NEXTVISIBLE);
 	}
 
-
+	delete pointer;
 }
 
 void GetTrainerTypes(std::vector<byte>& data, HWND hWndtv) {
 	game_string name;
-	unsigned int cur_add = GetAddress(ADD_TRAINER_CLASSES);
+	unsigned int add = GetAddress(ADD_TRNR_STR_PNTR);
 	HTREEITEM hti = TVI_FIRST;
 	int type_quantity = GetNumberOfTableElements(GetAddress(ADD_TRAINER_TABLE), data);
 	
+	byte* pointer = new byte[3];
+
+	pointer[2] = data[add - 1];
+	pointer[1] = data[add + 1];
+	pointer[0] = data[add];
+
+	add = PointerToAddress(pointer);
+
 	TreeView_DeleteAllItems(hWndtv);
 
 	for (int i = 0; i < type_quantity; i++) {
-		name = GetGameString(data, cur_add, 0x50);
+		name = GetGameString(data, add, 0x50);
 		hti = InsertTreeItem(hWndtv, (LPWSTR)name.wstring.c_str(), 1, hti, NULL, NULL, (LPARAM)i + 1);
-		cur_add += name.characters + 1;
+		add += name.characters + 1;
 	}
-
+	delete pointer;
 }
 
 void GetTrainerData(std::vector<byte>& data, HTREEITEM item, HWND hWnd) {

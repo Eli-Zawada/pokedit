@@ -75,6 +75,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				FillEncountersTree(rom, GetDlgItem(hWnd, TV_ENCOUNTERS));
 				FillMarts(rom, hWnd);
 				DisplayTMs(rom, hWnd);
+				UpdateItemCombos(rom, hWnd);
+				UpdatePokemonCombos(rom, hWnd);
+				UpdateMoveCombos(rom, hWnd);
 			}
 			break;
 		case SAVE_FILE:
@@ -292,6 +295,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			ChangeItemType(rom, hWnd);
 			ChangeItemLimits(rom, hWnd);
 			ChangeItemMenu(rom, hWnd);
+			UpdateItemName(rom, hWnd);
+			UpdateItemCombos(rom, hWnd);
+			UpdatePokemonCombos(rom, hWnd);
+			UpdateMoveCombos(rom, hWnd);
 			break;
 
 		}
@@ -882,6 +889,7 @@ void AddMartControls(HWND hWnd) {
 	SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU2), CB_ADDSTRING, 0, (LPARAM)L"CURRENT MENU");
 	SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU2), CB_ADDSTRING, 0, (LPARAM)L"PARTY MENU");
 	SendMessage(GetDlgItem(hWnd, CB_ITEM_MENU2), CB_ADDSTRING, 0, (LPARAM)L"CLOSE MENU");
+	CreateWindow(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | DT_CENTER, ITEM_CONS_X, ITEM_CONS_Y + 40, 125, 25, hWnd, (HMENU)EB_ITEM_NAME, NULL, NULL);
 
 	CreateWindow(L"Button", L"Change", WS_VISIBLE | WS_CHILD, ITEM_CONS_X, ITEM_CONS_Y + 75, 60, 25, hWnd, (HMENU)BTN_CHNG_ITEM_STATS, NULL, NULL);
 
@@ -1347,6 +1355,7 @@ void ToggleMartTab(bool update, HWND hWnd) {
 	ShowWindow(GetDlgItem(hWnd, CB_ITEM_USE), update);
 	ShowWindow(GetDlgItem(hWnd, CB_ITEM_MENU2), update);
 	ShowWindow(GetDlgItem(hWnd, BTN_CHNG_ITEM_STATS), update);
+	ShowWindow(GetDlgItem(hWnd, EB_ITEM_NAME), update);
 }
 
 INT_PTR ColorStaticBackground(HWND& hWnd, HDC& hdcStatic, byte pal) {

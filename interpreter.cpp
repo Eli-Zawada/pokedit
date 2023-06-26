@@ -5333,10 +5333,8 @@ std::wstring InterpretPokemon(std::vector<byte>& data, byte code) {
 	add = PointerToAddress(pointer);
 
 	for (int i = 0; i < code; i++) {
-		while (data[add] != 0x50) {
-			add++;
-		}
-		add++;
+		
+		add += 10;
 	}
 
 	std::wstring str = L"";
@@ -5405,6 +5403,7 @@ std::wstring InterpretConds(byte type, byte code) {
 
 std::wstring InterpretTM1(byte bit) {
 	std::wstring name = L"";
+	//game_string move = {L"", 0};
 
 	switch (bit) {
 	case (char)0x00: {

@@ -1,6 +1,7 @@
 #include "dataeditor.h"
 #include "randomencounters.h"
 #include "profile.h"
+#include "address.h"
 
 unsigned int GetFileSize(std::wstring fileName) {
 
@@ -283,4 +284,66 @@ int GetNumberOfTableElements(int table_add, std::vector<byte>& data) {
 
 bool CheckBit(byte b, byte p) {
 	return (b>>p) & 1;
+}
+
+void UpdateStringPointers(std::vector<byte>& data, int offset, byte type) {
+	unsigned int item = GetAddress(ADD_ITEM_STR_PNTR);
+	unsigned int trainer = GetAddress(ADD_TRNR_STR_PNTR);
+	unsigned int pokemon = GetAddress(ADD_POKE_STR_PNTR);
+	unsigned int move = GetAddress(ADD_MOVE_STR_PNTR);
+	unsigned int address = 0;
+
+	byte* pointer = new byte[3];
+
+	switch (type) {
+	case 0:
+		pointer[2] = data[item - 1];
+		pointer[1] = data[item + 1];
+		pointer[0] = data[item];
+
+		address = PointerToAddress(pointer) + offset;
+		pointer = CreatePointer(address);
+
+		data[item - 1] = pointer[2];
+		data[item + 1] = pointer[1];
+		data[item] = pointer[0];
+
+	case 1:
+		pointer[2] = data[trainer - 1];
+		pointer[1] = data[trainer + 1];
+		pointer[0] = data[trainer];
+
+		address = PointerToAddress(pointer) + offset;
+		pointer = CreatePointer(address);
+
+		data[trainer - 1] = pointer[2];
+		data[trainer + 1] = pointer[1];
+		data[trainer] = pointer[0];
+
+	case 2:
+		pointer[2] = data[pokemon - 7];
+		pointer[1] = data[pokemon + 1];
+		pointer[0] = data[pokemon];
+
+		address = PointerToAddress(pointer) + offset;
+		pointer = CreatePointer(address);
+
+		data[pokemon - 1] = pointer[2];
+		data[pokemon + 1] = pointer[1];
+		data[pokemon] = pointer[0];
+
+	case 3:
+		pointer[2] = data[move - 1];
+		pointer[1] = data[move + 1];
+		pointer[0] = data[move];
+
+		address = PointerToAddress(pointer) + offset;
+		pointer = CreatePointer(address);
+
+		data[move - 1] = pointer[2];
+		data[move + 1] = pointer[1];
+		data[move] = pointer[0];
+	}
+
+
 }

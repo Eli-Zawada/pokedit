@@ -24,3 +24,6 @@ void CreateTagsCombo(HWND hWnd, int x, int y, int width, int height, int inst);
 void AddHoldEffectsCombo(HWND hWnd, int x, int y, int width, int height, int inst);
 void AddBlankCombo(HWND hWnd, int x, int y, int width, int height, int inst);
 int UpdateComboBox(std::vector<byte>& data, HWND hWnd, byte code);
+int UpdateItemCombos(std::vector<byte>& data, HWND hWnd);
+int UpdatePokemonCombos(std::vector<byte>& data, HWND hWnd);
+int UpdateMoveCombos(std::vector<byte>& data, HWND hWnd);

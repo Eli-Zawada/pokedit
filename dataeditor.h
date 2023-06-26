@@ -59,3 +59,4 @@ std::wstring IntToHexString(int number);
 bool CheckValidPointerTableEntry(std::vector<byte>& data, int address, int entry);
 int GetNumberOfTableElements(int table_add, std::vector<byte>& data);
 bool CheckBit(byte b, byte p);
+void UpdateStringPointers(std::vector<byte>& data, int offset, byte type);

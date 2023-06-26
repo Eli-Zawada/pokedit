@@ -682,3 +682,58 @@ int ChangeItemMenu(std::vector<byte>& data, HWND hWnd) {
 
 	return 0;
 }
+
+int UpdateItemName(std::vector<byte>& data, HWND hWnd) {
+	if (data.empty() == true) return -1;
+
+	unsigned int add = GetAddress(ADD_ITEM_STR_PNTR);
+	byte pointer[3] = { 0 };
+
+	pointer[2] = data[add - 1];
+	pointer[1] = data[add + 1];
+	pointer[0] = data[add];
+
+	add = PointerToAddress(pointer);
+
+	pointer[2] = FindBank(add) + 1;
+	pointer[1] = 0x40;
+	pointer[0] = 0x00;
+
+	unsigned int end = PointerToAddress(pointer) - 1;
+
+	byte item = SendMessage(GetDlgItem(hWnd, CB_ITEMS), CB_GETCURSEL, 0 ,0) + 1;
+	for (int i = 0; i < item; i++) {
+		while (data[add] != 0x50) {
+			add++;
+		}
+		add++;
+	}
+
+	std::vector<byte> copy = CopyData(data, add - 1, end - 1);
+
+	int old_size = 0;
+
+	add -= 2;
+	while (data[add] != 0x50) {
+		add--;
+		old_size++;
+	}
+	add++;
+
+	wchar_t buff[14] = { L'\0' };
+	GetWindowText(GetDlgItem(hWnd, EB_ITEM_NAME), buff, 14);
+	int new_size = 0;
+
+	for (wchar_t c: buff) {
+		if (c != L'\0') {
+			data[add++] = TextToHex(c);
+			new_size++;
+		}
+	}
+
+	PasteData(data, add, copy);
+
+	UpdateStringPointers(data, new_size - old_size, 1);
+
+	return 0;
+}

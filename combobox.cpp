@@ -515,3 +515,128 @@ int UpdateComboBox(std::vector<byte>& data, HWND hWnd, byte code) {
 
 	return 0;
 }
+
+int UpdateItemCombos(std::vector<byte>& data, HWND hWnd) {
+	if (data.empty() == true) return -1;
+
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_ITEM_23), 0);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_ITEM_2), 0);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_ITEM_1), 0);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_ITEM_1), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_ITEM_2), 0);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_ITEM_2), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_ITEM_3), 0);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_ITEM_3), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_ITEM_4), 0);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_ITEM_4), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_ITEM_5), 0);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_ITEM_5), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_ITEM_6), 0);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_ITEM_6), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_MART_ITEMS), 0);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_ITEMS), 0);
+
+	return 0;
+}
+
+int UpdatePokemonCombos(std::vector<byte>& data, HWND hWnd) {
+	if (data.empty() == true) return -1;
+
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_POKEMON), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_EVO_POK), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_POKE1), 2);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_POKE1), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_POKE2), 2);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_POKE2), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_POKE3), 2);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_POKE3), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_POKE4), 2);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_POKE4), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_POKE5), 2);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_POKE5), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_POKE6), 2);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_POKE6), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_MOR_POKE_1), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_MOR_POKE_2), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_MOR_POKE_3), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_MOR_POKE_4), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_MOR_POKE_5), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_MOR_POKE_6), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_MOR_POKE_7), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_DAY_POKE_1), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_DAY_POKE_2), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_DAY_POKE_3), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_DAY_POKE_4), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_DAY_POKE_5), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_DAY_POKE_6), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_DAY_POKE_7), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_NGT_POKE_1), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_NGT_POKE_2), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_NGT_POKE_3), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_NGT_POKE_4), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_NGT_POKE_5), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_NGT_POKE_6), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_NGT_POKE_7), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_SURF_POKE_1), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_SURF_POKE_2), 2);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_SURF_POKE_3), 2);
+
+	return 0;
+}
+
+int UpdateMoveCombos(std::vector<byte>& data, HWND hWnd) {
+	if (data.empty() == true) return -1;
+
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_MOVES), 3);
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE1_1), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE1_1), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE1_2), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE1_2), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE1_3), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE1_3), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE1_4), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE1_4), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE2_1), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE2_1), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE2_2), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE2_2), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE2_3), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE2_3), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE2_4), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE2_4), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE3_1), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE3_1), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE3_2), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE3_2), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE3_3), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE3_3), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE3_4), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE3_4), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE4_1), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE4_1), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE4_2), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE4_2), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE4_3), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE4_3), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE4_4), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE4_4), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE5_1), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE5_1), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE5_2), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE5_2), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE5_3), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE5_3), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE5_4), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE5_4), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE6_1), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE6_1), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE6_2), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE6_2), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE6_3), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE6_3), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_TRA_MOVE6_4), 3);
+	SendMessage(GetDlgItem(hWnd, CB_TRA_MOVE6_4), CB_INSERTSTRING, 0, (LPARAM)L"NONE");
+	UpdateComboBox(data, GetDlgItem(hWnd, CB_CHNG_TM), 3);
+
+	return 0;
+}
